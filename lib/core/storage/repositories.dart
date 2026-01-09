@@ -169,8 +169,11 @@ class OutputRepository extends StateNotifier<AsyncValue<GeneratedOutput?>> {
       
       print('📥 _loadOutput: useMock=${apiClient.useMock}, characters=${profile?.characters.length}');
       
-      // If using backend, always try to load from backend first
-      if (!apiClient.useMock && profile?.characters.length == AppConstants.requiredCharacterCount) {
+      // If using backend, always try to load from backend first (4-6 characters)
+      if (!apiClient.useMock && 
+          profile != null && 
+          profile.characters.length >= AppConstants.minCharacterCount &&
+          profile.characters.length <= AppConstants.maxCharacterCount) {
         print('🌐 Attempting to load from backend...');
         try {
           // Try to get cached output from backend
@@ -219,7 +222,9 @@ class OutputRepository extends StateNotifier<AsyncValue<GeneratedOutput?>> {
       }
       
       // Only fallback to fixture in mock mode
-      if (apiClient.useMock && profile?.characters.length == AppConstants.requiredCharacterCount) {
+      if (apiClient.useMock && 
+          profile != null && 
+          profile.characters.length >= AppConstants.minCharacterCount) {
         print('🎭 Using fixture (mock mode)');
         final output = await FixtureLoader.loadFixture();
         state = AsyncValue.data(output);
@@ -248,7 +253,9 @@ class OutputRepository extends StateNotifier<AsyncValue<GeneratedOutput?>> {
           
           final profileAsync = ref.read(userProfileRepositoryProvider);
           final profile = profileAsync.valueOrNull;
-          if (profile == null || profile.characters.length != AppConstants.requiredCharacterCount) {
+          if (profile == null || 
+              profile.characters.length < AppConstants.minCharacterCount ||
+              profile.characters.length > AppConstants.maxCharacterCount) {
             state = const AsyncValue.data(null);
             return;
           }

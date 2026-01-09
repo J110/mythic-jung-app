@@ -1,5 +1,7 @@
 class AppConstants {
-  static const int requiredCharacterCount = 6;
+  static const int minCharacterCount = 4;  // Minimum required
+  static const int maxCharacterCount = 6;  // Maximum allowed (2 optional)
+  static const int requiredCharacterCount = 4;  // For backward compatibility
   static const int assessmentModulesCount = 7;
   
   // Assessment module types

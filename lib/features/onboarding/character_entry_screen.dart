@@ -18,11 +18,11 @@ class CharacterEntryScreen extends ConsumerStatefulWidget {
 class _CharacterEntryScreenState
     extends ConsumerState<CharacterEntryScreen> {
   final List<TextEditingController> _controllers = List.generate(
-    AppConstants.requiredCharacterCount,
+    AppConstants.maxCharacterCount,
     (_) => TextEditingController(),
   );
   final List<FocusNode> _focusNodes = List.generate(
-    AppConstants.requiredCharacterCount,
+    AppConstants.maxCharacterCount,
     (_) => FocusNode(),
   );
 
@@ -47,10 +47,10 @@ class _CharacterEntryScreenState
             ))
         .toList();
 
-    if (characters.length != AppConstants.requiredCharacterCount) {
+    if (characters.length < AppConstants.minCharacterCount) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter all 6 characters'),
+        SnackBar(
+          content: Text('Please enter at least ${AppConstants.minCharacterCount} characters'),
         ),
       );
       return;
@@ -152,14 +152,14 @@ class _CharacterEntryScreenState
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Choose 6 characters',
+                              'Choose your characters',
                               style: theme.textTheme.headlineMedium?.copyWith(
                                 fontWeight: FontWeight.w700,
                               ),
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              'Characters from stories, myths, films, or any narrative that speaks to you.',
+                              '4 required, 2 optional. Characters from stories, myths, films, or any narrative.',
                               style: theme.textTheme.bodyMedium?.copyWith(
                                 height: 1.5,
                               ),
@@ -172,68 +172,96 @@ class _CharacterEntryScreenState
                 ),
                 const SizedBox(height: 32),
                 ...List.generate(
-                  AppConstants.requiredCharacterCount,
-                  (index) => Padding(
-                    padding: const EdgeInsets.only(bottom: 20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Container(
-                              width: 32,
-                              height: 32,
-                              decoration: BoxDecoration(
-                                gradient: AppTheme.primaryGradient,
-                                shape: BoxShape.circle,
-                              ),
-                              child: Center(
-                                child: Text(
-                                  '${index + 1}',
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 16,
+                  AppConstants.maxCharacterCount,
+                  (index) {
+                    final isOptional = index >= AppConstants.minCharacterCount;
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                width: 32,
+                                height: 32,
+                                decoration: BoxDecoration(
+                                  gradient: isOptional 
+                                      ? LinearGradient(colors: [Colors.grey.shade400, Colors.grey.shade500])
+                                      : AppTheme.primaryGradient,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    '${index + 1}',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 16,
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Text(
-                                'Character ${index + 1}',
-                                style: theme.textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.w600,
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      'Character ${index + 1}',
+                                      style: theme.textTheme.titleMedium?.copyWith(
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    if (isOptional) ...[
+                                      const SizedBox(width: 8),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                        decoration: BoxDecoration(
+                                          color: Colors.grey.withOpacity(0.2),
+                                          borderRadius: BorderRadius.circular(8),
+                                        ),
+                                        child: Text(
+                                          'Optional',
+                                          style: theme.textTheme.labelSmall?.copyWith(
+                                            color: Colors.grey.shade600,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ],
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        TextField(
-                          controller: _controllers[index],
-                          focusNode: _focusNodes[index],
-                          decoration: InputDecoration(
-                            hintText: 'e.g., Ethan Hunt, James Bond, Odysseus...',
-                            prefixIcon: Icon(
-                              Icons.person_outline,
-                              color: theme.colorScheme.primary,
-                            ),
+                            ],
                           ),
-                          textInputAction: index < AppConstants.requiredCharacterCount - 1
-                              ? TextInputAction.next
-                              : TextInputAction.done,
-                          onSubmitted: (value) {
-                            if (index < AppConstants.requiredCharacterCount - 1) {
-                              _focusNodes[index + 1].requestFocus();
-                            } else {
-                              _generate();
-                            }
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
+                          const SizedBox(height: 12),
+                          TextField(
+                            controller: _controllers[index],
+                            focusNode: _focusNodes[index],
+                            decoration: InputDecoration(
+                              hintText: isOptional 
+                                  ? 'Optional: Add another character...'
+                                  : 'e.g., Ethan Hunt, James Bond, Odysseus...',
+                              prefixIcon: Icon(
+                                Icons.person_outline,
+                                color: isOptional ? Colors.grey : theme.colorScheme.primary,
+                              ),
+                            ),
+                            textInputAction: index < AppConstants.maxCharacterCount - 1
+                                ? TextInputAction.next
+                                : TextInputAction.done,
+                            onSubmitted: (value) {
+                              if (index < AppConstants.maxCharacterCount - 1) {
+                                _focusNodes[index + 1].requestFocus();
+                              } else {
+                                _generate();
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                    );
+                  },
                 ),
                 const SizedBox(height: 32),
                 Container(

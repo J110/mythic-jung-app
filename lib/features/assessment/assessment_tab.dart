@@ -18,7 +18,7 @@ class AssessmentTab extends ConsumerWidget {
       ),
       body: profileAsync.when(
         data: (profile) {
-          if (profile == null || profile.characters.length != AppConstants.requiredCharacterCount) {
+          if (profile == null || profile.characters.length < AppConstants.minCharacterCount) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
