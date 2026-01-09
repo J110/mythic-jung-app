@@ -1,0 +1,324 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "GeneratedOutput",
+  "type": "object",
+  "required": [
+    "story",
+    "identification",
+    "functioning",
+    "actions",
+    "lifeDomains",
+    "meta"
+  ],
+  "properties": {
+    "story": {
+      "type": "object",
+      "required": [
+        "mythSummary",
+        "centralTension",
+        "guidingSentence"
+      ],
+      "properties": {
+        "mythSummary": {
+          "type": "string"
+        },
+        "centralTension": {
+          "type": "string"
+        },
+        "guidingSentence": {
+          "type": "string"
+        },
+        "northStarScene": {
+          "type": "string"
+        }
+      }
+    },
+    "identification": {
+      "type": "object",
+      "required": [
+        "ego",
+        "persona",
+        "shadow",
+        "feelingFunction",
+        "evidence"
+      ],
+      "properties": {
+        "ego": {
+          "$ref": "#/definitions/ArchetypeBlock"
+        },
+        "persona": {
+          "$ref": "#/definitions/ArchetypeBlock"
+        },
+        "shadow": {
+          "$ref": "#/definitions/ArchetypeBlock"
+        },
+        "shadowVirtue": {
+          "$ref": "#/definitions/ArchetypeBlock"
+        },
+        "feelingFunction": {
+          "$ref": "#/definitions/ArchetypeBlock"
+        },
+        "erosAxis": {
+          "$ref": "#/definitions/ArchetypeBlock"
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/EvidenceItem"
+          }
+        }
+      }
+    },
+    "functioning": {
+      "type": "object",
+      "required": [
+        "coreTraits",
+        "symbolicEssence",
+        "narrativeArc",
+        "redemptionArc"
+      ],
+      "properties": {
+        "coreTraits": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "symbolicEssence": {
+          "type": "string"
+        },
+        "narrativeArc": {
+          "type": "string"
+        },
+        "redemptionArc": {
+          "type": "string"
+        },
+        "costsAndCompensations": {
+          "type": "string"
+        },
+        "alignmentIndicators": {
+          "type": "object",
+          "properties": {
+            "aligned": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "unaligned": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "actions": {
+      "type": "object",
+      "required": [
+        "situationBlocks",
+        "guidingQuestion"
+      ],
+      "properties": {
+        "situationBlocks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/SituationBlock"
+          }
+        },
+        "guidingQuestion": {
+          "type": "string"
+        }
+      }
+    },
+    "lifeDomains": {
+      "type": "object",
+      "required": [
+        "work",
+        "leadership",
+        "truth",
+        "intimacy",
+        "social",
+        "innerLife"
+      ],
+      "properties": {
+        "work": {
+          "$ref": "#/definitions/DomainBlock"
+        },
+        "leadership": {
+          "$ref": "#/definitions/DomainBlock"
+        },
+        "truth": {
+          "$ref": "#/definitions/DomainBlock"
+        },
+        "intimacy": {
+          "$ref": "#/definitions/DomainBlock"
+        },
+        "social": {
+          "$ref": "#/definitions/DomainBlock"
+        },
+        "innerLife": {
+          "$ref": "#/definitions/DomainBlock"
+        }
+      }
+    },
+    "meta": {
+      "type": "object",
+      "required": [
+        "generatedAt",
+        "modelVersion",
+        "promptVersion",
+        "schemaVersion"
+      ],
+      "properties": {
+        "generatedAt": {
+          "type": "string"
+        },
+        "modelVersion": {
+          "type": "string"
+        },
+        "promptVersion": {
+          "type": "string"
+        },
+        "schemaVersion": {
+          "type": "integer"
+        }
+      }
+    }
+  },
+  "definitions": {
+    "ArchetypeBlock": {
+      "type": "object",
+      "required": [
+        "title",
+        "summary",
+        "characters"
+      ],
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string"
+        },
+        "characters": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "details": {
+          "type": "string"
+        }
+      }
+    },
+    "EvidenceItem": {
+      "type": "object",
+      "required": [
+        "targetPath",
+        "characterRefs",
+        "assessmentRefs"
+      ],
+      "properties": {
+        "targetPath": {
+          "type": "string",
+          "description": "JSON path e.g. identification.shadowVirtue"
+        },
+        "characterRefs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "assessmentRefs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "description": "questionId(s)"
+          }
+        }
+      }
+    },
+    "SituationBlock": {
+      "type": "object",
+      "required": [
+        "title",
+        "situation",
+        "alignedResponse",
+        "beWaryOf"
+      ],
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "situation": {
+          "type": "string"
+        },
+        "alignedResponse": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "beWaryOf": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "DomainBlock": {
+      "type": "object",
+      "required": [
+        "title",
+        "iAm",
+        "iTendTo",
+        "typicalSituations",
+        "watchOuts",
+        "toRealizePotential",
+        "selfDirection"
+      ],
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "iAm": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "iTendTo": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "typicalSituations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "watchOuts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "toRealizePotential": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "selfDirection": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

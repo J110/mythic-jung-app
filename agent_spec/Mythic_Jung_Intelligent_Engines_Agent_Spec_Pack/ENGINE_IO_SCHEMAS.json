@@ -1,0 +1,31 @@
+{
+  "RecognitionResult": {
+    "status": "RECOGNIZED|AMBIGUOUS|NOT_RECOGNIZED",
+    "confidence": "0..1",
+    "canonical": {
+      "canonicalId": "string",
+      "name": "string",
+      "franchise": "string",
+      "medium": "string",
+      "portrayal": "string?"
+    },
+    "candidates": [
+      {
+        "canonicalId": "string",
+        "name": "string",
+        "franchise": "string",
+        "medium": "string",
+        "portrayal": "string?"
+      }
+    ],
+    "requiredDisambiguation": [
+      "string"
+    ],
+    "normalization": {
+      "cleanedInput": "string",
+      "detectedHints": [
+        "string"
+      ]
+    }
+  }
+}

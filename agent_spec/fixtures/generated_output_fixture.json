@@ -1,0 +1,217 @@
+{
+  "story": {
+    "mythSummary": "(Fixture) ...",
+    "centralTension": "Truth vs belonging.",
+    "guidingSentence": "Use independence precisely; return to intimacy.",
+    "northStarScene": "(Optional fixture)"
+  },
+  "identification": {
+    "ego": {
+      "title": "Ego \u2014 Ethan Hunt",
+      "summary": "(Fixture)",
+      "characters": [
+        "Ethan Hunt"
+      ],
+      "details": "Longer detail..."
+    },
+    "persona": {
+      "title": "Persona \u2014 Bond / House",
+      "summary": "(Fixture)",
+      "characters": [
+        "James Bond",
+        "Gregory House"
+      ],
+      "details": "..."
+    },
+    "shadow": {
+      "title": "Shadow \u2014 Draper / Rick",
+      "summary": "(Fixture)",
+      "characters": [
+        "Don Draper",
+        "Rick Sanchez"
+      ],
+      "details": "..."
+    },
+    "shadowVirtue": {
+      "title": "Shadow Virtue \u2014 Epistemic Courage",
+      "summary": "(Fixture)",
+      "characters": [
+        "Rick Sanchez"
+      ],
+      "details": "..."
+    },
+    "feelingFunction": {
+      "title": "Feeling Function \u2014 Patch Adams",
+      "summary": "(Fixture)",
+      "characters": [
+        "Patch Adams"
+      ],
+      "details": "..."
+    },
+    "erosAxis": {
+      "title": "Eros Axis \u2014 Intimacy",
+      "summary": "(Fixture)",
+      "characters": [
+        "(none)"
+      ],
+      "details": "..."
+    },
+    "evidence": [
+      {
+        "targetPath": "identification.shadowVirtue",
+        "characterRefs": [
+          "Rick Sanchez"
+        ],
+        "assessmentRefs": [
+          "SHADOW_QVIRTUE"
+        ]
+      }
+    ]
+  },
+  "functioning": {
+    "coreTraits": [
+      "Mission-oriented",
+      "Truth-driven"
+    ],
+    "symbolicEssence": "...",
+    "narrativeArc": "...",
+    "redemptionArc": "..."
+  },
+  "actions": {
+    "situationBlocks": [
+      {
+        "title": "Fear-based rules",
+        "situation": "...",
+        "alignedResponse": [
+          "..."
+        ],
+        "beWaryOf": [
+          "..."
+        ]
+      }
+    ],
+    "guidingQuestion": "Am I alone for truth, or avoiding intimacy?"
+  },
+  "lifeDomains": {
+    "work": {
+      "title": "Work & Purpose",
+      "iAm": [
+        "..."
+      ],
+      "iTendTo": [
+        "..."
+      ],
+      "typicalSituations": [
+        "..."
+      ],
+      "watchOuts": [
+        "..."
+      ],
+      "toRealizePotential": [
+        "..."
+      ],
+      "selfDirection": "..."
+    },
+    "leadership": {
+      "title": "Leadership & Authority",
+      "iAm": [
+        "..."
+      ],
+      "iTendTo": [
+        "..."
+      ],
+      "typicalSituations": [
+        "..."
+      ],
+      "watchOuts": [
+        "..."
+      ],
+      "toRealizePotential": [
+        "..."
+      ],
+      "selfDirection": "..."
+    },
+    "truth": {
+      "title": "Truth & Rules",
+      "iAm": [
+        "..."
+      ],
+      "iTendTo": [
+        "..."
+      ],
+      "typicalSituations": [
+        "..."
+      ],
+      "watchOuts": [
+        "..."
+      ],
+      "toRealizePotential": [
+        "..."
+      ],
+      "selfDirection": "..."
+    },
+    "intimacy": {
+      "title": "Relationships & Intimacy",
+      "iAm": [
+        "..."
+      ],
+      "iTendTo": [
+        "..."
+      ],
+      "typicalSituations": [
+        "..."
+      ],
+      "watchOuts": [
+        "..."
+      ],
+      "toRealizePotential": [
+        "..."
+      ],
+      "selfDirection": "..."
+    },
+    "social": {
+      "title": "Social Life",
+      "iAm": [
+        "..."
+      ],
+      "iTendTo": [
+        "..."
+      ],
+      "typicalSituations": [
+        "..."
+      ],
+      "watchOuts": [
+        "..."
+      ],
+      "toRealizePotential": [
+        "..."
+      ],
+      "selfDirection": "..."
+    },
+    "innerLife": {
+      "title": "Inner Life",
+      "iAm": [
+        "..."
+      ],
+      "iTendTo": [
+        "..."
+      ],
+      "typicalSituations": [
+        "..."
+      ],
+      "watchOuts": [
+        "..."
+      ],
+      "toRealizePotential": [
+        "..."
+      ],
+      "selfDirection": "..."
+    }
+  },
+  "meta": {
+    "generatedAt": "2026-01-07",
+    "modelVersion": "server-llm",
+    "promptVersion": "v1",
+    "schemaVersion": 1
+  }
+}

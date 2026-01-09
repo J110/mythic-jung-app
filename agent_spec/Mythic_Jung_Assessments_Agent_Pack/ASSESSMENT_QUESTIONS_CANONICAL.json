@@ -1,0 +1,446 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-01-07",
+  "assessments": [
+    {
+      "assessmentType": "LIBIDINAL_CHARGE",
+      "title": "Libidinal Charge",
+      "goal_user": "Identify which character(s) your energy naturally flows toward right now (motivation + aliveness).",
+      "answerRules": "Choose from your 6 characters. Answer quickly; go with the first true pull.",
+      "questions": [
+        {
+          "questionId": "LIB_Q1_ENERGY_PULL_NOW",
+          "text": "Right now, which character feels like the strongest pull on your energy?",
+          "helper": "Pick the one you\u2019d instinctively \u2018step into\u2019 today.",
+          "answerType": "SINGLE",
+          "influences": [
+            "story.mythSummary",
+            "functioning.coreTraits",
+            "identification.ego.summary"
+          ]
+        },
+        {
+          "questionId": "LIB_Q2_WHEN_UNDER_PRESSURE",
+          "text": "When life gets intense or high-stakes, which character shows up in you automatically?",
+          "helper": "Who takes the wheel when things get serious?",
+          "answerType": "SINGLE",
+          "influences": [
+            "identification.ego",
+            "functioning.coreTraits",
+            "actions.situationBlocks"
+          ]
+        },
+        {
+          "questionId": "LIB_Q3_WHEN_YOU_FEEL_MOST_ALIVE",
+          "text": "Which character represents how you feel when you\u2019re at your best\u2014focused, alive, and in motion?",
+          "helper": "Not who you admire\u2014who feels like \u2018you at your best\u2019.",
+          "answerType": "SINGLE",
+          "influences": [
+            "story.guidingSentence",
+            "functioning.symbolicEssence",
+            "lifeDomains.work"
+          ]
+        },
+        {
+          "questionId": "LIB_Q4_WHEN_YOU_NEED_RECOVERY",
+          "text": "When you\u2019re drained and need to recover, which character helps you come back to yourself?",
+          "helper": "Who restores you\u2014emotionally or psychologically?",
+          "answerType": "SINGLE",
+          "influences": [
+            "identification.feelingFunction",
+            "actions.situationBlocks"
+          ]
+        },
+        {
+          "questionId": "LIB_Q5_WHAT_YOU_CHASE",
+          "text": "If you had one free day with no obligations, which character\u2019s life would you most want to live for that day?",
+          "helper": "This reveals your hidden \u2018charge\u2019 and desire.",
+          "answerType": "SINGLE",
+          "influences": [
+            "functioning.narrativeArc",
+            "lifeDomains.innerLife",
+            "story.northStarScene"
+          ]
+        },
+        {
+          "questionId": "LIB_Q6_WHAT_YOU_PROTECT",
+          "text": "Which character best represents what you protect at all costs\u2014truth, people, freedom, competence, love, meaning?",
+          "helper": "Pick the one whose values feel non\u2011negotiable.",
+          "answerType": "SINGLE",
+          "influences": [
+            "functioning.symbolicEssence",
+            "actions.guidingQuestion",
+            "lifeDomains.truth"
+          ]
+        }
+      ]
+    },
+    {
+      "assessmentType": "EGO_POSITION",
+      "title": "Ego Position",
+      "goal_user": "Identify your default conscious stance: how you decide, act, and hold identity under normal life.",
+      "answerRules": "Choose the character that best matches your default mode, not your ideal self.",
+      "questions": [
+        {
+          "questionId": "EGO_Q1_DEFAULT_DAY_MODE",
+          "text": "On a normal day, which character is closest to how you naturally operate?",
+          "helper": "Your default pace, tone, and decision style.",
+          "answerType": "SINGLE",
+          "influences": [
+            "identification.ego",
+            "lifeDomains.work"
+          ]
+        },
+        {
+          "questionId": "EGO_Q2_DECISION_STYLE",
+          "text": "When you must make a decision quickly, which character\u2019s decision style do you use most?",
+          "helper": "Instinctive\u2014no overthinking.",
+          "answerType": "SINGLE",
+          "influences": [
+            "identification.ego.details",
+            "functioning.coreTraits"
+          ]
+        },
+        {
+          "questionId": "EGO_Q3_WHAT_YOU_TRUST",
+          "text": "Which character best represents what you trust most: evidence, instinct, loyalty, strategy, or empathy?",
+          "helper": "Pick the one who matches your inner compass.",
+          "answerType": "SINGLE",
+          "influences": [
+            "functioning.symbolicEssence",
+            "lifeDomains.truth"
+          ]
+        },
+        {
+          "questionId": "EGO_Q4_CONFLICT_RESPONSE",
+          "text": "In conflict, which character most resembles how you respond?",
+          "helper": "Do you confront, withdraw, negotiate, or outsmart?",
+          "answerType": "SINGLE",
+          "influences": [
+            "actions.situationBlocks",
+            "lifeDomains.leadership"
+          ]
+        },
+        {
+          "questionId": "EGO_Q5_BOUNDARIES",
+          "text": "Which character best matches how you set boundaries when someone crosses a line?",
+          "helper": "How you say no, enforce, or detach.",
+          "answerType": "SINGLE",
+          "influences": [
+            "actions.situationBlocks",
+            "lifeDomains.social"
+          ]
+        }
+      ]
+    },
+    {
+      "assessmentType": "PERSONA_FORMATION",
+      "title": "Persona Formation",
+      "goal_user": "Identify the face you present to the world to function: competence mask, social role, performance layer.",
+      "answerRules": "Choose the character you \u2018use\u2019 in public or when you want to be respected.",
+      "questions": [
+        {
+          "questionId": "PER_Q1_PUBLIC_FACE",
+          "text": "In public (work, strangers, formal settings), which character are you most likely to present as?",
+          "helper": "Your \u2018default mask\u2019 when you\u2019re being observed.",
+          "answerType": "SINGLE",
+          "influences": [
+            "identification.persona",
+            "lifeDomains.work"
+          ]
+        },
+        {
+          "questionId": "PER_Q2_WHEN_YOU_WANT_RESPECT",
+          "text": "When you want respect or credibility, which character do you lean into?",
+          "helper": "Who do you become to be taken seriously?",
+          "answerType": "SINGLE",
+          "influences": [
+            "identification.persona.details",
+            "functioning.costsAndCompensations"
+          ]
+        },
+        {
+          "questionId": "PER_Q3_WHEN_YOU_FEEL_JUDGED",
+          "text": "When you feel judged, which character\u2019s style do you adopt to protect yourself?",
+          "helper": "Polish, humor, dominance, distance, charm, etc.",
+          "answerType": "SINGLE",
+          "influences": [
+            "actions.situationBlocks",
+            "lifeDomains.social"
+          ]
+        },
+        {
+          "questionId": "PER_Q4_WHAT_YOU_HIDE",
+          "text": "Which character best represents what you hide from others: vulnerability, need, uncertainty, softness, or loneliness?",
+          "helper": "Pick the one whose \u2018mask\u2019 matches your defense.",
+          "answerType": "SINGLE",
+          "influences": [
+            "functioning.redemptionArc",
+            "identification.persona"
+          ]
+        },
+        {
+          "questionId": "PER_Q5_COST_OF_THE_MASK",
+          "text": "After a long day of \u2018being on\u2019, which character best represents how you feel inside?",
+          "helper": "This reveals persona fatigue.",
+          "answerType": "SINGLE",
+          "influences": [
+            "functioning.costsAndCompensations",
+            "actions.situationBlocks"
+          ]
+        }
+      ]
+    },
+    {
+      "assessmentType": "SHADOW_PROXIMITY",
+      "title": "Shadow Proximity",
+      "goal_user": "Identify the rejected or dangerous parts: what you fear becoming, deny, or secretly use.",
+      "answerRules": "Choose honestly; this is about what\u2019s closest to you when you\u2019re stressed or unguarded.",
+      "questions": [
+        {
+          "questionId": "SHD_Q1_UNDER_STRESS",
+          "text": "When you\u2019re stressed or cornered, which character\u2019s darker side can show up in you?",
+          "helper": "Irritability, detachment, control, cynicism, numbness.",
+          "answerType": "SINGLE",
+          "influences": [
+            "identification.shadow",
+            "actions.situationBlocks"
+          ]
+        },
+        {
+          "questionId": "SHD_Q2_SECRETLY_RELATABLE",
+          "text": "Which character\u2019s flaws feel uncomfortably relatable\u2014even if you don\u2019t want to admit it?",
+          "helper": "Not admiration\u2014relatability.",
+          "answerType": "SINGLE",
+          "influences": [
+            "identification.shadow.details",
+            "functioning.narrativeArc"
+          ]
+        },
+        {
+          "questionId": "SHD_Q3_WHAT_YOU_JUDGE_IN_OTHERS",
+          "text": "Which character best represents the trait you judge most harshly in others?",
+          "helper": "Often, what we judge is close to our shadow.",
+          "answerType": "SINGLE",
+          "influences": [
+            "identification.shadow",
+            "lifeDomains.social"
+          ]
+        },
+        {
+          "questionId": "SHD_Q4_SHADOW_VIRTUE",
+          "text": "Which character represents the \u2018shadow strength\u2019 you use when rules are irrational and you must stand alone?",
+          "helper": "Courage to defy fear-based consensus.",
+          "answerType": "SINGLE",
+          "influences": [
+            "identification.shadowVirtue",
+            "lifeDomains.truth",
+            "actions.situationBlocks"
+          ]
+        },
+        {
+          "questionId": "SHD_Q5_WHAT_YOU_FEAR_BECOMING",
+          "text": "Which character represents what you fear becoming if you lose meaning or connection?",
+          "helper": "This is your cautionary archetype.",
+          "answerType": "SINGLE",
+          "influences": [
+            "functioning.redemptionArc",
+            "story.centralTension"
+          ]
+        }
+      ]
+    },
+    {
+      "assessmentType": "FEELING_FUNCTION_EROS",
+      "title": "Feeling Function (Anima/Animus) + Eros",
+      "goal_user": "Identify what brings emotional aliveness and what you require for love/meaning (Eros).",
+      "answerRules": "Answer based on what truly restores you and what you actually need, not what looks strong.",
+      "questions": [
+        {
+          "questionId": "FEE_Q1_WHAT_SOFTENS_YOU",
+          "text": "Which character softens you and brings you back to warmth and humanity?",
+          "helper": "Who opens your heart without weakening your strength?",
+          "answerType": "SINGLE",
+          "influences": [
+            "identification.feelingFunction",
+            "actions.situationBlocks"
+          ]
+        },
+        {
+          "questionId": "FEE_Q2_WHAT_MAKES_YOU_FEEL_LOVED",
+          "text": "Which character best represents the way you most want to feel loved\u2014seen, chosen, safe, desired, understood?",
+          "helper": "This is about your emotional need, not your behavior.",
+          "answerType": "SINGLE",
+          "influences": [
+            "identification.erosAxis",
+            "lifeDomains.intimacy"
+          ]
+        },
+        {
+          "questionId": "FEE_Q3_INTIMACY_BLOCK",
+          "text": "Which character best represents what blocks intimacy for you\u2014skepticism, hyper-independence, control, or emotional distance?",
+          "helper": "Pick the closest blocker.",
+          "answerType": "SINGLE",
+          "influences": [
+            "functioning.costsAndCompensations",
+            "actions.situationBlocks",
+            "lifeDomains.intimacy"
+          ]
+        },
+        {
+          "questionId": "FEE_Q4_WHAT_RESTORES_MEANING",
+          "text": "When everything feels empty, which character helps you recover meaning?",
+          "helper": "Humor, care, beauty, romance, service, wonder.",
+          "answerType": "SINGLE",
+          "influences": [
+            "story.mythSummary",
+            "lifeDomains.innerLife"
+          ]
+        },
+        {
+          "questionId": "FEE_Q5_RELATIONAL_STYLE",
+          "text": "In close relationships, which character best matches your relational style\u2014protective, avoidant, skeptical, playful, or devoted?",
+          "helper": "How you \u2018do\u2019 closeness, day-to-day.",
+          "answerType": "SINGLE",
+          "influences": [
+            "lifeDomains.intimacy",
+            "actions.situationBlocks"
+          ]
+        }
+      ]
+    },
+    {
+      "assessmentType": "COST_COMPENSATION",
+      "title": "Cost & Compensation",
+      "goal_user": "Identify what each mode costs you over time, and what compensates to restore balance.",
+      "answerRules": "Choose based on long-term effect, not short-term success.",
+      "questions": [
+        {
+          "questionId": "CC_Q1_LONG_TERM_EXHAUSTION",
+          "text": "If you had to live as one of these characters for months, which one would slowly exhaust you\u2014even if they are effective?",
+          "helper": "This reveals the hidden cost of a persona.",
+          "answerType": "SINGLE",
+          "influences": [
+            "functioning.costsAndCompensations",
+            "actions.situationBlocks"
+          ]
+        },
+        {
+          "questionId": "CC_Q2_WHAT_YOU_OVERUSE",
+          "text": "Which character represents the mode you overuse when you\u2019re trying to stay in control?",
+          "helper": "The one you rely on too often.",
+          "answerType": "SINGLE",
+          "influences": [
+            "identification.persona",
+            "functioning.narrativeArc"
+          ]
+        },
+        {
+          "questionId": "CC_Q3_WHAT_YOU_SACRIFICE",
+          "text": "Which character best represents what you sacrifice when you\u2019re \u2018performing\u2019\u2014sleep, joy, intimacy, play, softness, or time?",
+          "helper": "Pick the clearest sacrifice.",
+          "answerType": "SINGLE",
+          "influences": [
+            "lifeDomains.innerLife",
+            "lifeDomains.intimacy",
+            "functioning.costsAndCompensations"
+          ]
+        },
+        {
+          "questionId": "CC_Q4_TRUE_COMPENSATOR",
+          "text": "Which character most restores you back to balance after heavy responsibility?",
+          "helper": "Your real compensator\u2014warmth, humor, romance, stillness, play.",
+          "answerType": "SINGLE",
+          "influences": [
+            "identification.feelingFunction",
+            "actions.situationBlocks",
+            "lifeDomains.innerLife"
+          ]
+        },
+        {
+          "questionId": "CC_Q5_HOLLOW_SUCCESS_RISK",
+          "text": "Which character represents the risk of becoming \u2018successful but hollow\u2019?",
+          "helper": "Image without inner truth.",
+          "answerType": "SINGLE",
+          "influences": [
+            "identification.shadow",
+            "actions.situationBlocks"
+          ]
+        },
+        {
+          "questionId": "CC_Q6_COMPENSATION_YOU_AVOID",
+          "text": "Which character represents the kind of compensation you avoid, even though you need it (rest, intimacy, play, asking for help)?",
+          "helper": "The missing medicine.",
+          "answerType": "SINGLE",
+          "influences": [
+            "functioning.redemptionArc",
+            "lifeDomains.intimacy",
+            "lifeDomains.innerLife"
+          ]
+        }
+      ]
+    },
+    {
+      "assessmentType": "INDIVIDUATION_DIRECTION",
+      "title": "Individuation Direction",
+      "goal_user": "Identify your next integrative direction: which qualities to bring online to move toward the Self.",
+      "answerRules": "You may select up to 3 characters if the direction is a synthesis.",
+      "questions": [
+        {
+          "questionId": "IND_Q1_NEXT_STEP_QUALITY",
+          "text": "To become more whole, which character holds the quality you need to develop next?",
+          "helper": "Not your default\u2014your missing piece.",
+          "answerType": "SINGLE",
+          "influences": [
+            "story.guidingSentence",
+            "functioning.redemptionArc"
+          ]
+        },
+        {
+          "questionId": "IND_Q2_SYNTHESIS_TRIO",
+          "text": "If your future self is a synthesis, pick up to 3 characters that best represent that direction.",
+          "helper": "Choose the combination that feels like your \u2018next chapter\u2019.",
+          "answerType": "MULTI",
+          "maxSelections": 3,
+          "influences": [
+            "story.northStarScene",
+            "functioning.narrativeArc",
+            "lifeDomains.work",
+            "lifeDomains.intimacy"
+          ]
+        },
+        {
+          "questionId": "IND_Q3_WHAT_TO_LEAVE_BEHIND",
+          "text": "Which character represents the pattern you must stop living inside (even if it works)?",
+          "helper": "The one you\u2019re outgrowing.",
+          "answerType": "SINGLE",
+          "influences": [
+            "functioning.costsAndCompensations",
+            "actions.situationBlocks"
+          ]
+        },
+        {
+          "questionId": "IND_Q4_WHAT_TO_RETURN_TO",
+          "text": "Which character represents what you must return to regularly to stay aligned (warmth, love, play, meaning)?",
+          "helper": "Your alignment anchor.",
+          "answerType": "SINGLE",
+          "influences": [
+            "lifeDomains.innerLife",
+            "actions.guidingQuestion"
+          ]
+        },
+        {
+          "questionId": "IND_Q5_REAL_WORLD_TEST",
+          "text": "In a real-life turning point (new job, major relationship choice, family crisis), which character should lead you so you stay aligned with your Self?",
+          "helper": "The \u2018leader\u2019 at the crossroads.",
+          "answerType": "SINGLE",
+          "influences": [
+            "actions.situationBlocks",
+            "lifeDomains.leadership",
+            "lifeDomains.truth"
+          ]
+        }
+      ]
+    }
+  ]
+}
