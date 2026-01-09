@@ -74,6 +74,8 @@ class GeneratedOutput with _$GeneratedOutput {
     required LifeDomainsOutput lifeDomains,
     required MetaOutput meta,
     ExamplesOutput? examples,
+    @JsonKey(name: 'identification_v2') IdentificationV2? identificationV2, // Center/Orbit system
+    DeltaSummary? deltaSummary, // Assessment-driven change summary
   }) = _GeneratedOutput;
 
   factory GeneratedOutput.fromJson(Map<String, dynamic> json) =>
@@ -226,10 +228,148 @@ class MetaOutput with _$MetaOutput {
     required String modelVersion,
     required String promptVersion,
     required int schemaVersion,
+    String? identificationVersion, // '1.0' or '2.0' for Center/Orbit
+    String? regenerationType, // 'full' or 'assessment_driven'
+    Map<String, dynamic>? changedMappings, // What triggered regen
   }) = _MetaOutput;
 
   factory MetaOutput.fromJson(Map<String, dynamic> json) =>
       _$MetaOutputFromJson(json);
+}
+
+// ==================== ASSESSMENT STATE ====================
+
+/// Delta summary showing what changed and why
+@freezed
+class DeltaSummary with _$DeltaSummary {
+  const factory DeltaSummary({
+    @Default([]) List<DeltaChange> changes,
+    Map<String, dynamic>? changedMappings,
+    String? timestamp,
+  }) = _DeltaSummary;
+
+  factory DeltaSummary.fromJson(Map<String, dynamic> json) =>
+      _$DeltaSummaryFromJson(json);
+}
+
+/// Individual change in delta
+@freezed
+class DeltaChange with _$DeltaChange {
+  const factory DeltaChange({
+    required String what,
+    String? from,
+    String? to,
+    @Default([]) List<String> triggeredBy,
+  }) = _DeltaChange;
+
+  factory DeltaChange.fromJson(Map<String, dynamic> json) =>
+      _$DeltaChangeFromJson(json);
+}
+
+// ==================== IDENTIFICATION V2 (Center/Orbit) ====================
+
+/// Identification V2 with Center/Orbit/Compensation dynamics
+@freezed
+class IdentificationV2 with _$IdentificationV2 {
+  const factory IdentificationV2({
+    @Default('2.0') String version,
+    ArchetypeDynamics? ego,
+    ArchetypeDynamics? persona,
+    ArchetypeDynamics? shadow,
+    ArchetypeDynamics? shadowVirtue,
+    ArchetypeDynamics? feelingFunction,
+    ArchetypeDynamics? erosAxis,
+  }) = _IdentificationV2;
+
+  factory IdentificationV2.fromJson(Map<String, dynamic> json) =>
+      _$IdentificationV2FromJson(json);
+}
+
+/// Dynamics for a single archetype (Center + Orbit + Compensations)
+@freezed
+class ArchetypeDynamics with _$ArchetypeDynamics {
+  const factory ArchetypeDynamics({
+    required CenterPosition center,
+    @Default([]) List<OrbitEntry> orbit,
+    @Default([]) List<CompensationEntry> compensations,
+  }) = _ArchetypeDynamics;
+
+  factory ArchetypeDynamics.fromJson(Map<String, dynamic> json) =>
+      _$ArchetypeDynamicsFromJson(json);
+}
+
+/// Center position - stable primary identity
+@freezed
+class CenterPosition with _$CenterPosition {
+  const factory CenterPosition({
+    required String label,
+    required List<String> characters,
+    required String summary,
+    String? details,
+    @Default(0.0) double confidence,
+    DynamicsRationale? rationale,
+  }) = _CenterPosition;
+
+  factory CenterPosition.fromJson(Map<String, dynamic> json) =>
+      _$CenterPositionFromJson(json);
+}
+
+/// Orbit entry - contextual shift
+@freezed
+class OrbitEntry with _$OrbitEntry {
+  const factory OrbitEntry({
+    required OrbitTrigger trigger,
+    @Default([]) List<String> characters,
+    String? pattern,
+    String? costRisk,
+    String? stabilizer,
+    DynamicsRationale? rationale,
+  }) = _OrbitEntry;
+
+  factory OrbitEntry.fromJson(Map<String, dynamic> json) =>
+      _$OrbitEntryFromJson(json);
+}
+
+/// Trigger for an orbit shift
+@freezed
+class OrbitTrigger with _$OrbitTrigger {
+  const factory OrbitTrigger({
+    required String name,
+    @Default([]) List<String> tags,
+  }) = _OrbitTrigger;
+
+  factory OrbitTrigger.fromJson(Map<String, dynamic> json) =>
+      _$OrbitTriggerFromJson(json);
+}
+
+/// Compensation entry - when balance is lost
+@freezed
+class CompensationEntry with _$CompensationEntry {
+  const factory CompensationEntry({
+    required String name,
+    String? when,
+    @StringOrListConverter() @Default([]) List<String> expression,
+    String? risk,
+    String? returnPath,
+    @Default([]) List<String> characters,
+    DynamicsRationale? rationale,
+  }) = _CompensationEntry;
+
+  factory CompensationEntry.fromJson(Map<String, dynamic> json) =>
+      _$CompensationEntryFromJson(json);
+}
+
+/// Rationale for dynamics (references to evidence)
+@freezed
+class DynamicsRationale with _$DynamicsRationale {
+  const factory DynamicsRationale({
+    @Default([]) List<String> traitSignals,
+    @Default([]) List<String> assessmentRefs,
+    @Default([]) List<String> exampleRefs,
+  }) = _DynamicsRationale;
+
+  factory DynamicsRationale.fromJson(Map<String, dynamic> json) =>
+      _$DynamicsRationaleFromJson(json);
 }
 
 // ==================== EXAMPLES ====================

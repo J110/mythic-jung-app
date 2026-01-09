@@ -28,6 +28,9 @@ mixin _$GeneratedOutput {
   LifeDomainsOutput get lifeDomains => throw _privateConstructorUsedError;
   MetaOutput get meta => throw _privateConstructorUsedError;
   ExamplesOutput? get examples => throw _privateConstructorUsedError;
+  @JsonKey(name: 'identification_v2')
+  IdentificationV2? get identificationV2 => throw _privateConstructorUsedError; // Center/Orbit system
+  DeltaSummary? get deltaSummary => throw _privateConstructorUsedError;
 
   /// Serializes this GeneratedOutput to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -54,6 +57,8 @@ abstract class $GeneratedOutputCopyWith<$Res> {
     LifeDomainsOutput lifeDomains,
     MetaOutput meta,
     ExamplesOutput? examples,
+    @JsonKey(name: 'identification_v2') IdentificationV2? identificationV2,
+    DeltaSummary? deltaSummary,
   });
 
   $StoryOutputCopyWith<$Res> get story;
@@ -63,6 +68,8 @@ abstract class $GeneratedOutputCopyWith<$Res> {
   $LifeDomainsOutputCopyWith<$Res> get lifeDomains;
   $MetaOutputCopyWith<$Res> get meta;
   $ExamplesOutputCopyWith<$Res>? get examples;
+  $IdentificationV2CopyWith<$Res>? get identificationV2;
+  $DeltaSummaryCopyWith<$Res>? get deltaSummary;
 }
 
 /// @nodoc
@@ -87,6 +94,8 @@ class _$GeneratedOutputCopyWithImpl<$Res, $Val extends GeneratedOutput>
     Object? lifeDomains = null,
     Object? meta = null,
     Object? examples = freezed,
+    Object? identificationV2 = freezed,
+    Object? deltaSummary = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -118,6 +127,14 @@ class _$GeneratedOutputCopyWithImpl<$Res, $Val extends GeneratedOutput>
                 ? _value.examples
                 : examples // ignore: cast_nullable_to_non_nullable
                       as ExamplesOutput?,
+            identificationV2: freezed == identificationV2
+                ? _value.identificationV2
+                : identificationV2 // ignore: cast_nullable_to_non_nullable
+                      as IdentificationV2?,
+            deltaSummary: freezed == deltaSummary
+                ? _value.deltaSummary
+                : deltaSummary // ignore: cast_nullable_to_non_nullable
+                      as DeltaSummary?,
           )
           as $Val,
     );
@@ -196,6 +213,34 @@ class _$GeneratedOutputCopyWithImpl<$Res, $Val extends GeneratedOutput>
       return _then(_value.copyWith(examples: value) as $Val);
     });
   }
+
+  /// Create a copy of GeneratedOutput
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $IdentificationV2CopyWith<$Res>? get identificationV2 {
+    if (_value.identificationV2 == null) {
+      return null;
+    }
+
+    return $IdentificationV2CopyWith<$Res>(_value.identificationV2!, (value) {
+      return _then(_value.copyWith(identificationV2: value) as $Val);
+    });
+  }
+
+  /// Create a copy of GeneratedOutput
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $DeltaSummaryCopyWith<$Res>? get deltaSummary {
+    if (_value.deltaSummary == null) {
+      return null;
+    }
+
+    return $DeltaSummaryCopyWith<$Res>(_value.deltaSummary!, (value) {
+      return _then(_value.copyWith(deltaSummary: value) as $Val);
+    });
+  }
 }
 
 /// @nodoc
@@ -215,6 +260,8 @@ abstract class _$$GeneratedOutputImplCopyWith<$Res>
     LifeDomainsOutput lifeDomains,
     MetaOutput meta,
     ExamplesOutput? examples,
+    @JsonKey(name: 'identification_v2') IdentificationV2? identificationV2,
+    DeltaSummary? deltaSummary,
   });
 
   @override
@@ -231,6 +278,10 @@ abstract class _$$GeneratedOutputImplCopyWith<$Res>
   $MetaOutputCopyWith<$Res> get meta;
   @override
   $ExamplesOutputCopyWith<$Res>? get examples;
+  @override
+  $IdentificationV2CopyWith<$Res>? get identificationV2;
+  @override
+  $DeltaSummaryCopyWith<$Res>? get deltaSummary;
 }
 
 /// @nodoc
@@ -254,6 +305,8 @@ class __$$GeneratedOutputImplCopyWithImpl<$Res>
     Object? lifeDomains = null,
     Object? meta = null,
     Object? examples = freezed,
+    Object? identificationV2 = freezed,
+    Object? deltaSummary = freezed,
   }) {
     return _then(
       _$GeneratedOutputImpl(
@@ -285,6 +338,14 @@ class __$$GeneratedOutputImplCopyWithImpl<$Res>
             ? _value.examples
             : examples // ignore: cast_nullable_to_non_nullable
                   as ExamplesOutput?,
+        identificationV2: freezed == identificationV2
+            ? _value.identificationV2
+            : identificationV2 // ignore: cast_nullable_to_non_nullable
+                  as IdentificationV2?,
+        deltaSummary: freezed == deltaSummary
+            ? _value.deltaSummary
+            : deltaSummary // ignore: cast_nullable_to_non_nullable
+                  as DeltaSummary?,
       ),
     );
   }
@@ -301,6 +362,8 @@ class _$GeneratedOutputImpl implements _GeneratedOutput {
     required this.lifeDomains,
     required this.meta,
     this.examples,
+    @JsonKey(name: 'identification_v2') this.identificationV2,
+    this.deltaSummary,
   });
 
   factory _$GeneratedOutputImpl.fromJson(Map<String, dynamic> json) =>
@@ -320,10 +383,16 @@ class _$GeneratedOutputImpl implements _GeneratedOutput {
   final MetaOutput meta;
   @override
   final ExamplesOutput? examples;
+  @override
+  @JsonKey(name: 'identification_v2')
+  final IdentificationV2? identificationV2;
+  // Center/Orbit system
+  @override
+  final DeltaSummary? deltaSummary;
 
   @override
   String toString() {
-    return 'GeneratedOutput(story: $story, identification: $identification, functioning: $functioning, actions: $actions, lifeDomains: $lifeDomains, meta: $meta, examples: $examples)';
+    return 'GeneratedOutput(story: $story, identification: $identification, functioning: $functioning, actions: $actions, lifeDomains: $lifeDomains, meta: $meta, examples: $examples, identificationV2: $identificationV2, deltaSummary: $deltaSummary)';
   }
 
   @override
@@ -341,7 +410,11 @@ class _$GeneratedOutputImpl implements _GeneratedOutput {
                 other.lifeDomains == lifeDomains) &&
             (identical(other.meta, meta) || other.meta == meta) &&
             (identical(other.examples, examples) ||
-                other.examples == examples));
+                other.examples == examples) &&
+            (identical(other.identificationV2, identificationV2) ||
+                other.identificationV2 == identificationV2) &&
+            (identical(other.deltaSummary, deltaSummary) ||
+                other.deltaSummary == deltaSummary));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -355,6 +428,8 @@ class _$GeneratedOutputImpl implements _GeneratedOutput {
     lifeDomains,
     meta,
     examples,
+    identificationV2,
+    deltaSummary,
   );
 
   /// Create a copy of GeneratedOutput
@@ -383,6 +458,9 @@ abstract class _GeneratedOutput implements GeneratedOutput {
     required final LifeDomainsOutput lifeDomains,
     required final MetaOutput meta,
     final ExamplesOutput? examples,
+    @JsonKey(name: 'identification_v2')
+    final IdentificationV2? identificationV2,
+    final DeltaSummary? deltaSummary,
   }) = _$GeneratedOutputImpl;
 
   factory _GeneratedOutput.fromJson(Map<String, dynamic> json) =
@@ -402,6 +480,11 @@ abstract class _GeneratedOutput implements GeneratedOutput {
   MetaOutput get meta;
   @override
   ExamplesOutput? get examples;
+  @override
+  @JsonKey(name: 'identification_v2')
+  IdentificationV2? get identificationV2; // Center/Orbit system
+  @override
+  DeltaSummary? get deltaSummary;
 
   /// Create a copy of GeneratedOutput
   /// with the given fields replaced by the non-null parameter values.
@@ -3251,6 +3334,12 @@ mixin _$MetaOutput {
   String get modelVersion => throw _privateConstructorUsedError;
   String get promptVersion => throw _privateConstructorUsedError;
   int get schemaVersion => throw _privateConstructorUsedError;
+  String? get identificationVersion =>
+      throw _privateConstructorUsedError; // '1.0' or '2.0' for Center/Orbit
+  String? get regenerationType =>
+      throw _privateConstructorUsedError; // 'full' or 'assessment_driven'
+  Map<String, dynamic>? get changedMappings =>
+      throw _privateConstructorUsedError;
 
   /// Serializes this MetaOutput to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -3274,6 +3363,9 @@ abstract class $MetaOutputCopyWith<$Res> {
     String modelVersion,
     String promptVersion,
     int schemaVersion,
+    String? identificationVersion,
+    String? regenerationType,
+    Map<String, dynamic>? changedMappings,
   });
 }
 
@@ -3296,6 +3388,9 @@ class _$MetaOutputCopyWithImpl<$Res, $Val extends MetaOutput>
     Object? modelVersion = null,
     Object? promptVersion = null,
     Object? schemaVersion = null,
+    Object? identificationVersion = freezed,
+    Object? regenerationType = freezed,
+    Object? changedMappings = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -3315,6 +3410,18 @@ class _$MetaOutputCopyWithImpl<$Res, $Val extends MetaOutput>
                 ? _value.schemaVersion
                 : schemaVersion // ignore: cast_nullable_to_non_nullable
                       as int,
+            identificationVersion: freezed == identificationVersion
+                ? _value.identificationVersion
+                : identificationVersion // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            regenerationType: freezed == regenerationType
+                ? _value.regenerationType
+                : regenerationType // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            changedMappings: freezed == changedMappings
+                ? _value.changedMappings
+                : changedMappings // ignore: cast_nullable_to_non_nullable
+                      as Map<String, dynamic>?,
           )
           as $Val,
     );
@@ -3335,6 +3442,9 @@ abstract class _$$MetaOutputImplCopyWith<$Res>
     String modelVersion,
     String promptVersion,
     int schemaVersion,
+    String? identificationVersion,
+    String? regenerationType,
+    Map<String, dynamic>? changedMappings,
   });
 }
 
@@ -3356,6 +3466,9 @@ class __$$MetaOutputImplCopyWithImpl<$Res>
     Object? modelVersion = null,
     Object? promptVersion = null,
     Object? schemaVersion = null,
+    Object? identificationVersion = freezed,
+    Object? regenerationType = freezed,
+    Object? changedMappings = freezed,
   }) {
     return _then(
       _$MetaOutputImpl(
@@ -3375,6 +3488,18 @@ class __$$MetaOutputImplCopyWithImpl<$Res>
             ? _value.schemaVersion
             : schemaVersion // ignore: cast_nullable_to_non_nullable
                   as int,
+        identificationVersion: freezed == identificationVersion
+            ? _value.identificationVersion
+            : identificationVersion // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        regenerationType: freezed == regenerationType
+            ? _value.regenerationType
+            : regenerationType // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        changedMappings: freezed == changedMappings
+            ? _value._changedMappings
+            : changedMappings // ignore: cast_nullable_to_non_nullable
+                  as Map<String, dynamic>?,
       ),
     );
   }
@@ -3388,7 +3513,10 @@ class _$MetaOutputImpl implements _MetaOutput {
     required this.modelVersion,
     required this.promptVersion,
     required this.schemaVersion,
-  });
+    this.identificationVersion,
+    this.regenerationType,
+    final Map<String, dynamic>? changedMappings,
+  }) : _changedMappings = changedMappings;
 
   factory _$MetaOutputImpl.fromJson(Map<String, dynamic> json) =>
       _$$MetaOutputImplFromJson(json);
@@ -3401,10 +3529,26 @@ class _$MetaOutputImpl implements _MetaOutput {
   final String promptVersion;
   @override
   final int schemaVersion;
+  @override
+  final String? identificationVersion;
+  // '1.0' or '2.0' for Center/Orbit
+  @override
+  final String? regenerationType;
+  // 'full' or 'assessment_driven'
+  final Map<String, dynamic>? _changedMappings;
+  // 'full' or 'assessment_driven'
+  @override
+  Map<String, dynamic>? get changedMappings {
+    final value = _changedMappings;
+    if (value == null) return null;
+    if (_changedMappings is EqualUnmodifiableMapView) return _changedMappings;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(value);
+  }
 
   @override
   String toString() {
-    return 'MetaOutput(generatedAt: $generatedAt, modelVersion: $modelVersion, promptVersion: $promptVersion, schemaVersion: $schemaVersion)';
+    return 'MetaOutput(generatedAt: $generatedAt, modelVersion: $modelVersion, promptVersion: $promptVersion, schemaVersion: $schemaVersion, identificationVersion: $identificationVersion, regenerationType: $regenerationType, changedMappings: $changedMappings)';
   }
 
   @override
@@ -3419,7 +3563,15 @@ class _$MetaOutputImpl implements _MetaOutput {
             (identical(other.promptVersion, promptVersion) ||
                 other.promptVersion == promptVersion) &&
             (identical(other.schemaVersion, schemaVersion) ||
-                other.schemaVersion == schemaVersion));
+                other.schemaVersion == schemaVersion) &&
+            (identical(other.identificationVersion, identificationVersion) ||
+                other.identificationVersion == identificationVersion) &&
+            (identical(other.regenerationType, regenerationType) ||
+                other.regenerationType == regenerationType) &&
+            const DeepCollectionEquality().equals(
+              other._changedMappings,
+              _changedMappings,
+            ));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -3430,6 +3582,9 @@ class _$MetaOutputImpl implements _MetaOutput {
     modelVersion,
     promptVersion,
     schemaVersion,
+    identificationVersion,
+    regenerationType,
+    const DeepCollectionEquality().hash(_changedMappings),
   );
 
   /// Create a copy of MetaOutput
@@ -3452,6 +3607,9 @@ abstract class _MetaOutput implements MetaOutput {
     required final String modelVersion,
     required final String promptVersion,
     required final int schemaVersion,
+    final String? identificationVersion,
+    final String? regenerationType,
+    final Map<String, dynamic>? changedMappings,
   }) = _$MetaOutputImpl;
 
   factory _MetaOutput.fromJson(Map<String, dynamic> json) =
@@ -3465,12 +3623,2506 @@ abstract class _MetaOutput implements MetaOutput {
   String get promptVersion;
   @override
   int get schemaVersion;
+  @override
+  String? get identificationVersion; // '1.0' or '2.0' for Center/Orbit
+  @override
+  String? get regenerationType; // 'full' or 'assessment_driven'
+  @override
+  Map<String, dynamic>? get changedMappings;
 
   /// Create a copy of MetaOutput
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$MetaOutputImplCopyWith<_$MetaOutputImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+DeltaSummary _$DeltaSummaryFromJson(Map<String, dynamic> json) {
+  return _DeltaSummary.fromJson(json);
+}
+
+/// @nodoc
+mixin _$DeltaSummary {
+  List<DeltaChange> get changes => throw _privateConstructorUsedError;
+  Map<String, dynamic>? get changedMappings =>
+      throw _privateConstructorUsedError;
+  String? get timestamp => throw _privateConstructorUsedError;
+
+  /// Serializes this DeltaSummary to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of DeltaSummary
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $DeltaSummaryCopyWith<DeltaSummary> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $DeltaSummaryCopyWith<$Res> {
+  factory $DeltaSummaryCopyWith(
+    DeltaSummary value,
+    $Res Function(DeltaSummary) then,
+  ) = _$DeltaSummaryCopyWithImpl<$Res, DeltaSummary>;
+  @useResult
+  $Res call({
+    List<DeltaChange> changes,
+    Map<String, dynamic>? changedMappings,
+    String? timestamp,
+  });
+}
+
+/// @nodoc
+class _$DeltaSummaryCopyWithImpl<$Res, $Val extends DeltaSummary>
+    implements $DeltaSummaryCopyWith<$Res> {
+  _$DeltaSummaryCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of DeltaSummary
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? changes = null,
+    Object? changedMappings = freezed,
+    Object? timestamp = freezed,
+  }) {
+    return _then(
+      _value.copyWith(
+            changes: null == changes
+                ? _value.changes
+                : changes // ignore: cast_nullable_to_non_nullable
+                      as List<DeltaChange>,
+            changedMappings: freezed == changedMappings
+                ? _value.changedMappings
+                : changedMappings // ignore: cast_nullable_to_non_nullable
+                      as Map<String, dynamic>?,
+            timestamp: freezed == timestamp
+                ? _value.timestamp
+                : timestamp // ignore: cast_nullable_to_non_nullable
+                      as String?,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$DeltaSummaryImplCopyWith<$Res>
+    implements $DeltaSummaryCopyWith<$Res> {
+  factory _$$DeltaSummaryImplCopyWith(
+    _$DeltaSummaryImpl value,
+    $Res Function(_$DeltaSummaryImpl) then,
+  ) = __$$DeltaSummaryImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({
+    List<DeltaChange> changes,
+    Map<String, dynamic>? changedMappings,
+    String? timestamp,
+  });
+}
+
+/// @nodoc
+class __$$DeltaSummaryImplCopyWithImpl<$Res>
+    extends _$DeltaSummaryCopyWithImpl<$Res, _$DeltaSummaryImpl>
+    implements _$$DeltaSummaryImplCopyWith<$Res> {
+  __$$DeltaSummaryImplCopyWithImpl(
+    _$DeltaSummaryImpl _value,
+    $Res Function(_$DeltaSummaryImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of DeltaSummary
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? changes = null,
+    Object? changedMappings = freezed,
+    Object? timestamp = freezed,
+  }) {
+    return _then(
+      _$DeltaSummaryImpl(
+        changes: null == changes
+            ? _value._changes
+            : changes // ignore: cast_nullable_to_non_nullable
+                  as List<DeltaChange>,
+        changedMappings: freezed == changedMappings
+            ? _value._changedMappings
+            : changedMappings // ignore: cast_nullable_to_non_nullable
+                  as Map<String, dynamic>?,
+        timestamp: freezed == timestamp
+            ? _value.timestamp
+            : timestamp // ignore: cast_nullable_to_non_nullable
+                  as String?,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$DeltaSummaryImpl implements _DeltaSummary {
+  const _$DeltaSummaryImpl({
+    final List<DeltaChange> changes = const [],
+    final Map<String, dynamic>? changedMappings,
+    this.timestamp,
+  }) : _changes = changes,
+       _changedMappings = changedMappings;
+
+  factory _$DeltaSummaryImpl.fromJson(Map<String, dynamic> json) =>
+      _$$DeltaSummaryImplFromJson(json);
+
+  final List<DeltaChange> _changes;
+  @override
+  @JsonKey()
+  List<DeltaChange> get changes {
+    if (_changes is EqualUnmodifiableListView) return _changes;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_changes);
+  }
+
+  final Map<String, dynamic>? _changedMappings;
+  @override
+  Map<String, dynamic>? get changedMappings {
+    final value = _changedMappings;
+    if (value == null) return null;
+    if (_changedMappings is EqualUnmodifiableMapView) return _changedMappings;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(value);
+  }
+
+  @override
+  final String? timestamp;
+
+  @override
+  String toString() {
+    return 'DeltaSummary(changes: $changes, changedMappings: $changedMappings, timestamp: $timestamp)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$DeltaSummaryImpl &&
+            const DeepCollectionEquality().equals(other._changes, _changes) &&
+            const DeepCollectionEquality().equals(
+              other._changedMappings,
+              _changedMappings,
+            ) &&
+            (identical(other.timestamp, timestamp) ||
+                other.timestamp == timestamp));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+    runtimeType,
+    const DeepCollectionEquality().hash(_changes),
+    const DeepCollectionEquality().hash(_changedMappings),
+    timestamp,
+  );
+
+  /// Create a copy of DeltaSummary
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$DeltaSummaryImplCopyWith<_$DeltaSummaryImpl> get copyWith =>
+      __$$DeltaSummaryImplCopyWithImpl<_$DeltaSummaryImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$DeltaSummaryImplToJson(this);
+  }
+}
+
+abstract class _DeltaSummary implements DeltaSummary {
+  const factory _DeltaSummary({
+    final List<DeltaChange> changes,
+    final Map<String, dynamic>? changedMappings,
+    final String? timestamp,
+  }) = _$DeltaSummaryImpl;
+
+  factory _DeltaSummary.fromJson(Map<String, dynamic> json) =
+      _$DeltaSummaryImpl.fromJson;
+
+  @override
+  List<DeltaChange> get changes;
+  @override
+  Map<String, dynamic>? get changedMappings;
+  @override
+  String? get timestamp;
+
+  /// Create a copy of DeltaSummary
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$DeltaSummaryImplCopyWith<_$DeltaSummaryImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+DeltaChange _$DeltaChangeFromJson(Map<String, dynamic> json) {
+  return _DeltaChange.fromJson(json);
+}
+
+/// @nodoc
+mixin _$DeltaChange {
+  String get what => throw _privateConstructorUsedError;
+  String? get from => throw _privateConstructorUsedError;
+  String? get to => throw _privateConstructorUsedError;
+  List<String> get triggeredBy => throw _privateConstructorUsedError;
+
+  /// Serializes this DeltaChange to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of DeltaChange
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $DeltaChangeCopyWith<DeltaChange> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $DeltaChangeCopyWith<$Res> {
+  factory $DeltaChangeCopyWith(
+    DeltaChange value,
+    $Res Function(DeltaChange) then,
+  ) = _$DeltaChangeCopyWithImpl<$Res, DeltaChange>;
+  @useResult
+  $Res call({String what, String? from, String? to, List<String> triggeredBy});
+}
+
+/// @nodoc
+class _$DeltaChangeCopyWithImpl<$Res, $Val extends DeltaChange>
+    implements $DeltaChangeCopyWith<$Res> {
+  _$DeltaChangeCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of DeltaChange
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? what = null,
+    Object? from = freezed,
+    Object? to = freezed,
+    Object? triggeredBy = null,
+  }) {
+    return _then(
+      _value.copyWith(
+            what: null == what
+                ? _value.what
+                : what // ignore: cast_nullable_to_non_nullable
+                      as String,
+            from: freezed == from
+                ? _value.from
+                : from // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            to: freezed == to
+                ? _value.to
+                : to // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            triggeredBy: null == triggeredBy
+                ? _value.triggeredBy
+                : triggeredBy // ignore: cast_nullable_to_non_nullable
+                      as List<String>,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$DeltaChangeImplCopyWith<$Res>
+    implements $DeltaChangeCopyWith<$Res> {
+  factory _$$DeltaChangeImplCopyWith(
+    _$DeltaChangeImpl value,
+    $Res Function(_$DeltaChangeImpl) then,
+  ) = __$$DeltaChangeImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String what, String? from, String? to, List<String> triggeredBy});
+}
+
+/// @nodoc
+class __$$DeltaChangeImplCopyWithImpl<$Res>
+    extends _$DeltaChangeCopyWithImpl<$Res, _$DeltaChangeImpl>
+    implements _$$DeltaChangeImplCopyWith<$Res> {
+  __$$DeltaChangeImplCopyWithImpl(
+    _$DeltaChangeImpl _value,
+    $Res Function(_$DeltaChangeImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of DeltaChange
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? what = null,
+    Object? from = freezed,
+    Object? to = freezed,
+    Object? triggeredBy = null,
+  }) {
+    return _then(
+      _$DeltaChangeImpl(
+        what: null == what
+            ? _value.what
+            : what // ignore: cast_nullable_to_non_nullable
+                  as String,
+        from: freezed == from
+            ? _value.from
+            : from // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        to: freezed == to
+            ? _value.to
+            : to // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        triggeredBy: null == triggeredBy
+            ? _value._triggeredBy
+            : triggeredBy // ignore: cast_nullable_to_non_nullable
+                  as List<String>,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$DeltaChangeImpl implements _DeltaChange {
+  const _$DeltaChangeImpl({
+    required this.what,
+    this.from,
+    this.to,
+    final List<String> triggeredBy = const [],
+  }) : _triggeredBy = triggeredBy;
+
+  factory _$DeltaChangeImpl.fromJson(Map<String, dynamic> json) =>
+      _$$DeltaChangeImplFromJson(json);
+
+  @override
+  final String what;
+  @override
+  final String? from;
+  @override
+  final String? to;
+  final List<String> _triggeredBy;
+  @override
+  @JsonKey()
+  List<String> get triggeredBy {
+    if (_triggeredBy is EqualUnmodifiableListView) return _triggeredBy;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_triggeredBy);
+  }
+
+  @override
+  String toString() {
+    return 'DeltaChange(what: $what, from: $from, to: $to, triggeredBy: $triggeredBy)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$DeltaChangeImpl &&
+            (identical(other.what, what) || other.what == what) &&
+            (identical(other.from, from) || other.from == from) &&
+            (identical(other.to, to) || other.to == to) &&
+            const DeepCollectionEquality().equals(
+              other._triggeredBy,
+              _triggeredBy,
+            ));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+    runtimeType,
+    what,
+    from,
+    to,
+    const DeepCollectionEquality().hash(_triggeredBy),
+  );
+
+  /// Create a copy of DeltaChange
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$DeltaChangeImplCopyWith<_$DeltaChangeImpl> get copyWith =>
+      __$$DeltaChangeImplCopyWithImpl<_$DeltaChangeImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$DeltaChangeImplToJson(this);
+  }
+}
+
+abstract class _DeltaChange implements DeltaChange {
+  const factory _DeltaChange({
+    required final String what,
+    final String? from,
+    final String? to,
+    final List<String> triggeredBy,
+  }) = _$DeltaChangeImpl;
+
+  factory _DeltaChange.fromJson(Map<String, dynamic> json) =
+      _$DeltaChangeImpl.fromJson;
+
+  @override
+  String get what;
+  @override
+  String? get from;
+  @override
+  String? get to;
+  @override
+  List<String> get triggeredBy;
+
+  /// Create a copy of DeltaChange
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$DeltaChangeImplCopyWith<_$DeltaChangeImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+IdentificationV2 _$IdentificationV2FromJson(Map<String, dynamic> json) {
+  return _IdentificationV2.fromJson(json);
+}
+
+/// @nodoc
+mixin _$IdentificationV2 {
+  String get version => throw _privateConstructorUsedError;
+  ArchetypeDynamics? get ego => throw _privateConstructorUsedError;
+  ArchetypeDynamics? get persona => throw _privateConstructorUsedError;
+  ArchetypeDynamics? get shadow => throw _privateConstructorUsedError;
+  ArchetypeDynamics? get shadowVirtue => throw _privateConstructorUsedError;
+  ArchetypeDynamics? get feelingFunction => throw _privateConstructorUsedError;
+  ArchetypeDynamics? get erosAxis => throw _privateConstructorUsedError;
+
+  /// Serializes this IdentificationV2 to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of IdentificationV2
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $IdentificationV2CopyWith<IdentificationV2> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $IdentificationV2CopyWith<$Res> {
+  factory $IdentificationV2CopyWith(
+    IdentificationV2 value,
+    $Res Function(IdentificationV2) then,
+  ) = _$IdentificationV2CopyWithImpl<$Res, IdentificationV2>;
+  @useResult
+  $Res call({
+    String version,
+    ArchetypeDynamics? ego,
+    ArchetypeDynamics? persona,
+    ArchetypeDynamics? shadow,
+    ArchetypeDynamics? shadowVirtue,
+    ArchetypeDynamics? feelingFunction,
+    ArchetypeDynamics? erosAxis,
+  });
+
+  $ArchetypeDynamicsCopyWith<$Res>? get ego;
+  $ArchetypeDynamicsCopyWith<$Res>? get persona;
+  $ArchetypeDynamicsCopyWith<$Res>? get shadow;
+  $ArchetypeDynamicsCopyWith<$Res>? get shadowVirtue;
+  $ArchetypeDynamicsCopyWith<$Res>? get feelingFunction;
+  $ArchetypeDynamicsCopyWith<$Res>? get erosAxis;
+}
+
+/// @nodoc
+class _$IdentificationV2CopyWithImpl<$Res, $Val extends IdentificationV2>
+    implements $IdentificationV2CopyWith<$Res> {
+  _$IdentificationV2CopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of IdentificationV2
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? version = null,
+    Object? ego = freezed,
+    Object? persona = freezed,
+    Object? shadow = freezed,
+    Object? shadowVirtue = freezed,
+    Object? feelingFunction = freezed,
+    Object? erosAxis = freezed,
+  }) {
+    return _then(
+      _value.copyWith(
+            version: null == version
+                ? _value.version
+                : version // ignore: cast_nullable_to_non_nullable
+                      as String,
+            ego: freezed == ego
+                ? _value.ego
+                : ego // ignore: cast_nullable_to_non_nullable
+                      as ArchetypeDynamics?,
+            persona: freezed == persona
+                ? _value.persona
+                : persona // ignore: cast_nullable_to_non_nullable
+                      as ArchetypeDynamics?,
+            shadow: freezed == shadow
+                ? _value.shadow
+                : shadow // ignore: cast_nullable_to_non_nullable
+                      as ArchetypeDynamics?,
+            shadowVirtue: freezed == shadowVirtue
+                ? _value.shadowVirtue
+                : shadowVirtue // ignore: cast_nullable_to_non_nullable
+                      as ArchetypeDynamics?,
+            feelingFunction: freezed == feelingFunction
+                ? _value.feelingFunction
+                : feelingFunction // ignore: cast_nullable_to_non_nullable
+                      as ArchetypeDynamics?,
+            erosAxis: freezed == erosAxis
+                ? _value.erosAxis
+                : erosAxis // ignore: cast_nullable_to_non_nullable
+                      as ArchetypeDynamics?,
+          )
+          as $Val,
+    );
+  }
+
+  /// Create a copy of IdentificationV2
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $ArchetypeDynamicsCopyWith<$Res>? get ego {
+    if (_value.ego == null) {
+      return null;
+    }
+
+    return $ArchetypeDynamicsCopyWith<$Res>(_value.ego!, (value) {
+      return _then(_value.copyWith(ego: value) as $Val);
+    });
+  }
+
+  /// Create a copy of IdentificationV2
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $ArchetypeDynamicsCopyWith<$Res>? get persona {
+    if (_value.persona == null) {
+      return null;
+    }
+
+    return $ArchetypeDynamicsCopyWith<$Res>(_value.persona!, (value) {
+      return _then(_value.copyWith(persona: value) as $Val);
+    });
+  }
+
+  /// Create a copy of IdentificationV2
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $ArchetypeDynamicsCopyWith<$Res>? get shadow {
+    if (_value.shadow == null) {
+      return null;
+    }
+
+    return $ArchetypeDynamicsCopyWith<$Res>(_value.shadow!, (value) {
+      return _then(_value.copyWith(shadow: value) as $Val);
+    });
+  }
+
+  /// Create a copy of IdentificationV2
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $ArchetypeDynamicsCopyWith<$Res>? get shadowVirtue {
+    if (_value.shadowVirtue == null) {
+      return null;
+    }
+
+    return $ArchetypeDynamicsCopyWith<$Res>(_value.shadowVirtue!, (value) {
+      return _then(_value.copyWith(shadowVirtue: value) as $Val);
+    });
+  }
+
+  /// Create a copy of IdentificationV2
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $ArchetypeDynamicsCopyWith<$Res>? get feelingFunction {
+    if (_value.feelingFunction == null) {
+      return null;
+    }
+
+    return $ArchetypeDynamicsCopyWith<$Res>(_value.feelingFunction!, (value) {
+      return _then(_value.copyWith(feelingFunction: value) as $Val);
+    });
+  }
+
+  /// Create a copy of IdentificationV2
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $ArchetypeDynamicsCopyWith<$Res>? get erosAxis {
+    if (_value.erosAxis == null) {
+      return null;
+    }
+
+    return $ArchetypeDynamicsCopyWith<$Res>(_value.erosAxis!, (value) {
+      return _then(_value.copyWith(erosAxis: value) as $Val);
+    });
+  }
+}
+
+/// @nodoc
+abstract class _$$IdentificationV2ImplCopyWith<$Res>
+    implements $IdentificationV2CopyWith<$Res> {
+  factory _$$IdentificationV2ImplCopyWith(
+    _$IdentificationV2Impl value,
+    $Res Function(_$IdentificationV2Impl) then,
+  ) = __$$IdentificationV2ImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({
+    String version,
+    ArchetypeDynamics? ego,
+    ArchetypeDynamics? persona,
+    ArchetypeDynamics? shadow,
+    ArchetypeDynamics? shadowVirtue,
+    ArchetypeDynamics? feelingFunction,
+    ArchetypeDynamics? erosAxis,
+  });
+
+  @override
+  $ArchetypeDynamicsCopyWith<$Res>? get ego;
+  @override
+  $ArchetypeDynamicsCopyWith<$Res>? get persona;
+  @override
+  $ArchetypeDynamicsCopyWith<$Res>? get shadow;
+  @override
+  $ArchetypeDynamicsCopyWith<$Res>? get shadowVirtue;
+  @override
+  $ArchetypeDynamicsCopyWith<$Res>? get feelingFunction;
+  @override
+  $ArchetypeDynamicsCopyWith<$Res>? get erosAxis;
+}
+
+/// @nodoc
+class __$$IdentificationV2ImplCopyWithImpl<$Res>
+    extends _$IdentificationV2CopyWithImpl<$Res, _$IdentificationV2Impl>
+    implements _$$IdentificationV2ImplCopyWith<$Res> {
+  __$$IdentificationV2ImplCopyWithImpl(
+    _$IdentificationV2Impl _value,
+    $Res Function(_$IdentificationV2Impl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of IdentificationV2
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? version = null,
+    Object? ego = freezed,
+    Object? persona = freezed,
+    Object? shadow = freezed,
+    Object? shadowVirtue = freezed,
+    Object? feelingFunction = freezed,
+    Object? erosAxis = freezed,
+  }) {
+    return _then(
+      _$IdentificationV2Impl(
+        version: null == version
+            ? _value.version
+            : version // ignore: cast_nullable_to_non_nullable
+                  as String,
+        ego: freezed == ego
+            ? _value.ego
+            : ego // ignore: cast_nullable_to_non_nullable
+                  as ArchetypeDynamics?,
+        persona: freezed == persona
+            ? _value.persona
+            : persona // ignore: cast_nullable_to_non_nullable
+                  as ArchetypeDynamics?,
+        shadow: freezed == shadow
+            ? _value.shadow
+            : shadow // ignore: cast_nullable_to_non_nullable
+                  as ArchetypeDynamics?,
+        shadowVirtue: freezed == shadowVirtue
+            ? _value.shadowVirtue
+            : shadowVirtue // ignore: cast_nullable_to_non_nullable
+                  as ArchetypeDynamics?,
+        feelingFunction: freezed == feelingFunction
+            ? _value.feelingFunction
+            : feelingFunction // ignore: cast_nullable_to_non_nullable
+                  as ArchetypeDynamics?,
+        erosAxis: freezed == erosAxis
+            ? _value.erosAxis
+            : erosAxis // ignore: cast_nullable_to_non_nullable
+                  as ArchetypeDynamics?,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$IdentificationV2Impl implements _IdentificationV2 {
+  const _$IdentificationV2Impl({
+    this.version = '2.0',
+    this.ego,
+    this.persona,
+    this.shadow,
+    this.shadowVirtue,
+    this.feelingFunction,
+    this.erosAxis,
+  });
+
+  factory _$IdentificationV2Impl.fromJson(Map<String, dynamic> json) =>
+      _$$IdentificationV2ImplFromJson(json);
+
+  @override
+  @JsonKey()
+  final String version;
+  @override
+  final ArchetypeDynamics? ego;
+  @override
+  final ArchetypeDynamics? persona;
+  @override
+  final ArchetypeDynamics? shadow;
+  @override
+  final ArchetypeDynamics? shadowVirtue;
+  @override
+  final ArchetypeDynamics? feelingFunction;
+  @override
+  final ArchetypeDynamics? erosAxis;
+
+  @override
+  String toString() {
+    return 'IdentificationV2(version: $version, ego: $ego, persona: $persona, shadow: $shadow, shadowVirtue: $shadowVirtue, feelingFunction: $feelingFunction, erosAxis: $erosAxis)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$IdentificationV2Impl &&
+            (identical(other.version, version) || other.version == version) &&
+            (identical(other.ego, ego) || other.ego == ego) &&
+            (identical(other.persona, persona) || other.persona == persona) &&
+            (identical(other.shadow, shadow) || other.shadow == shadow) &&
+            (identical(other.shadowVirtue, shadowVirtue) ||
+                other.shadowVirtue == shadowVirtue) &&
+            (identical(other.feelingFunction, feelingFunction) ||
+                other.feelingFunction == feelingFunction) &&
+            (identical(other.erosAxis, erosAxis) ||
+                other.erosAxis == erosAxis));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+    runtimeType,
+    version,
+    ego,
+    persona,
+    shadow,
+    shadowVirtue,
+    feelingFunction,
+    erosAxis,
+  );
+
+  /// Create a copy of IdentificationV2
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$IdentificationV2ImplCopyWith<_$IdentificationV2Impl> get copyWith =>
+      __$$IdentificationV2ImplCopyWithImpl<_$IdentificationV2Impl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$IdentificationV2ImplToJson(this);
+  }
+}
+
+abstract class _IdentificationV2 implements IdentificationV2 {
+  const factory _IdentificationV2({
+    final String version,
+    final ArchetypeDynamics? ego,
+    final ArchetypeDynamics? persona,
+    final ArchetypeDynamics? shadow,
+    final ArchetypeDynamics? shadowVirtue,
+    final ArchetypeDynamics? feelingFunction,
+    final ArchetypeDynamics? erosAxis,
+  }) = _$IdentificationV2Impl;
+
+  factory _IdentificationV2.fromJson(Map<String, dynamic> json) =
+      _$IdentificationV2Impl.fromJson;
+
+  @override
+  String get version;
+  @override
+  ArchetypeDynamics? get ego;
+  @override
+  ArchetypeDynamics? get persona;
+  @override
+  ArchetypeDynamics? get shadow;
+  @override
+  ArchetypeDynamics? get shadowVirtue;
+  @override
+  ArchetypeDynamics? get feelingFunction;
+  @override
+  ArchetypeDynamics? get erosAxis;
+
+  /// Create a copy of IdentificationV2
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$IdentificationV2ImplCopyWith<_$IdentificationV2Impl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+ArchetypeDynamics _$ArchetypeDynamicsFromJson(Map<String, dynamic> json) {
+  return _ArchetypeDynamics.fromJson(json);
+}
+
+/// @nodoc
+mixin _$ArchetypeDynamics {
+  CenterPosition get center => throw _privateConstructorUsedError;
+  List<OrbitEntry> get orbit => throw _privateConstructorUsedError;
+  List<CompensationEntry> get compensations =>
+      throw _privateConstructorUsedError;
+
+  /// Serializes this ArchetypeDynamics to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of ArchetypeDynamics
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $ArchetypeDynamicsCopyWith<ArchetypeDynamics> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $ArchetypeDynamicsCopyWith<$Res> {
+  factory $ArchetypeDynamicsCopyWith(
+    ArchetypeDynamics value,
+    $Res Function(ArchetypeDynamics) then,
+  ) = _$ArchetypeDynamicsCopyWithImpl<$Res, ArchetypeDynamics>;
+  @useResult
+  $Res call({
+    CenterPosition center,
+    List<OrbitEntry> orbit,
+    List<CompensationEntry> compensations,
+  });
+
+  $CenterPositionCopyWith<$Res> get center;
+}
+
+/// @nodoc
+class _$ArchetypeDynamicsCopyWithImpl<$Res, $Val extends ArchetypeDynamics>
+    implements $ArchetypeDynamicsCopyWith<$Res> {
+  _$ArchetypeDynamicsCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of ArchetypeDynamics
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? center = null,
+    Object? orbit = null,
+    Object? compensations = null,
+  }) {
+    return _then(
+      _value.copyWith(
+            center: null == center
+                ? _value.center
+                : center // ignore: cast_nullable_to_non_nullable
+                      as CenterPosition,
+            orbit: null == orbit
+                ? _value.orbit
+                : orbit // ignore: cast_nullable_to_non_nullable
+                      as List<OrbitEntry>,
+            compensations: null == compensations
+                ? _value.compensations
+                : compensations // ignore: cast_nullable_to_non_nullable
+                      as List<CompensationEntry>,
+          )
+          as $Val,
+    );
+  }
+
+  /// Create a copy of ArchetypeDynamics
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $CenterPositionCopyWith<$Res> get center {
+    return $CenterPositionCopyWith<$Res>(_value.center, (value) {
+      return _then(_value.copyWith(center: value) as $Val);
+    });
+  }
+}
+
+/// @nodoc
+abstract class _$$ArchetypeDynamicsImplCopyWith<$Res>
+    implements $ArchetypeDynamicsCopyWith<$Res> {
+  factory _$$ArchetypeDynamicsImplCopyWith(
+    _$ArchetypeDynamicsImpl value,
+    $Res Function(_$ArchetypeDynamicsImpl) then,
+  ) = __$$ArchetypeDynamicsImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({
+    CenterPosition center,
+    List<OrbitEntry> orbit,
+    List<CompensationEntry> compensations,
+  });
+
+  @override
+  $CenterPositionCopyWith<$Res> get center;
+}
+
+/// @nodoc
+class __$$ArchetypeDynamicsImplCopyWithImpl<$Res>
+    extends _$ArchetypeDynamicsCopyWithImpl<$Res, _$ArchetypeDynamicsImpl>
+    implements _$$ArchetypeDynamicsImplCopyWith<$Res> {
+  __$$ArchetypeDynamicsImplCopyWithImpl(
+    _$ArchetypeDynamicsImpl _value,
+    $Res Function(_$ArchetypeDynamicsImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of ArchetypeDynamics
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? center = null,
+    Object? orbit = null,
+    Object? compensations = null,
+  }) {
+    return _then(
+      _$ArchetypeDynamicsImpl(
+        center: null == center
+            ? _value.center
+            : center // ignore: cast_nullable_to_non_nullable
+                  as CenterPosition,
+        orbit: null == orbit
+            ? _value._orbit
+            : orbit // ignore: cast_nullable_to_non_nullable
+                  as List<OrbitEntry>,
+        compensations: null == compensations
+            ? _value._compensations
+            : compensations // ignore: cast_nullable_to_non_nullable
+                  as List<CompensationEntry>,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$ArchetypeDynamicsImpl implements _ArchetypeDynamics {
+  const _$ArchetypeDynamicsImpl({
+    required this.center,
+    final List<OrbitEntry> orbit = const [],
+    final List<CompensationEntry> compensations = const [],
+  }) : _orbit = orbit,
+       _compensations = compensations;
+
+  factory _$ArchetypeDynamicsImpl.fromJson(Map<String, dynamic> json) =>
+      _$$ArchetypeDynamicsImplFromJson(json);
+
+  @override
+  final CenterPosition center;
+  final List<OrbitEntry> _orbit;
+  @override
+  @JsonKey()
+  List<OrbitEntry> get orbit {
+    if (_orbit is EqualUnmodifiableListView) return _orbit;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_orbit);
+  }
+
+  final List<CompensationEntry> _compensations;
+  @override
+  @JsonKey()
+  List<CompensationEntry> get compensations {
+    if (_compensations is EqualUnmodifiableListView) return _compensations;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_compensations);
+  }
+
+  @override
+  String toString() {
+    return 'ArchetypeDynamics(center: $center, orbit: $orbit, compensations: $compensations)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$ArchetypeDynamicsImpl &&
+            (identical(other.center, center) || other.center == center) &&
+            const DeepCollectionEquality().equals(other._orbit, _orbit) &&
+            const DeepCollectionEquality().equals(
+              other._compensations,
+              _compensations,
+            ));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+    runtimeType,
+    center,
+    const DeepCollectionEquality().hash(_orbit),
+    const DeepCollectionEquality().hash(_compensations),
+  );
+
+  /// Create a copy of ArchetypeDynamics
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$ArchetypeDynamicsImplCopyWith<_$ArchetypeDynamicsImpl> get copyWith =>
+      __$$ArchetypeDynamicsImplCopyWithImpl<_$ArchetypeDynamicsImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$ArchetypeDynamicsImplToJson(this);
+  }
+}
+
+abstract class _ArchetypeDynamics implements ArchetypeDynamics {
+  const factory _ArchetypeDynamics({
+    required final CenterPosition center,
+    final List<OrbitEntry> orbit,
+    final List<CompensationEntry> compensations,
+  }) = _$ArchetypeDynamicsImpl;
+
+  factory _ArchetypeDynamics.fromJson(Map<String, dynamic> json) =
+      _$ArchetypeDynamicsImpl.fromJson;
+
+  @override
+  CenterPosition get center;
+  @override
+  List<OrbitEntry> get orbit;
+  @override
+  List<CompensationEntry> get compensations;
+
+  /// Create a copy of ArchetypeDynamics
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$ArchetypeDynamicsImplCopyWith<_$ArchetypeDynamicsImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+CenterPosition _$CenterPositionFromJson(Map<String, dynamic> json) {
+  return _CenterPosition.fromJson(json);
+}
+
+/// @nodoc
+mixin _$CenterPosition {
+  String get label => throw _privateConstructorUsedError;
+  List<String> get characters => throw _privateConstructorUsedError;
+  String get summary => throw _privateConstructorUsedError;
+  String? get details => throw _privateConstructorUsedError;
+  double get confidence => throw _privateConstructorUsedError;
+  DynamicsRationale? get rationale => throw _privateConstructorUsedError;
+
+  /// Serializes this CenterPosition to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of CenterPosition
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $CenterPositionCopyWith<CenterPosition> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $CenterPositionCopyWith<$Res> {
+  factory $CenterPositionCopyWith(
+    CenterPosition value,
+    $Res Function(CenterPosition) then,
+  ) = _$CenterPositionCopyWithImpl<$Res, CenterPosition>;
+  @useResult
+  $Res call({
+    String label,
+    List<String> characters,
+    String summary,
+    String? details,
+    double confidence,
+    DynamicsRationale? rationale,
+  });
+
+  $DynamicsRationaleCopyWith<$Res>? get rationale;
+}
+
+/// @nodoc
+class _$CenterPositionCopyWithImpl<$Res, $Val extends CenterPosition>
+    implements $CenterPositionCopyWith<$Res> {
+  _$CenterPositionCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of CenterPosition
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? label = null,
+    Object? characters = null,
+    Object? summary = null,
+    Object? details = freezed,
+    Object? confidence = null,
+    Object? rationale = freezed,
+  }) {
+    return _then(
+      _value.copyWith(
+            label: null == label
+                ? _value.label
+                : label // ignore: cast_nullable_to_non_nullable
+                      as String,
+            characters: null == characters
+                ? _value.characters
+                : characters // ignore: cast_nullable_to_non_nullable
+                      as List<String>,
+            summary: null == summary
+                ? _value.summary
+                : summary // ignore: cast_nullable_to_non_nullable
+                      as String,
+            details: freezed == details
+                ? _value.details
+                : details // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            confidence: null == confidence
+                ? _value.confidence
+                : confidence // ignore: cast_nullable_to_non_nullable
+                      as double,
+            rationale: freezed == rationale
+                ? _value.rationale
+                : rationale // ignore: cast_nullable_to_non_nullable
+                      as DynamicsRationale?,
+          )
+          as $Val,
+    );
+  }
+
+  /// Create a copy of CenterPosition
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $DynamicsRationaleCopyWith<$Res>? get rationale {
+    if (_value.rationale == null) {
+      return null;
+    }
+
+    return $DynamicsRationaleCopyWith<$Res>(_value.rationale!, (value) {
+      return _then(_value.copyWith(rationale: value) as $Val);
+    });
+  }
+}
+
+/// @nodoc
+abstract class _$$CenterPositionImplCopyWith<$Res>
+    implements $CenterPositionCopyWith<$Res> {
+  factory _$$CenterPositionImplCopyWith(
+    _$CenterPositionImpl value,
+    $Res Function(_$CenterPositionImpl) then,
+  ) = __$$CenterPositionImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({
+    String label,
+    List<String> characters,
+    String summary,
+    String? details,
+    double confidence,
+    DynamicsRationale? rationale,
+  });
+
+  @override
+  $DynamicsRationaleCopyWith<$Res>? get rationale;
+}
+
+/// @nodoc
+class __$$CenterPositionImplCopyWithImpl<$Res>
+    extends _$CenterPositionCopyWithImpl<$Res, _$CenterPositionImpl>
+    implements _$$CenterPositionImplCopyWith<$Res> {
+  __$$CenterPositionImplCopyWithImpl(
+    _$CenterPositionImpl _value,
+    $Res Function(_$CenterPositionImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of CenterPosition
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? label = null,
+    Object? characters = null,
+    Object? summary = null,
+    Object? details = freezed,
+    Object? confidence = null,
+    Object? rationale = freezed,
+  }) {
+    return _then(
+      _$CenterPositionImpl(
+        label: null == label
+            ? _value.label
+            : label // ignore: cast_nullable_to_non_nullable
+                  as String,
+        characters: null == characters
+            ? _value._characters
+            : characters // ignore: cast_nullable_to_non_nullable
+                  as List<String>,
+        summary: null == summary
+            ? _value.summary
+            : summary // ignore: cast_nullable_to_non_nullable
+                  as String,
+        details: freezed == details
+            ? _value.details
+            : details // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        confidence: null == confidence
+            ? _value.confidence
+            : confidence // ignore: cast_nullable_to_non_nullable
+                  as double,
+        rationale: freezed == rationale
+            ? _value.rationale
+            : rationale // ignore: cast_nullable_to_non_nullable
+                  as DynamicsRationale?,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$CenterPositionImpl implements _CenterPosition {
+  const _$CenterPositionImpl({
+    required this.label,
+    required final List<String> characters,
+    required this.summary,
+    this.details,
+    this.confidence = 0.0,
+    this.rationale,
+  }) : _characters = characters;
+
+  factory _$CenterPositionImpl.fromJson(Map<String, dynamic> json) =>
+      _$$CenterPositionImplFromJson(json);
+
+  @override
+  final String label;
+  final List<String> _characters;
+  @override
+  List<String> get characters {
+    if (_characters is EqualUnmodifiableListView) return _characters;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_characters);
+  }
+
+  @override
+  final String summary;
+  @override
+  final String? details;
+  @override
+  @JsonKey()
+  final double confidence;
+  @override
+  final DynamicsRationale? rationale;
+
+  @override
+  String toString() {
+    return 'CenterPosition(label: $label, characters: $characters, summary: $summary, details: $details, confidence: $confidence, rationale: $rationale)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$CenterPositionImpl &&
+            (identical(other.label, label) || other.label == label) &&
+            const DeepCollectionEquality().equals(
+              other._characters,
+              _characters,
+            ) &&
+            (identical(other.summary, summary) || other.summary == summary) &&
+            (identical(other.details, details) || other.details == details) &&
+            (identical(other.confidence, confidence) ||
+                other.confidence == confidence) &&
+            (identical(other.rationale, rationale) ||
+                other.rationale == rationale));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+    runtimeType,
+    label,
+    const DeepCollectionEquality().hash(_characters),
+    summary,
+    details,
+    confidence,
+    rationale,
+  );
+
+  /// Create a copy of CenterPosition
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$CenterPositionImplCopyWith<_$CenterPositionImpl> get copyWith =>
+      __$$CenterPositionImplCopyWithImpl<_$CenterPositionImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$CenterPositionImplToJson(this);
+  }
+}
+
+abstract class _CenterPosition implements CenterPosition {
+  const factory _CenterPosition({
+    required final String label,
+    required final List<String> characters,
+    required final String summary,
+    final String? details,
+    final double confidence,
+    final DynamicsRationale? rationale,
+  }) = _$CenterPositionImpl;
+
+  factory _CenterPosition.fromJson(Map<String, dynamic> json) =
+      _$CenterPositionImpl.fromJson;
+
+  @override
+  String get label;
+  @override
+  List<String> get characters;
+  @override
+  String get summary;
+  @override
+  String? get details;
+  @override
+  double get confidence;
+  @override
+  DynamicsRationale? get rationale;
+
+  /// Create a copy of CenterPosition
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$CenterPositionImplCopyWith<_$CenterPositionImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+OrbitEntry _$OrbitEntryFromJson(Map<String, dynamic> json) {
+  return _OrbitEntry.fromJson(json);
+}
+
+/// @nodoc
+mixin _$OrbitEntry {
+  OrbitTrigger get trigger => throw _privateConstructorUsedError;
+  List<String> get characters => throw _privateConstructorUsedError;
+  String? get pattern => throw _privateConstructorUsedError;
+  String? get costRisk => throw _privateConstructorUsedError;
+  String? get stabilizer => throw _privateConstructorUsedError;
+  DynamicsRationale? get rationale => throw _privateConstructorUsedError;
+
+  /// Serializes this OrbitEntry to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of OrbitEntry
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $OrbitEntryCopyWith<OrbitEntry> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $OrbitEntryCopyWith<$Res> {
+  factory $OrbitEntryCopyWith(
+    OrbitEntry value,
+    $Res Function(OrbitEntry) then,
+  ) = _$OrbitEntryCopyWithImpl<$Res, OrbitEntry>;
+  @useResult
+  $Res call({
+    OrbitTrigger trigger,
+    List<String> characters,
+    String? pattern,
+    String? costRisk,
+    String? stabilizer,
+    DynamicsRationale? rationale,
+  });
+
+  $OrbitTriggerCopyWith<$Res> get trigger;
+  $DynamicsRationaleCopyWith<$Res>? get rationale;
+}
+
+/// @nodoc
+class _$OrbitEntryCopyWithImpl<$Res, $Val extends OrbitEntry>
+    implements $OrbitEntryCopyWith<$Res> {
+  _$OrbitEntryCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of OrbitEntry
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? trigger = null,
+    Object? characters = null,
+    Object? pattern = freezed,
+    Object? costRisk = freezed,
+    Object? stabilizer = freezed,
+    Object? rationale = freezed,
+  }) {
+    return _then(
+      _value.copyWith(
+            trigger: null == trigger
+                ? _value.trigger
+                : trigger // ignore: cast_nullable_to_non_nullable
+                      as OrbitTrigger,
+            characters: null == characters
+                ? _value.characters
+                : characters // ignore: cast_nullable_to_non_nullable
+                      as List<String>,
+            pattern: freezed == pattern
+                ? _value.pattern
+                : pattern // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            costRisk: freezed == costRisk
+                ? _value.costRisk
+                : costRisk // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            stabilizer: freezed == stabilizer
+                ? _value.stabilizer
+                : stabilizer // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            rationale: freezed == rationale
+                ? _value.rationale
+                : rationale // ignore: cast_nullable_to_non_nullable
+                      as DynamicsRationale?,
+          )
+          as $Val,
+    );
+  }
+
+  /// Create a copy of OrbitEntry
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $OrbitTriggerCopyWith<$Res> get trigger {
+    return $OrbitTriggerCopyWith<$Res>(_value.trigger, (value) {
+      return _then(_value.copyWith(trigger: value) as $Val);
+    });
+  }
+
+  /// Create a copy of OrbitEntry
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $DynamicsRationaleCopyWith<$Res>? get rationale {
+    if (_value.rationale == null) {
+      return null;
+    }
+
+    return $DynamicsRationaleCopyWith<$Res>(_value.rationale!, (value) {
+      return _then(_value.copyWith(rationale: value) as $Val);
+    });
+  }
+}
+
+/// @nodoc
+abstract class _$$OrbitEntryImplCopyWith<$Res>
+    implements $OrbitEntryCopyWith<$Res> {
+  factory _$$OrbitEntryImplCopyWith(
+    _$OrbitEntryImpl value,
+    $Res Function(_$OrbitEntryImpl) then,
+  ) = __$$OrbitEntryImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({
+    OrbitTrigger trigger,
+    List<String> characters,
+    String? pattern,
+    String? costRisk,
+    String? stabilizer,
+    DynamicsRationale? rationale,
+  });
+
+  @override
+  $OrbitTriggerCopyWith<$Res> get trigger;
+  @override
+  $DynamicsRationaleCopyWith<$Res>? get rationale;
+}
+
+/// @nodoc
+class __$$OrbitEntryImplCopyWithImpl<$Res>
+    extends _$OrbitEntryCopyWithImpl<$Res, _$OrbitEntryImpl>
+    implements _$$OrbitEntryImplCopyWith<$Res> {
+  __$$OrbitEntryImplCopyWithImpl(
+    _$OrbitEntryImpl _value,
+    $Res Function(_$OrbitEntryImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of OrbitEntry
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? trigger = null,
+    Object? characters = null,
+    Object? pattern = freezed,
+    Object? costRisk = freezed,
+    Object? stabilizer = freezed,
+    Object? rationale = freezed,
+  }) {
+    return _then(
+      _$OrbitEntryImpl(
+        trigger: null == trigger
+            ? _value.trigger
+            : trigger // ignore: cast_nullable_to_non_nullable
+                  as OrbitTrigger,
+        characters: null == characters
+            ? _value._characters
+            : characters // ignore: cast_nullable_to_non_nullable
+                  as List<String>,
+        pattern: freezed == pattern
+            ? _value.pattern
+            : pattern // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        costRisk: freezed == costRisk
+            ? _value.costRisk
+            : costRisk // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        stabilizer: freezed == stabilizer
+            ? _value.stabilizer
+            : stabilizer // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        rationale: freezed == rationale
+            ? _value.rationale
+            : rationale // ignore: cast_nullable_to_non_nullable
+                  as DynamicsRationale?,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$OrbitEntryImpl implements _OrbitEntry {
+  const _$OrbitEntryImpl({
+    required this.trigger,
+    final List<String> characters = const [],
+    this.pattern,
+    this.costRisk,
+    this.stabilizer,
+    this.rationale,
+  }) : _characters = characters;
+
+  factory _$OrbitEntryImpl.fromJson(Map<String, dynamic> json) =>
+      _$$OrbitEntryImplFromJson(json);
+
+  @override
+  final OrbitTrigger trigger;
+  final List<String> _characters;
+  @override
+  @JsonKey()
+  List<String> get characters {
+    if (_characters is EqualUnmodifiableListView) return _characters;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_characters);
+  }
+
+  @override
+  final String? pattern;
+  @override
+  final String? costRisk;
+  @override
+  final String? stabilizer;
+  @override
+  final DynamicsRationale? rationale;
+
+  @override
+  String toString() {
+    return 'OrbitEntry(trigger: $trigger, characters: $characters, pattern: $pattern, costRisk: $costRisk, stabilizer: $stabilizer, rationale: $rationale)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$OrbitEntryImpl &&
+            (identical(other.trigger, trigger) || other.trigger == trigger) &&
+            const DeepCollectionEquality().equals(
+              other._characters,
+              _characters,
+            ) &&
+            (identical(other.pattern, pattern) || other.pattern == pattern) &&
+            (identical(other.costRisk, costRisk) ||
+                other.costRisk == costRisk) &&
+            (identical(other.stabilizer, stabilizer) ||
+                other.stabilizer == stabilizer) &&
+            (identical(other.rationale, rationale) ||
+                other.rationale == rationale));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+    runtimeType,
+    trigger,
+    const DeepCollectionEquality().hash(_characters),
+    pattern,
+    costRisk,
+    stabilizer,
+    rationale,
+  );
+
+  /// Create a copy of OrbitEntry
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$OrbitEntryImplCopyWith<_$OrbitEntryImpl> get copyWith =>
+      __$$OrbitEntryImplCopyWithImpl<_$OrbitEntryImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$OrbitEntryImplToJson(this);
+  }
+}
+
+abstract class _OrbitEntry implements OrbitEntry {
+  const factory _OrbitEntry({
+    required final OrbitTrigger trigger,
+    final List<String> characters,
+    final String? pattern,
+    final String? costRisk,
+    final String? stabilizer,
+    final DynamicsRationale? rationale,
+  }) = _$OrbitEntryImpl;
+
+  factory _OrbitEntry.fromJson(Map<String, dynamic> json) =
+      _$OrbitEntryImpl.fromJson;
+
+  @override
+  OrbitTrigger get trigger;
+  @override
+  List<String> get characters;
+  @override
+  String? get pattern;
+  @override
+  String? get costRisk;
+  @override
+  String? get stabilizer;
+  @override
+  DynamicsRationale? get rationale;
+
+  /// Create a copy of OrbitEntry
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$OrbitEntryImplCopyWith<_$OrbitEntryImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+OrbitTrigger _$OrbitTriggerFromJson(Map<String, dynamic> json) {
+  return _OrbitTrigger.fromJson(json);
+}
+
+/// @nodoc
+mixin _$OrbitTrigger {
+  String get name => throw _privateConstructorUsedError;
+  List<String> get tags => throw _privateConstructorUsedError;
+
+  /// Serializes this OrbitTrigger to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of OrbitTrigger
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $OrbitTriggerCopyWith<OrbitTrigger> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $OrbitTriggerCopyWith<$Res> {
+  factory $OrbitTriggerCopyWith(
+    OrbitTrigger value,
+    $Res Function(OrbitTrigger) then,
+  ) = _$OrbitTriggerCopyWithImpl<$Res, OrbitTrigger>;
+  @useResult
+  $Res call({String name, List<String> tags});
+}
+
+/// @nodoc
+class _$OrbitTriggerCopyWithImpl<$Res, $Val extends OrbitTrigger>
+    implements $OrbitTriggerCopyWith<$Res> {
+  _$OrbitTriggerCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of OrbitTrigger
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? name = null, Object? tags = null}) {
+    return _then(
+      _value.copyWith(
+            name: null == name
+                ? _value.name
+                : name // ignore: cast_nullable_to_non_nullable
+                      as String,
+            tags: null == tags
+                ? _value.tags
+                : tags // ignore: cast_nullable_to_non_nullable
+                      as List<String>,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$OrbitTriggerImplCopyWith<$Res>
+    implements $OrbitTriggerCopyWith<$Res> {
+  factory _$$OrbitTriggerImplCopyWith(
+    _$OrbitTriggerImpl value,
+    $Res Function(_$OrbitTriggerImpl) then,
+  ) = __$$OrbitTriggerImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String name, List<String> tags});
+}
+
+/// @nodoc
+class __$$OrbitTriggerImplCopyWithImpl<$Res>
+    extends _$OrbitTriggerCopyWithImpl<$Res, _$OrbitTriggerImpl>
+    implements _$$OrbitTriggerImplCopyWith<$Res> {
+  __$$OrbitTriggerImplCopyWithImpl(
+    _$OrbitTriggerImpl _value,
+    $Res Function(_$OrbitTriggerImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of OrbitTrigger
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? name = null, Object? tags = null}) {
+    return _then(
+      _$OrbitTriggerImpl(
+        name: null == name
+            ? _value.name
+            : name // ignore: cast_nullable_to_non_nullable
+                  as String,
+        tags: null == tags
+            ? _value._tags
+            : tags // ignore: cast_nullable_to_non_nullable
+                  as List<String>,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$OrbitTriggerImpl implements _OrbitTrigger {
+  const _$OrbitTriggerImpl({
+    required this.name,
+    final List<String> tags = const [],
+  }) : _tags = tags;
+
+  factory _$OrbitTriggerImpl.fromJson(Map<String, dynamic> json) =>
+      _$$OrbitTriggerImplFromJson(json);
+
+  @override
+  final String name;
+  final List<String> _tags;
+  @override
+  @JsonKey()
+  List<String> get tags {
+    if (_tags is EqualUnmodifiableListView) return _tags;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_tags);
+  }
+
+  @override
+  String toString() {
+    return 'OrbitTrigger(name: $name, tags: $tags)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$OrbitTriggerImpl &&
+            (identical(other.name, name) || other.name == name) &&
+            const DeepCollectionEquality().equals(other._tags, _tags));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+    runtimeType,
+    name,
+    const DeepCollectionEquality().hash(_tags),
+  );
+
+  /// Create a copy of OrbitTrigger
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$OrbitTriggerImplCopyWith<_$OrbitTriggerImpl> get copyWith =>
+      __$$OrbitTriggerImplCopyWithImpl<_$OrbitTriggerImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$OrbitTriggerImplToJson(this);
+  }
+}
+
+abstract class _OrbitTrigger implements OrbitTrigger {
+  const factory _OrbitTrigger({
+    required final String name,
+    final List<String> tags,
+  }) = _$OrbitTriggerImpl;
+
+  factory _OrbitTrigger.fromJson(Map<String, dynamic> json) =
+      _$OrbitTriggerImpl.fromJson;
+
+  @override
+  String get name;
+  @override
+  List<String> get tags;
+
+  /// Create a copy of OrbitTrigger
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$OrbitTriggerImplCopyWith<_$OrbitTriggerImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+CompensationEntry _$CompensationEntryFromJson(Map<String, dynamic> json) {
+  return _CompensationEntry.fromJson(json);
+}
+
+/// @nodoc
+mixin _$CompensationEntry {
+  String get name => throw _privateConstructorUsedError;
+  String? get when => throw _privateConstructorUsedError;
+  @StringOrListConverter()
+  List<String> get expression => throw _privateConstructorUsedError;
+  String? get risk => throw _privateConstructorUsedError;
+  String? get returnPath => throw _privateConstructorUsedError;
+  List<String> get characters => throw _privateConstructorUsedError;
+  DynamicsRationale? get rationale => throw _privateConstructorUsedError;
+
+  /// Serializes this CompensationEntry to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of CompensationEntry
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $CompensationEntryCopyWith<CompensationEntry> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $CompensationEntryCopyWith<$Res> {
+  factory $CompensationEntryCopyWith(
+    CompensationEntry value,
+    $Res Function(CompensationEntry) then,
+  ) = _$CompensationEntryCopyWithImpl<$Res, CompensationEntry>;
+  @useResult
+  $Res call({
+    String name,
+    String? when,
+    @StringOrListConverter() List<String> expression,
+    String? risk,
+    String? returnPath,
+    List<String> characters,
+    DynamicsRationale? rationale,
+  });
+
+  $DynamicsRationaleCopyWith<$Res>? get rationale;
+}
+
+/// @nodoc
+class _$CompensationEntryCopyWithImpl<$Res, $Val extends CompensationEntry>
+    implements $CompensationEntryCopyWith<$Res> {
+  _$CompensationEntryCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of CompensationEntry
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? name = null,
+    Object? when = freezed,
+    Object? expression = null,
+    Object? risk = freezed,
+    Object? returnPath = freezed,
+    Object? characters = null,
+    Object? rationale = freezed,
+  }) {
+    return _then(
+      _value.copyWith(
+            name: null == name
+                ? _value.name
+                : name // ignore: cast_nullable_to_non_nullable
+                      as String,
+            when: freezed == when
+                ? _value.when
+                : when // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            expression: null == expression
+                ? _value.expression
+                : expression // ignore: cast_nullable_to_non_nullable
+                      as List<String>,
+            risk: freezed == risk
+                ? _value.risk
+                : risk // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            returnPath: freezed == returnPath
+                ? _value.returnPath
+                : returnPath // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            characters: null == characters
+                ? _value.characters
+                : characters // ignore: cast_nullable_to_non_nullable
+                      as List<String>,
+            rationale: freezed == rationale
+                ? _value.rationale
+                : rationale // ignore: cast_nullable_to_non_nullable
+                      as DynamicsRationale?,
+          )
+          as $Val,
+    );
+  }
+
+  /// Create a copy of CompensationEntry
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $DynamicsRationaleCopyWith<$Res>? get rationale {
+    if (_value.rationale == null) {
+      return null;
+    }
+
+    return $DynamicsRationaleCopyWith<$Res>(_value.rationale!, (value) {
+      return _then(_value.copyWith(rationale: value) as $Val);
+    });
+  }
+}
+
+/// @nodoc
+abstract class _$$CompensationEntryImplCopyWith<$Res>
+    implements $CompensationEntryCopyWith<$Res> {
+  factory _$$CompensationEntryImplCopyWith(
+    _$CompensationEntryImpl value,
+    $Res Function(_$CompensationEntryImpl) then,
+  ) = __$$CompensationEntryImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({
+    String name,
+    String? when,
+    @StringOrListConverter() List<String> expression,
+    String? risk,
+    String? returnPath,
+    List<String> characters,
+    DynamicsRationale? rationale,
+  });
+
+  @override
+  $DynamicsRationaleCopyWith<$Res>? get rationale;
+}
+
+/// @nodoc
+class __$$CompensationEntryImplCopyWithImpl<$Res>
+    extends _$CompensationEntryCopyWithImpl<$Res, _$CompensationEntryImpl>
+    implements _$$CompensationEntryImplCopyWith<$Res> {
+  __$$CompensationEntryImplCopyWithImpl(
+    _$CompensationEntryImpl _value,
+    $Res Function(_$CompensationEntryImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of CompensationEntry
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? name = null,
+    Object? when = freezed,
+    Object? expression = null,
+    Object? risk = freezed,
+    Object? returnPath = freezed,
+    Object? characters = null,
+    Object? rationale = freezed,
+  }) {
+    return _then(
+      _$CompensationEntryImpl(
+        name: null == name
+            ? _value.name
+            : name // ignore: cast_nullable_to_non_nullable
+                  as String,
+        when: freezed == when
+            ? _value.when
+            : when // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        expression: null == expression
+            ? _value._expression
+            : expression // ignore: cast_nullable_to_non_nullable
+                  as List<String>,
+        risk: freezed == risk
+            ? _value.risk
+            : risk // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        returnPath: freezed == returnPath
+            ? _value.returnPath
+            : returnPath // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        characters: null == characters
+            ? _value._characters
+            : characters // ignore: cast_nullable_to_non_nullable
+                  as List<String>,
+        rationale: freezed == rationale
+            ? _value.rationale
+            : rationale // ignore: cast_nullable_to_non_nullable
+                  as DynamicsRationale?,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$CompensationEntryImpl implements _CompensationEntry {
+  const _$CompensationEntryImpl({
+    required this.name,
+    this.when,
+    @StringOrListConverter() final List<String> expression = const [],
+    this.risk,
+    this.returnPath,
+    final List<String> characters = const [],
+    this.rationale,
+  }) : _expression = expression,
+       _characters = characters;
+
+  factory _$CompensationEntryImpl.fromJson(Map<String, dynamic> json) =>
+      _$$CompensationEntryImplFromJson(json);
+
+  @override
+  final String name;
+  @override
+  final String? when;
+  final List<String> _expression;
+  @override
+  @JsonKey()
+  @StringOrListConverter()
+  List<String> get expression {
+    if (_expression is EqualUnmodifiableListView) return _expression;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_expression);
+  }
+
+  @override
+  final String? risk;
+  @override
+  final String? returnPath;
+  final List<String> _characters;
+  @override
+  @JsonKey()
+  List<String> get characters {
+    if (_characters is EqualUnmodifiableListView) return _characters;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_characters);
+  }
+
+  @override
+  final DynamicsRationale? rationale;
+
+  @override
+  String toString() {
+    return 'CompensationEntry(name: $name, when: $when, expression: $expression, risk: $risk, returnPath: $returnPath, characters: $characters, rationale: $rationale)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$CompensationEntryImpl &&
+            (identical(other.name, name) || other.name == name) &&
+            (identical(other.when, when) || other.when == when) &&
+            const DeepCollectionEquality().equals(
+              other._expression,
+              _expression,
+            ) &&
+            (identical(other.risk, risk) || other.risk == risk) &&
+            (identical(other.returnPath, returnPath) ||
+                other.returnPath == returnPath) &&
+            const DeepCollectionEquality().equals(
+              other._characters,
+              _characters,
+            ) &&
+            (identical(other.rationale, rationale) ||
+                other.rationale == rationale));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+    runtimeType,
+    name,
+    when,
+    const DeepCollectionEquality().hash(_expression),
+    risk,
+    returnPath,
+    const DeepCollectionEquality().hash(_characters),
+    rationale,
+  );
+
+  /// Create a copy of CompensationEntry
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$CompensationEntryImplCopyWith<_$CompensationEntryImpl> get copyWith =>
+      __$$CompensationEntryImplCopyWithImpl<_$CompensationEntryImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$CompensationEntryImplToJson(this);
+  }
+}
+
+abstract class _CompensationEntry implements CompensationEntry {
+  const factory _CompensationEntry({
+    required final String name,
+    final String? when,
+    @StringOrListConverter() final List<String> expression,
+    final String? risk,
+    final String? returnPath,
+    final List<String> characters,
+    final DynamicsRationale? rationale,
+  }) = _$CompensationEntryImpl;
+
+  factory _CompensationEntry.fromJson(Map<String, dynamic> json) =
+      _$CompensationEntryImpl.fromJson;
+
+  @override
+  String get name;
+  @override
+  String? get when;
+  @override
+  @StringOrListConverter()
+  List<String> get expression;
+  @override
+  String? get risk;
+  @override
+  String? get returnPath;
+  @override
+  List<String> get characters;
+  @override
+  DynamicsRationale? get rationale;
+
+  /// Create a copy of CompensationEntry
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$CompensationEntryImplCopyWith<_$CompensationEntryImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+DynamicsRationale _$DynamicsRationaleFromJson(Map<String, dynamic> json) {
+  return _DynamicsRationale.fromJson(json);
+}
+
+/// @nodoc
+mixin _$DynamicsRationale {
+  List<String> get traitSignals => throw _privateConstructorUsedError;
+  List<String> get assessmentRefs => throw _privateConstructorUsedError;
+  List<String> get exampleRefs => throw _privateConstructorUsedError;
+
+  /// Serializes this DynamicsRationale to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of DynamicsRationale
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $DynamicsRationaleCopyWith<DynamicsRationale> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $DynamicsRationaleCopyWith<$Res> {
+  factory $DynamicsRationaleCopyWith(
+    DynamicsRationale value,
+    $Res Function(DynamicsRationale) then,
+  ) = _$DynamicsRationaleCopyWithImpl<$Res, DynamicsRationale>;
+  @useResult
+  $Res call({
+    List<String> traitSignals,
+    List<String> assessmentRefs,
+    List<String> exampleRefs,
+  });
+}
+
+/// @nodoc
+class _$DynamicsRationaleCopyWithImpl<$Res, $Val extends DynamicsRationale>
+    implements $DynamicsRationaleCopyWith<$Res> {
+  _$DynamicsRationaleCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of DynamicsRationale
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? traitSignals = null,
+    Object? assessmentRefs = null,
+    Object? exampleRefs = null,
+  }) {
+    return _then(
+      _value.copyWith(
+            traitSignals: null == traitSignals
+                ? _value.traitSignals
+                : traitSignals // ignore: cast_nullable_to_non_nullable
+                      as List<String>,
+            assessmentRefs: null == assessmentRefs
+                ? _value.assessmentRefs
+                : assessmentRefs // ignore: cast_nullable_to_non_nullable
+                      as List<String>,
+            exampleRefs: null == exampleRefs
+                ? _value.exampleRefs
+                : exampleRefs // ignore: cast_nullable_to_non_nullable
+                      as List<String>,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$DynamicsRationaleImplCopyWith<$Res>
+    implements $DynamicsRationaleCopyWith<$Res> {
+  factory _$$DynamicsRationaleImplCopyWith(
+    _$DynamicsRationaleImpl value,
+    $Res Function(_$DynamicsRationaleImpl) then,
+  ) = __$$DynamicsRationaleImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({
+    List<String> traitSignals,
+    List<String> assessmentRefs,
+    List<String> exampleRefs,
+  });
+}
+
+/// @nodoc
+class __$$DynamicsRationaleImplCopyWithImpl<$Res>
+    extends _$DynamicsRationaleCopyWithImpl<$Res, _$DynamicsRationaleImpl>
+    implements _$$DynamicsRationaleImplCopyWith<$Res> {
+  __$$DynamicsRationaleImplCopyWithImpl(
+    _$DynamicsRationaleImpl _value,
+    $Res Function(_$DynamicsRationaleImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of DynamicsRationale
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? traitSignals = null,
+    Object? assessmentRefs = null,
+    Object? exampleRefs = null,
+  }) {
+    return _then(
+      _$DynamicsRationaleImpl(
+        traitSignals: null == traitSignals
+            ? _value._traitSignals
+            : traitSignals // ignore: cast_nullable_to_non_nullable
+                  as List<String>,
+        assessmentRefs: null == assessmentRefs
+            ? _value._assessmentRefs
+            : assessmentRefs // ignore: cast_nullable_to_non_nullable
+                  as List<String>,
+        exampleRefs: null == exampleRefs
+            ? _value._exampleRefs
+            : exampleRefs // ignore: cast_nullable_to_non_nullable
+                  as List<String>,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$DynamicsRationaleImpl implements _DynamicsRationale {
+  const _$DynamicsRationaleImpl({
+    final List<String> traitSignals = const [],
+    final List<String> assessmentRefs = const [],
+    final List<String> exampleRefs = const [],
+  }) : _traitSignals = traitSignals,
+       _assessmentRefs = assessmentRefs,
+       _exampleRefs = exampleRefs;
+
+  factory _$DynamicsRationaleImpl.fromJson(Map<String, dynamic> json) =>
+      _$$DynamicsRationaleImplFromJson(json);
+
+  final List<String> _traitSignals;
+  @override
+  @JsonKey()
+  List<String> get traitSignals {
+    if (_traitSignals is EqualUnmodifiableListView) return _traitSignals;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_traitSignals);
+  }
+
+  final List<String> _assessmentRefs;
+  @override
+  @JsonKey()
+  List<String> get assessmentRefs {
+    if (_assessmentRefs is EqualUnmodifiableListView) return _assessmentRefs;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_assessmentRefs);
+  }
+
+  final List<String> _exampleRefs;
+  @override
+  @JsonKey()
+  List<String> get exampleRefs {
+    if (_exampleRefs is EqualUnmodifiableListView) return _exampleRefs;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_exampleRefs);
+  }
+
+  @override
+  String toString() {
+    return 'DynamicsRationale(traitSignals: $traitSignals, assessmentRefs: $assessmentRefs, exampleRefs: $exampleRefs)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$DynamicsRationaleImpl &&
+            const DeepCollectionEquality().equals(
+              other._traitSignals,
+              _traitSignals,
+            ) &&
+            const DeepCollectionEquality().equals(
+              other._assessmentRefs,
+              _assessmentRefs,
+            ) &&
+            const DeepCollectionEquality().equals(
+              other._exampleRefs,
+              _exampleRefs,
+            ));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+    runtimeType,
+    const DeepCollectionEquality().hash(_traitSignals),
+    const DeepCollectionEquality().hash(_assessmentRefs),
+    const DeepCollectionEquality().hash(_exampleRefs),
+  );
+
+  /// Create a copy of DynamicsRationale
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$DynamicsRationaleImplCopyWith<_$DynamicsRationaleImpl> get copyWith =>
+      __$$DynamicsRationaleImplCopyWithImpl<_$DynamicsRationaleImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$DynamicsRationaleImplToJson(this);
+  }
+}
+
+abstract class _DynamicsRationale implements DynamicsRationale {
+  const factory _DynamicsRationale({
+    final List<String> traitSignals,
+    final List<String> assessmentRefs,
+    final List<String> exampleRefs,
+  }) = _$DynamicsRationaleImpl;
+
+  factory _DynamicsRationale.fromJson(Map<String, dynamic> json) =
+      _$DynamicsRationaleImpl.fromJson;
+
+  @override
+  List<String> get traitSignals;
+  @override
+  List<String> get assessmentRefs;
+  @override
+  List<String> get exampleRefs;
+
+  /// Create a copy of DynamicsRationale
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$DynamicsRationaleImplCopyWith<_$DynamicsRationaleImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -5421,6 +8073,7 @@ ExampleReference _$ExampleReferenceFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$ExampleReference {
   String get title => throw _privateConstructorUsedError;
+  @YearToStringConverter()
   String get year => throw _privateConstructorUsedError;
   String get medium => throw _privateConstructorUsedError;
 
@@ -5441,7 +8094,11 @@ abstract class $ExampleReferenceCopyWith<$Res> {
     $Res Function(ExampleReference) then,
   ) = _$ExampleReferenceCopyWithImpl<$Res, ExampleReference>;
   @useResult
-  $Res call({String title, String year, String medium});
+  $Res call({
+    String title,
+    @YearToStringConverter() String year,
+    String medium,
+  });
 }
 
 /// @nodoc
@@ -5492,7 +8149,11 @@ abstract class _$$ExampleReferenceImplCopyWith<$Res>
   ) = __$$ExampleReferenceImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String title, String year, String medium});
+  $Res call({
+    String title,
+    @YearToStringConverter() String year,
+    String medium,
+  });
 }
 
 /// @nodoc
@@ -5537,7 +8198,7 @@ class __$$ExampleReferenceImplCopyWithImpl<$Res>
 class _$ExampleReferenceImpl implements _ExampleReference {
   const _$ExampleReferenceImpl({
     required this.title,
-    required this.year,
+    @YearToStringConverter() required this.year,
     required this.medium,
   });
 
@@ -5547,6 +8208,7 @@ class _$ExampleReferenceImpl implements _ExampleReference {
   @override
   final String title;
   @override
+  @YearToStringConverter()
   final String year;
   @override
   final String medium;
@@ -5590,7 +8252,7 @@ class _$ExampleReferenceImpl implements _ExampleReference {
 abstract class _ExampleReference implements ExampleReference {
   const factory _ExampleReference({
     required final String title,
-    required final String year,
+    @YearToStringConverter() required final String year,
     required final String medium,
   }) = _$ExampleReferenceImpl;
 
@@ -5600,6 +8262,7 @@ abstract class _ExampleReference implements ExampleReference {
   @override
   String get title;
   @override
+  @YearToStringConverter()
   String get year;
   @override
   String get medium;
