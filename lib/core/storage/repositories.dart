@@ -5,6 +5,7 @@ import '../models/character.dart' as models;
 import '../models/assessment_answer.dart' as models;
 import '../models/generated_output.dart';
 import '../models/user_profile.dart';
+import '../models/relationship.dart';
 import '../api/api_client.dart' show ApiClient, CharacterValidationException;
 import '../utils/fixture_loader.dart';
 import '../utils/constants.dart';
@@ -301,6 +302,217 @@ class OutputRepository extends StateNotifier<AsyncValue<GeneratedOutput?>> {
           print('✅ Output updated and cached');
         } catch (e, stack) {
           print('❌ Regeneration error: $e');
+          state = AsyncValue.error(e, stack);
+        }
+      },
+    );
+  }
+}
+
+// ============================================================================
+// RELATIONSHIP REPOSITORY (Independent from Me)
+// ============================================================================
+
+final relationshipRepositoryProvider = StateNotifierProvider<RelationshipRepository, AsyncValue<RelationshipCharacterSet?>>((ref) {
+  return RelationshipRepository(ref);
+});
+
+class RelationshipRepository extends StateNotifier<AsyncValue<RelationshipCharacterSet?>> {
+  final Ref ref;
+
+  RelationshipRepository(this.ref) : super(const AsyncValue.loading()) {
+    _loadRelationship();
+  }
+
+  Future<void> _loadRelationship() async {
+    try {
+      final db = ref.read(appDatabaseProvider);
+      final relationship = await db.loadRelationship();
+      state = AsyncValue.data(relationship);
+    } catch (e, stack) {
+      state = AsyncValue.error(e, stack);
+    }
+  }
+
+  Future<void> saveRelationship({
+    required bool enabled,
+    required String relationshipType,
+    required List<models.Character> otherCharacters,
+  }) async {
+    final relationship = RelationshipCharacterSet(
+      userId: 'default-user',
+      enabled: enabled,
+      relationshipType: relationshipType,
+      otherLabel: relationshipType == 'romantic' ? 'partner' : 'friend',
+      characters: otherCharacters,
+      rawInputs: otherCharacters.map((c) => c.displayName).toList(),
+      updatedAt: DateTime.now(),
+    );
+    
+    final db = ref.read(appDatabaseProvider);
+    await db.saveRelationship(relationship);
+    
+    state = AsyncValue.data(relationship);
+    
+    // Save to backend
+    final apiClient = ref.read(apiClientProvider);
+    if (!apiClient.useMock) {
+      try {
+        print('💾 Saving relationship characters to backend...');
+        await apiClient.saveRelationshipSet(relationship);
+        print('✅ Relationship saved to backend successfully');
+      } catch (e) {
+        print('❌ Failed to save relationship on backend: $e');
+      }
+    }
+    
+    // Trigger relationship output generation
+    ref.read(relationshipOutputRepositoryProvider.notifier).regenerate();
+  }
+
+  Future<void> disableRelationship() async {
+    final current = state.valueOrNull;
+    if (current == null) return;
+    
+    final disabled = current.copyWith(enabled: false);
+    
+    final db = ref.read(appDatabaseProvider);
+    await db.saveRelationship(disabled);
+    
+    state = AsyncValue.data(disabled);
+    
+    // Clear relationship output
+    ref.read(relationshipOutputRepositoryProvider.notifier).clearCache();
+  }
+
+  Future<void> updateRelationshipType(String type) async {
+    final current = state.valueOrNull;
+    if (current == null) return;
+    
+    final updated = current.copyWith(
+      relationshipType: type,
+      otherLabel: type == 'romantic' ? 'partner' : 'friend',
+      updatedAt: DateTime.now(),
+    );
+    
+    final db = ref.read(appDatabaseProvider);
+    await db.saveRelationship(updated);
+    
+    state = AsyncValue.data(updated);
+    
+    // Trigger regeneration with new type
+    ref.read(relationshipOutputRepositoryProvider.notifier).regenerate();
+  }
+}
+
+// ============================================================================
+// RELATIONSHIP OUTPUT REPOSITORY (Independent from Me Output)
+// ============================================================================
+
+final relationshipOutputRepositoryProvider = StateNotifierProvider<RelationshipOutputRepository, AsyncValue<RelationshipOutput?>>((ref) {
+  return RelationshipOutputRepository(ref);
+});
+
+class RelationshipOutputRepository extends StateNotifier<AsyncValue<RelationshipOutput?>> {
+  final Ref ref;
+  Timer? _regenerationTimer;
+
+  RelationshipOutputRepository(this.ref) : super(const AsyncValue.loading()) {
+    _loadOutput();
+  }
+
+  Future<void> _loadOutput() async {
+    try {
+      final relationshipAsync = ref.read(relationshipRepositoryProvider);
+      final relationship = relationshipAsync.valueOrNull;
+      final apiClient = ref.read(apiClientProvider);
+      
+      print('📥 [Relationship] _loadOutput: enabled=${relationship?.enabled}, characters=${relationship?.characters.length}');
+      
+      // Only load if relationship is enabled and has enough characters
+      if (relationship == null || 
+          !relationship.enabled || 
+          relationship.characters.length < AppConstants.minRelationshipCharacterCount) {
+        print('ℹ️ [Relationship] Not enabled or insufficient characters');
+        state = const AsyncValue.data(null);
+        return;
+      }
+      
+      // Load from backend
+      if (!apiClient.useMock) {
+        print('🌐 [Relationship] Attempting to load from backend...');
+        try {
+          final cached = await apiClient.getRelationshipOutput();
+          if (cached != null) {
+            print('✅ [Relationship] Found cached output on backend');
+            state = AsyncValue.data(cached);
+            return;
+          }
+          
+          // Generate new output
+          print('🔄 [Relationship] No cached output, generating...');
+          final output = await apiClient.generateRelationshipOutput(force: false);
+          print('✅ [Relationship] Generated output from backend');
+          state = AsyncValue.data(output);
+          return;
+        } catch (e, stack) {
+          print('❌ [Relationship] Backend error: $e');
+          state = AsyncValue.error(e, stack);
+          return;
+        }
+      }
+      
+      print('ℹ️ [Relationship] No output available');
+      state = const AsyncValue.data(null);
+    } catch (e, stack) {
+      print('❌ [Relationship] Error in _loadOutput: $e');
+      state = AsyncValue.error(e, stack);
+    }
+  }
+
+  void clearCache() {
+    state = const AsyncValue.loading();
+  }
+
+  void regenerate() {
+    _regenerationTimer?.cancel();
+    _regenerationTimer = Timer(
+      const Duration(milliseconds: AppConstants.regenerationDebounceMs),
+      () async {
+        try {
+          state = const AsyncValue.loading();
+          
+          final relationshipAsync = ref.read(relationshipRepositoryProvider);
+          final relationship = relationshipAsync.valueOrNull;
+          
+          if (relationship == null || 
+              !relationship.enabled ||
+              relationship.characters.length < AppConstants.minRelationshipCharacterCount) {
+            state = const AsyncValue.data(null);
+            return;
+          }
+          
+          final apiClient = ref.read(apiClientProvider);
+          
+          if (!apiClient.useMock) {
+            try {
+              print('🔄 [Relationship] Generating output...');
+              final output = await apiClient.generateRelationshipOutput(force: true);
+              print('✅ [Relationship] Backend generated output successfully');
+              state = AsyncValue.data(output);
+            } catch (e, stack) {
+              print('❌ [Relationship] Backend generation failed: $e');
+              state = AsyncValue.error(e, stack);
+              return;
+            }
+          } else {
+            // Mock mode - return null for now
+            state = const AsyncValue.data(null);
+          }
+          
+          print('✅ [Relationship] Output updated');
+        } catch (e, stack) {
+          print('❌ [Relationship] Regeneration error: $e');
           state = AsyncValue.error(e, stack);
         }
       },

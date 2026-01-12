@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'me/me_tab.dart';
+import 'relationship/relationship_tab.dart';
 import '../../features/assessment/assessment_tab.dart';
+import '../../core/storage/repositories.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -13,13 +15,60 @@ class HomeScreen extends ConsumerStatefulWidget {
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   int _currentIndex = 0;
 
-  final List<Widget> _tabs = const [
-    MeTab(),
-    AssessmentTab(),
-  ];
-
   @override
   Widget build(BuildContext context) {
+    final relationshipAsync = ref.watch(relationshipRepositoryProvider);
+    final isRelationshipEnabled = relationshipAsync.valueOrNull?.enabled ?? false;
+    
+    final tabs = <Widget>[
+      const MeTab(),
+      if (isRelationshipEnabled) const RelationshipTab(),
+      const AssessmentTab(),
+    ];
+    
+    final destinations = <NavigationDestination>[
+      const NavigationDestination(
+        icon: Icon(Icons.person_outline),
+        selectedIcon: Icon(Icons.person),
+        label: 'Me',
+      ),
+      if (isRelationshipEnabled)
+        const NavigationDestination(
+          icon: Icon(Icons.people_outline),
+          selectedIcon: Icon(Icons.people),
+          label: 'Relations',
+        ),
+      const NavigationDestination(
+        icon: Icon(Icons.quiz_outlined),
+        selectedIcon: Icon(Icons.quiz),
+        label: 'Assessments',
+      ),
+    ];
+    
+    final railDestinations = <NavigationRailDestination>[
+      const NavigationRailDestination(
+        icon: Icon(Icons.person_outline),
+        selectedIcon: Icon(Icons.person),
+        label: Text('Me'),
+      ),
+      if (isRelationshipEnabled)
+        const NavigationRailDestination(
+          icon: Icon(Icons.people_outline),
+          selectedIcon: Icon(Icons.people),
+          label: Text('Relations'),
+        ),
+      const NavigationRailDestination(
+        icon: Icon(Icons.quiz_outlined),
+        selectedIcon: Icon(Icons.quiz),
+        label: Text('Assessments'),
+      ),
+    ];
+    
+    // Ensure current index is valid
+    if (_currentIndex >= tabs.length) {
+      _currentIndex = 0;
+    }
+    
     final isWeb = MediaQuery.of(context).size.width > 600;
 
     if (isWeb) {
@@ -42,22 +91,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   color: Theme.of(context).colorScheme.primary,
                 ),
               ),
-              destinations: const [
-                NavigationRailDestination(
-                  icon: Icon(Icons.person_outline),
-                  selectedIcon: Icon(Icons.person),
-                  label: Text('Me'),
-                ),
-                NavigationRailDestination(
-                  icon: Icon(Icons.quiz_outlined),
-                  selectedIcon: Icon(Icons.quiz),
-                  label: Text('Assessments'),
-                ),
-              ],
+              destinations: railDestinations,
             ),
             const VerticalDivider(thickness: 1, width: 1),
             Expanded(
-              child: _tabs[_currentIndex],
+              child: tabs[_currentIndex],
             ),
           ],
         ),
@@ -65,7 +103,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }
 
     return Scaffold(
-      body: _tabs[_currentIndex],
+      body: tabs[_currentIndex],
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,
         onDestinationSelected: (index) {
@@ -73,18 +111,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             _currentIndex = index;
           });
         },
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.person_outline),
-            selectedIcon: Icon(Icons.person),
-            label: 'Me',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.quiz_outlined),
-            selectedIcon: Icon(Icons.quiz),
-            label: 'Assessments',
-          ),
-        ],
+        destinations: destinations,
       ),
     );
   }

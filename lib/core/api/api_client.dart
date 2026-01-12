@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import '../models/character.dart';
 import '../models/assessment_answer.dart';
 import '../models/generated_output.dart';
+import '../models/relationship.dart';
 
 class ApiClient {
   final Dio _dio;
@@ -121,6 +122,79 @@ class ApiClient {
       return List<Map<String, dynamic>>.from(response.data['questions'] ?? []);
     } on DioException catch (e) {
       print('Failed to fetch assessment questions: ${e.message}');
+      rethrow;
+    }
+  }
+
+  // ============================================================================
+  // RELATIONSHIP API (Independent from Me)
+  // ============================================================================
+
+  /// Save relationship character set
+  Future<void> saveRelationshipSet(RelationshipCharacterSet relationship) async {
+    if (useMock) {
+      await Future.delayed(const Duration(milliseconds: 500));
+      return;
+    }
+    
+    print('Calling POST /v1/relationship/set');
+    try {
+      await _dio.post('/v1/relationship/set', data: {
+        'enabled': relationship.enabled,
+        'relationshipType': relationship.relationshipType,
+        'otherCharacterInputs': relationship.characters.map((c) => c.displayName).toList(),
+      });
+      print('Relationship set saved successfully');
+    } on DioException catch (e) {
+      print('Failed to save relationship set: ${e.message}');
+      rethrow;
+    }
+  }
+
+  /// Get cached relationship output
+  Future<RelationshipOutput?> getRelationshipOutput() async {
+    if (useMock) {
+      return null;
+    }
+    
+    try {
+      final response = await _dio.get('/v1/relationship/output');
+      return RelationshipOutput.fromJson(response.data);
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 404) {
+        return null;
+      }
+      rethrow;
+    }
+  }
+
+  /// Generate relationship output
+  Future<RelationshipOutput> generateRelationshipOutput({bool force = false}) async {
+    if (useMock) {
+      await Future.delayed(const Duration(milliseconds: 1500));
+      throw UnimplementedError('Mock generation for relationships');
+    }
+    
+    print('Calling POST /v1/relationship/regenerate with force=$force');
+    try {
+      final response = await _dio.post('/v1/relationship/regenerate', data: {'force': force});
+      print('Relationship output generated: ${response.statusCode}');
+      return RelationshipOutput.fromJson(response.data);
+    } on DioException catch (e) {
+      print('DioException: ${e.message}');
+      print('Response: ${e.response?.data}');
+      
+      // Handle validation errors
+      if (e.response?.statusCode == 400) {
+        final errorData = e.response?.data;
+        if (errorData is Map) {
+          final userMessage = errorData['userMessage'] as String?;
+          if (userMessage != null) {
+            throw CharacterValidationException(userMessage);
+          }
+        }
+      }
+      
       rethrow;
     }
   }
