@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/storage/repositories.dart';
 import '../../../core/models/relationship.dart';
 import '../../../core/utils/constants.dart';
+import '../../../app/theme/app_theme.dart';
 
 class RelationshipTab extends ConsumerStatefulWidget {
   const RelationshipTab({super.key});
@@ -16,23 +18,23 @@ class _RelationshipTabState extends ConsumerState<RelationshipTab>
   late TabController _tabController;
   String _selectedType = AppConstants.relationshipTypePlatonic;
 
-  final List<_ModuleInfo> _modules = const [
-    _ModuleInfo('Myth', Icons.auto_stories, 'myth'),
-    _ModuleInfo('Field', Icons.blur_on, 'relationalField'),
-    _ModuleInfo('Bonding', Icons.favorite, 'attractionBonding'),
-    _ModuleInfo('Shadow', Icons.contrast, 'projectionShadow'),
-    _ModuleInfo('Masks', Icons.masks, 'egoPersonaMismatch'),
-    _ModuleInfo('Conflict', Icons.message, 'communicationConflict'),
-    _ModuleInfo('Needs', Icons.lock, 'needsBoundaries'),
-    _ModuleInfo('Growth', Icons.trending_up, 'growthPath'),
-    _ModuleInfo('Flags', Icons.flag, 'redFlagsRepair'),
-    _ModuleInfo('Next', Icons.directions, 'nextSteps'),
+  final List<_TabItem> _tabItems = const [
+    _TabItem(title: 'Myth', icon: Icons.auto_stories),
+    _TabItem(title: 'Field', icon: Icons.blur_on),
+    _TabItem(title: 'Bonding', icon: Icons.favorite),
+    _TabItem(title: 'Shadow', icon: Icons.contrast),
+    _TabItem(title: 'Masks', icon: Icons.masks),
+    _TabItem(title: 'Conflict', icon: Icons.forum),
+    _TabItem(title: 'Needs', icon: Icons.lock_open),
+    _TabItem(title: 'Growth', icon: Icons.trending_up),
+    _TabItem(title: 'Flags', icon: Icons.flag),
+    _TabItem(title: 'Next', icon: Icons.directions),
   ];
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: _modules.length, vsync: this);
+    _tabController = TabController(length: _tabItems.length, vsync: this);
   }
 
   @override
@@ -48,14 +50,19 @@ class _RelationshipTabState extends ConsumerState<RelationshipTab>
     }
   }
 
+  Color get _accentColor => _selectedType == AppConstants.relationshipTypeRomantic
+      ? const Color(0xFFE91E63)
+      : const Color(0xFF2196F3);
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final relationshipAsync = ref.watch(relationshipRepositoryProvider);
     final outputAsync = ref.watch(relationshipOutputRepositoryProvider);
 
     return relationshipAsync.when(
-      loading: () => _buildLoadingStructure(context, null),
+      loading: () => _buildScaffold(context, isDark, null, true),
       error: (e, _) => _buildErrorState(context, e.toString()),
       data: (relationship) {
         if (relationship == null || !relationship.enabled) {
@@ -65,176 +72,210 @@ class _RelationshipTabState extends ConsumerState<RelationshipTab>
         _selectedType = relationship.relationshipType;
 
         return outputAsync.when(
-          loading: () => _buildLoadingStructure(context, relationship),
-          error: (e, _) => _buildErrorState(context, e.toString()),
-          data: (output) {
-            if (output == null) {
-              return _buildLoadingStructure(context, relationship);
-            }
-            return _buildContent(context, relationship, output);
-          },
+          loading: () => _buildScaffold(context, isDark, null, true),
+          error: (e, _) => _buildScaffold(context, isDark, null, false, error: e.toString()),
+          data: (output) => _buildScaffold(context, isDark, output, false),
         );
       },
     );
   }
 
-  /// Progressive loading - shows the structure while content is loading
-  Widget _buildLoadingStructure(BuildContext context, RelationshipCharacterSet? relationship) {
+  Widget _buildScaffold(BuildContext context, bool isDark, RelationshipOutput? output, bool isLoading, {String? error}) {
     final theme = Theme.of(context);
-    final isRomantic = _selectedType == AppConstants.relationshipTypeRomantic;
-    final accentColor = isRomantic ? const Color(0xFFE91E63) : const Color(0xFF2196F3);
-
-    return NestedScrollView(
-      headerSliverBuilder: (context, innerBoxIsScrolled) {
-        return [
-          SliverAppBar(
-            title: Text(
-              isRomantic ? 'Romantic Relationship' : 'Friendship',
-              style: TextStyle(color: accentColor),
-            ),
-            floating: true,
-            snap: true,
-            backgroundColor: theme.scaffoldBackgroundColor,
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.refresh),
-                tooltip: 'Regenerate',
-                onPressed: () {
-                  ref.read(relationshipOutputRepositoryProvider.notifier).regenerate();
-                },
-              ),
-            ],
-            bottom: PreferredSize(
-              preferredSize: const Size.fromHeight(100),
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    child: _buildTypeSelector(context, accentColor),
-                  ),
-                  TabBar(
-                    controller: _tabController,
-                    isScrollable: true,
-                    labelColor: accentColor,
-                    unselectedLabelColor: theme.colorScheme.onSurfaceVariant,
-                    indicatorColor: accentColor,
-                    tabs: _modules.map((m) => Tab(
-                      icon: Icon(m.icon, size: 20),
-                      text: m.label,
-                    )).toList(),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ];
-      },
-      body: Column(
-        children: [
-          _buildDisclaimer(context),
-          // Loading indicator
-          Expanded(
-            child: Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SizedBox(
-                    width: 60,
-                    height: 60,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 3,
-                      color: accentColor,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  Text(
-                    'Analyzing relationship dynamics...',
-                    style: theme.textTheme.titleMedium,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    relationship != null 
-                        ? 'Processing ${relationship.characters.length} characters'
-                        : 'Loading relationship data',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  const SizedBox(height: 32),
-                  // Progress hints
-                  _buildProgressHint(context, 'Recognizing characters', true),
-                  _buildProgressHint(context, 'Discovering profiles', true),
-                  _buildProgressHint(context, 'Building relationship model', false),
-                  _buildProgressHint(context, 'Generating narrative', false),
-                  _buildProgressHint(context, 'Creating examples', false),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildProgressHint(BuildContext context, String text, bool complete) {
-    final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            complete ? Icons.check_circle : Icons.radio_button_unchecked,
-            size: 16,
-            color: complete ? Colors.green : theme.colorScheme.outline,
-          ),
-          const SizedBox(width: 8),
-          Text(
-            text,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: complete ? Colors.green : theme.colorScheme.outline,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildNotEnabledState(BuildContext context) {
-    final theme = Theme.of(context);
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
+    
+    return Scaffold(
+      appBar: AppBar(
+        title: Row(
           children: [
-            Icon(
-              Icons.people_outline,
-              size: 80,
-              color: theme.colorScheme.outline,
-            ),
-            const SizedBox(height: 24),
-            Text(
-              'Relationship Not Enabled',
-              style: theme.textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.w600,
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [_accentColor, _accentColor.withOpacity(0.7)],
+                ),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(
+                _selectedType == AppConstants.relationshipTypeRomantic
+                    ? Icons.favorite
+                    : Icons.people,
+                color: Colors.white,
+                size: 20,
               ),
             ),
-            const SizedBox(height: 12),
-            Text(
-              'Add partner or friend characters on the character entry screen to explore relationship dynamics.',
-              textAlign: TextAlign.center,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
+            const SizedBox(width: 12),
+            Text(_selectedType == AppConstants.relationshipTypeRomantic
+                ? 'Romantic Bond'
+                : 'Friendship Bond'),
           ],
         ),
+        actions: [
+          // Type switcher popup
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.swap_horiz),
+            tooltip: 'Change Type',
+            onSelected: _changeRelationshipType,
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                value: AppConstants.relationshipTypeRomantic,
+                child: Row(
+                  children: [
+                    Icon(Icons.favorite, 
+                      color: _selectedType == AppConstants.relationshipTypeRomantic 
+                          ? const Color(0xFFE91E63) : null,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 8),
+                    const Text('Romantic'),
+                  ],
+                ),
+              ),
+              PopupMenuItem(
+                value: AppConstants.relationshipTypePlatonic,
+                child: Row(
+                  children: [
+                    Icon(Icons.people,
+                      color: _selectedType == AppConstants.relationshipTypePlatonic
+                          ? const Color(0xFF2196F3) : null,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 8),
+                    const Text('Platonic'),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          IconButton(
+            icon: const Icon(Icons.edit_outlined),
+            tooltip: 'Edit Characters',
+            onPressed: () {
+              context.push('/characters');
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            tooltip: 'Regenerate',
+            onPressed: () {
+              ref.read(relationshipOutputRepositoryProvider.notifier).regenerate();
+            },
+          ),
+        ],
+        bottom: TabBar(
+          controller: _tabController,
+          isScrollable: true,
+          tabAlignment: TabAlignment.start,
+          indicatorSize: TabBarIndicatorSize.label,
+          dividerColor: Colors.transparent,
+          labelColor: _accentColor,
+          unselectedLabelColor: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
+          indicatorColor: _accentColor,
+          tabs: _tabItems.map((item) => Tab(
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(item.icon, size: 18),
+                const SizedBox(width: 6),
+                Text(item.title),
+              ],
+            ),
+          )).toList(),
+        ),
+      ),
+      body: Column(
+        children: [
+          // Disclaimer banner
+          _buildDisclaimer(context),
+          // Content
+          Expanded(
+            child: error != null
+                ? _buildErrorContent(context, error)
+                : isLoading
+                    ? _buildLoadingContent(context)
+                    : output == null
+                        ? _buildLoadingContent(context)
+                        : TabBarView(
+                            controller: _tabController,
+                            children: [
+                              _RelationshipMythTab(output: output, accentColor: _accentColor),
+                              _RelationshipModuleTab(output: output, moduleKey: 'relationalField', title: 'Relational Field', accentColor: _accentColor),
+                              _RelationshipModuleTab(output: output, moduleKey: 'attractionBonding', title: 'Attraction & Bonding', accentColor: _accentColor),
+                              _RelationshipModuleTab(output: output, moduleKey: 'projectionShadow', title: 'Projection & Shadow', accentColor: _accentColor),
+                              _RelationshipModuleTab(output: output, moduleKey: 'egoPersonaMismatch', title: 'Ego-Persona', accentColor: _accentColor),
+                              _RelationshipModuleTab(output: output, moduleKey: 'communicationConflict', title: 'Communication', accentColor: _accentColor),
+                              _RelationshipModuleTab(output: output, moduleKey: 'needsBoundaries', title: 'Needs & Boundaries', accentColor: _accentColor),
+                              _RelationshipModuleTab(output: output, moduleKey: 'growthPath', title: 'Growth Path', accentColor: _accentColor),
+                              _RelationshipModuleTab(output: output, moduleKey: 'redFlagsRepair', title: 'Red Flags & Repair', accentColor: _accentColor),
+                              _RelationshipNextStepsTab(output: output, accentColor: _accentColor),
+                            ],
+                          ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildErrorState(BuildContext context, String error) {
+  Widget _buildDisclaimer(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: Colors.amber.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.amber.withOpacity(0.3)),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.info_outline, color: Colors.amber.shade700, size: 18),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              'Based on your perception. Accuracy improves if they make their own profile.',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: Colors.amber.shade800,
+                fontSize: 11,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLoadingContent(BuildContext context) {
+    final theme = Theme.of(context);
+    
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(
+            width: 50,
+            height: 50,
+            child: CircularProgressIndicator(
+              strokeWidth: 3,
+              color: _accentColor,
+            ),
+          ),
+          const SizedBox(height: 20),
+          Text(
+            'Analyzing relationship dynamics...',
+            style: theme.textTheme.titleMedium,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'This may take a moment',
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildErrorContent(BuildContext context, String error) {
     final theme = Theme.of(context);
     return Center(
       child: Padding(
@@ -242,29 +283,14 @@ class _RelationshipTabState extends ConsumerState<RelationshipTab>
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              Icons.error_outline,
-              size: 64,
-              color: theme.colorScheme.error,
-            ),
+            Icon(Icons.error_outline, size: 48, color: theme.colorScheme.error),
             const SizedBox(height: 16),
-            Text(
-              'Error loading relationship',
-              style: theme.textTheme.titleLarge,
-            ),
+            Text('Error', style: theme.textTheme.titleLarge),
             const SizedBox(height: 8),
-            Text(
-              error,
-              textAlign: TextAlign.center,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.error,
-              ),
-            ),
+            Text(error, textAlign: TextAlign.center, style: TextStyle(color: theme.colorScheme.error)),
             const SizedBox(height: 24),
             ElevatedButton.icon(
-              onPressed: () {
-                ref.read(relationshipOutputRepositoryProvider.notifier).regenerate();
-              },
+              onPressed: () => ref.read(relationshipOutputRepositoryProvider.notifier).regenerate(),
               icon: const Icon(Icons.refresh),
               label: const Text('Retry'),
             ),
@@ -274,138 +300,33 @@ class _RelationshipTabState extends ConsumerState<RelationshipTab>
     );
   }
 
-  Widget _buildContent(
-    BuildContext context,
-    RelationshipCharacterSet relationship,
-    RelationshipOutput output,
-  ) {
+  Widget _buildNotEnabledState(BuildContext context) {
     final theme = Theme.of(context);
-    final isRomantic = _selectedType == AppConstants.relationshipTypeRomantic;
-    final accentColor = isRomantic ? const Color(0xFFE91E63) : const Color(0xFF2196F3);
-
-    return NestedScrollView(
-      headerSliverBuilder: (context, innerBoxIsScrolled) {
-        return [
-          SliverAppBar(
-            title: Text(
-              isRomantic ? 'Romantic Relationship' : 'Friendship',
-              style: TextStyle(color: accentColor),
-            ),
-            floating: true,
-            snap: true,
-            backgroundColor: theme.scaffoldBackgroundColor,
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.refresh),
-                tooltip: 'Regenerate',
-                onPressed: () {
-                  ref.read(relationshipOutputRepositoryProvider.notifier).regenerate();
-                },
-              ),
-            ],
-            bottom: PreferredSize(
-              preferredSize: const Size.fromHeight(100),
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    child: _buildTypeSelector(context, accentColor),
-                  ),
-                  TabBar(
-                    controller: _tabController,
-                    isScrollable: true,
-                    labelColor: accentColor,
-                    unselectedLabelColor: theme.colorScheme.onSurfaceVariant,
-                    indicatorColor: accentColor,
-                    tabs: _modules.map((m) => Tab(
-                      icon: Icon(m.icon, size: 20),
-                      text: m.label,
-                    )).toList(),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ];
-      },
-      body: Column(
-        children: [
-          _buildDisclaimer(context),
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: _modules.map((module) {
-                return _buildModuleContent(context, output, module.key);
-              }).toList(),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTypeSelector(BuildContext context, Color accentColor) {
-    return Row(
-      children: [
-        Expanded(
-          child: _buildTypeButton(
-            context,
-            type: AppConstants.relationshipTypeRomantic,
-            label: 'Romantic',
-            icon: Icons.favorite,
-            color: const Color(0xFFE91E63),
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: _buildTypeButton(
-            context,
-            type: AppConstants.relationshipTypePlatonic,
-            label: 'Platonic',
-            icon: Icons.people,
-            color: const Color(0xFF2196F3),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildTypeButton(
-    BuildContext context, {
-    required String type,
-    required String label,
-    required IconData icon,
-    required Color color,
-  }) {
-    final theme = Theme.of(context);
-    final isSelected = _selectedType == type;
-
-    return Material(
-      color: isSelected ? color.withOpacity(0.15) : Colors.transparent,
-      borderRadius: BorderRadius.circular(12),
-      child: InkWell(
-        onTap: () => _changeRelationshipType(type),
-        borderRadius: BorderRadius.circular(12),
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: isSelected ? color : theme.colorScheme.outline.withOpacity(0.3),
-              width: isSelected ? 2 : 1,
-            ),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+    return Scaffold(
+      appBar: AppBar(title: const Text('Relationship')),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, color: isSelected ? color : Colors.grey, size: 20),
-              const SizedBox(width: 8),
+              Icon(Icons.people_outline, size: 80, color: theme.colorScheme.outline),
+              const SizedBox(height: 24),
               Text(
-                label,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: isSelected ? color : theme.colorScheme.onSurface,
-                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                ),
+                'Relationship Not Enabled',
+                style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Add partner or friend characters on the character entry screen to explore relationship dynamics.',
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+              ),
+              const SizedBox(height: 24),
+              ElevatedButton.icon(
+                onPressed: () => context.push('/characters'),
+                icon: const Icon(Icons.add),
+                label: const Text('Add Characters'),
               ),
             ],
           ),
@@ -414,201 +335,502 @@ class _RelationshipTabState extends ConsumerState<RelationshipTab>
     );
   }
 
-  Widget _buildDisclaimer(BuildContext context) {
+  Widget _buildErrorState(BuildContext context, String error) {
     final theme = Theme.of(context);
-    return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.amber.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.amber.withOpacity(0.3)),
-      ),
-      child: Row(
-        children: [
-          Icon(Icons.info_outline, color: Colors.amber.shade700, size: 20),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              'Based on your perception of them. Accuracy improves if they make their own profile.',
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: Colors.amber.shade800,
+    return Scaffold(
+      appBar: AppBar(title: const Text('Relationship')),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.error_outline, size: 64, color: theme.colorScheme.error),
+              const SizedBox(height: 16),
+              Text('Error loading relationship', style: theme.textTheme.titleLarge),
+              const SizedBox(height: 8),
+              Text(error, textAlign: TextAlign.center, style: TextStyle(color: theme.colorScheme.error)),
+              const SizedBox(height: 24),
+              ElevatedButton.icon(
+                onPressed: () => ref.read(relationshipOutputRepositoryProvider.notifier).regenerate(),
+                icon: const Icon(Icons.refresh),
+                label: const Text('Retry'),
               ),
-            ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
+}
 
-  Widget _buildModuleContent(
-    BuildContext context,
-    RelationshipOutput output,
-    String moduleKey,
-  ) {
-    switch (moduleKey) {
-      case 'myth':
-        return _buildMythModule(context, output.myth, output.examples);
-      case 'relationalField':
-        return _buildNarrativeModule(context, output.narrative?.relationalField, 'Relational Field', output.examples?.relationalField);
-      case 'attractionBonding':
-        return _buildNarrativeModule(context, output.narrative?.attractionBonding, 'Attraction & Bonding', output.examples?.attractionBonding);
-      case 'projectionShadow':
-        return _buildNarrativeModule(context, output.narrative?.projectionShadow, 'Projection & Shadow', output.examples?.projectionShadow);
-      case 'egoPersonaMismatch':
-        return _buildNarrativeModule(context, output.narrative?.egoPersonaMismatch, 'Ego-Persona Mismatch', output.examples?.egoPersonaMismatch);
-      case 'communicationConflict':
-        return _buildNarrativeModule(context, output.narrative?.communicationConflict, 'Communication & Conflict', output.examples?.communicationConflict);
-      case 'needsBoundaries':
-        return _buildNarrativeModule(context, output.narrative?.needsBoundaries, 'Needs & Boundaries', output.examples?.needsBoundaries);
-      case 'growthPath':
-        return _buildNarrativeModule(context, output.narrative?.growthPath, 'Growth Path', output.examples?.growthPath);
-      case 'redFlagsRepair':
-        return _buildNarrativeModule(context, output.narrative?.redFlagsRepair, 'Red Flags & Repair', output.examples?.redFlagsRepair);
-      case 'nextSteps':
-        return _buildNextStepsModule(context, output.narrative?.nextSteps, output.examples?.nextSteps);
-      default:
-        return Center(child: Text('Module: $moduleKey'));
+class _TabItem {
+  final String title;
+  final IconData icon;
+  const _TabItem({required this.title, required this.icon});
+}
+
+// ============================================================================
+// MYTH TAB
+// ============================================================================
+
+class _RelationshipMythTab extends StatefulWidget {
+  final RelationshipOutput output;
+  final Color accentColor;
+
+  const _RelationshipMythTab({required this.output, required this.accentColor});
+
+  @override
+  State<_RelationshipMythTab> createState() => _RelationshipMythTabState();
+}
+
+class _RelationshipMythTabState extends State<_RelationshipMythTab> {
+  final Set<int> _revealedSections = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _startProgressiveReveal();
+  }
+
+  void _startProgressiveReveal() {
+    for (int i = 0; i < 4; i++) {
+      Future.delayed(Duration(milliseconds: 150 * i), () {
+        if (mounted) setState(() => _revealedSections.add(i));
+      });
     }
   }
 
-  Widget _buildMythModule(BuildContext context, RelationshipMyth? myth, RelationshipExamples? examples) {
+  @override
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final myth = widget.output.myth;
 
     if (myth == null) {
       return const Center(child: Text('No myth data available'));
     }
 
-    return SingleChildScrollView(
+    return ListView(
       padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (myth.title != null) ...[
-            Text(
-              myth.title!,
-              style: theme.textTheme.headlineMedium?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            const SizedBox(height: 16),
-          ],
-          if (myth.summary != null) ...[
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: theme.colorScheme.primaryContainer.withOpacity(0.3),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Text(
-                myth.summary!,
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  fontStyle: FontStyle.italic,
-                ),
-              ),
-            ),
-            const SizedBox(height: 24),
-          ],
-          if (myth.story != null) ...[
-            Text(
-              myth.story!,
-              style: theme.textTheme.bodyMedium?.copyWith(height: 1.7),
-            ),
-            const SizedBox(height: 24),
-          ],
-          if (myth.themes.isNotEmpty) ...[
-            Text(
-              'Themes',
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: myth.themes.map((t) => Chip(label: Text(t))).toList(),
-            ),
-          ],
-        ],
+      children: [
+        // Title card
+        _buildAnimatedCard(
+          0,
+          _buildSectionCard(
+            context,
+            title: myth.title ?? 'Your Relationship Myth',
+            content: myth.summary ?? '',
+            icon: Icons.auto_stories,
+            accentColor: widget.accentColor,
+            isHighlighted: true,
+          ),
+        ),
+        const SizedBox(height: 12),
+        // Story card
+        _buildAnimatedCard(
+          1,
+          _buildSectionCard(
+            context,
+            title: 'The Story',
+            content: myth.story ?? '',
+            icon: Icons.menu_book,
+            accentColor: const Color(0xFF8B5CF6),
+          ),
+        ),
+        const SizedBox(height: 12),
+        // Themes card
+        if (myth.themes.isNotEmpty)
+          _buildAnimatedCard(
+            2,
+            _buildThemesCard(context, myth.themes),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildAnimatedCard(int index, Widget child) {
+    final isRevealed = _revealedSections.contains(index);
+    return AnimatedOpacity(
+      duration: const Duration(milliseconds: 400),
+      opacity: isRevealed ? 1.0 : 0.3,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 400),
+        transform: Matrix4.translationValues(isRevealed ? 0 : 20, 0, 0),
+        child: child,
       ),
     );
   }
 
-  Widget _buildNarrativeModule(
-    BuildContext context,
-    ModuleNarrative? narrative,
-    String title,
-    List<RelationshipExampleRef>? examples,
-  ) {
+  Widget _buildSectionCard(
+    BuildContext context, {
+    required String title,
+    required String content,
+    required IconData icon,
+    required Color accentColor,
+    bool isHighlighted = false,
+  }) {
     final theme = Theme.of(context);
+    
+    return Card(
+      elevation: isHighlighted ? 4 : 1,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: isHighlighted
+            ? BorderSide(color: accentColor.withOpacity(0.3), width: 1.5)
+            : BorderSide.none,
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: accentColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(icon, color: accentColor, size: 20),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    title,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Text(
+              content,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                height: 1.6,
+                fontStyle: isHighlighted ? FontStyle.italic : FontStyle.normal,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildThemesCard(BuildContext context, List<String> themes) {
+    final theme = Theme.of(context);
+    
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF14B8A6).withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(Icons.tag, color: Color(0xFF14B8A6), size: 20),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  'Themes',
+                  style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: themes.map((t) => Chip(
+                label: Text(t),
+                backgroundColor: theme.colorScheme.surfaceContainerHighest,
+              )).toList(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ============================================================================
+// MODULE TAB (Generic for most modules)
+// ============================================================================
+
+class _RelationshipModuleTab extends StatefulWidget {
+  final RelationshipOutput output;
+  final String moduleKey;
+  final String title;
+  final Color accentColor;
+
+  const _RelationshipModuleTab({
+    required this.output,
+    required this.moduleKey,
+    required this.title,
+    required this.accentColor,
+  });
+
+  @override
+  State<_RelationshipModuleTab> createState() => _RelationshipModuleTabState();
+}
+
+class _RelationshipModuleTabState extends State<_RelationshipModuleTab> {
+  final Set<int> _revealedSections = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _startProgressiveReveal();
+  }
+
+  void _startProgressiveReveal() {
+    for (int i = 0; i < 5; i++) {
+      Future.delayed(Duration(milliseconds: 150 * i), () {
+        if (mounted) setState(() => _revealedSections.add(i));
+      });
+    }
+  }
+
+  ModuleNarrative? _getNarrative() {
+    final narrative = widget.output.narrative;
+    if (narrative == null) return null;
+    
+    switch (widget.moduleKey) {
+      case 'relationalField': return narrative.relationalField;
+      case 'attractionBonding': return narrative.attractionBonding;
+      case 'projectionShadow': return narrative.projectionShadow;
+      case 'egoPersonaMismatch': return narrative.egoPersonaMismatch;
+      case 'communicationConflict': return narrative.communicationConflict;
+      case 'needsBoundaries': return narrative.needsBoundaries;
+      case 'growthPath': return narrative.growthPath;
+      case 'redFlagsRepair': return narrative.redFlagsRepair;
+      default: return null;
+    }
+  }
+
+  List<RelationshipExampleRef>? _getExamples() {
+    final examples = widget.output.examples;
+    if (examples == null) return null;
+    
+    switch (widget.moduleKey) {
+      case 'relationalField': return examples.relationalField;
+      case 'attractionBonding': return examples.attractionBonding;
+      case 'projectionShadow': return examples.projectionShadow;
+      case 'egoPersonaMismatch': return examples.egoPersonaMismatch;
+      case 'communicationConflict': return examples.communicationConflict;
+      case 'needsBoundaries': return examples.needsBoundaries;
+      case 'growthPath': return examples.growthPath;
+      case 'redFlagsRepair': return examples.redFlagsRepair;
+      default: return null;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final narrative = _getNarrative();
+    final examples = _getExamples();
 
     if (narrative == null) {
-      return Center(child: Text('No $title data available'));
+      return Center(child: Text('No ${widget.title} data available'));
     }
 
-    return SingleChildScrollView(
+    return ListView(
       padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (narrative.summary != null) ...[
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: theme.colorScheme.surfaceContainerHighest,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Text(
-                narrative.summary!,
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  fontWeight: FontWeight.w500,
+      children: [
+        // Summary card
+        if (narrative.summary != null)
+          _buildAnimatedCard(0, _buildSummaryCard(context, narrative.summary!)),
+        
+        const SizedBox(height: 12),
+        
+        // Story card
+        if (narrative.story != null)
+          _buildAnimatedCard(1, _buildStoryCard(context, narrative.story!)),
+        
+        const SizedBox(height: 12),
+        
+        // Analysis bullets
+        if (narrative.analysisBullets.isNotEmpty)
+          _buildAnimatedCard(2, _buildBulletsCard(context, narrative.analysisBullets)),
+        
+        // Examples
+        if (examples != null && examples.isNotEmpty) ...[
+          const SizedBox(height: 20),
+          _buildAnimatedCard(3, _buildExamplesSection(context, examples)),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildAnimatedCard(int index, Widget child) {
+    final isRevealed = _revealedSections.contains(index);
+    return AnimatedOpacity(
+      duration: const Duration(milliseconds: 400),
+      opacity: isRevealed ? 1.0 : 0.3,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 400),
+        transform: Matrix4.translationValues(isRevealed ? 0 : 20, 0, 0),
+        child: child,
+      ),
+    );
+  }
+
+  Widget _buildSummaryCard(BuildContext context, String summary) {
+    final theme = Theme.of(context);
+    
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(color: widget.accentColor.withOpacity(0.3), width: 1.5),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: widget.accentColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(Icons.summarize, color: widget.accentColor, size: 20),
                 ),
+                const SizedBox(width: 12),
+                Text(
+                  'Summary',
+                  style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Text(
+              summary,
+              style: theme.textTheme.bodyLarge?.copyWith(
+                fontStyle: FontStyle.italic,
+                height: 1.5,
               ),
             ),
-            const SizedBox(height: 24),
           ],
-          if (narrative.story != null) ...[
-            Text(
-              narrative.story!,
-              style: theme.textTheme.bodyMedium?.copyWith(height: 1.7),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStoryCard(BuildContext context, String story) {
+    final theme = Theme.of(context);
+    
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF8B5CF6).withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(Icons.menu_book, color: Color(0xFF8B5CF6), size: 20),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  'The Narrative',
+                  style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+                ),
+              ],
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
+            Text(story, style: theme.textTheme.bodyMedium?.copyWith(height: 1.7)),
           ],
-          if (narrative.analysisBullets.isNotEmpty) ...[
-            Text(
-              'Key Points',
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBulletsCard(BuildContext context, List<String> bullets) {
+    final theme = Theme.of(context);
+    
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF14B8A6).withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(Icons.checklist, color: Color(0xFF14B8A6), size: 20),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  'Key Points',
+                  style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+                ),
+              ],
             ),
-            const SizedBox(height: 12),
-            ...narrative.analysisBullets.map((bullet) => Padding(
+            const SizedBox(height: 16),
+            ...bullets.map((bullet) => Padding(
               padding: const EdgeInsets.only(bottom: 8),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(Icons.arrow_right, size: 20, color: theme.colorScheme.primary),
+                  Icon(Icons.arrow_right, size: 20, color: widget.accentColor),
                   const SizedBox(width: 8),
-                  Expanded(child: Text(bullet)),
+                  Expanded(child: Text(bullet, style: theme.textTheme.bodyMedium)),
                 ],
               ),
             )),
-            const SizedBox(height: 24),
           ],
-          // Examples section
-          if (examples != null && examples.isNotEmpty) ...[
-            Text(
-              'Examples',
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 12),
-            ...examples.map((example) => _buildExampleCard(context, example)),
-          ],
-        ],
+        ),
       ),
+    );
+  }
+
+  Widget _buildExamplesSection(BuildContext context, List<RelationshipExampleRef> examples) {
+    final theme = Theme.of(context);
+    
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 4, bottom: 12),
+          child: Row(
+            children: [
+              Icon(Icons.movie_creation, color: widget.accentColor, size: 20),
+              const SizedBox(width: 8),
+              Text(
+                'Examples from Their Stories',
+                style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+              ),
+            ],
+          ),
+        ),
+        ...examples.map((ex) => _buildExampleCard(context, ex)),
+      ],
     );
   }
 
@@ -617,30 +839,31 @@ class _RelationshipTabState extends ConsumerState<RelationshipTab>
     
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Character and reference
+            // Header
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.primary.withOpacity(0.1),
+                    color: widget.accentColor.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
                     example.characterName ?? 'Character',
                     style: theme.textTheme.labelMedium?.copyWith(
-                      color: theme.colorScheme.primary,
+                      color: widget.accentColor,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
                 const SizedBox(width: 8),
-                if (example.reference != null) ...[
+                if (example.reference != null)
                   Expanded(
                     child: Text(
                       '${example.reference!.title ?? ''} (${example.reference!.year ?? ''})',
@@ -650,48 +873,22 @@ class _RelationshipTabState extends ConsumerState<RelationshipTab>
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                ],
-                if (example.tier != null && example.tier != 'B') ...[
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: Colors.amber.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Text(
-                      example.tier!,
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: Colors.amber.shade800,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ],
               ],
             ),
             const SizedBox(height: 12),
             // Situation
-            if (example.situation != null) ...[
-              Text(
-                example.situation!,
-                style: theme.textTheme.bodyMedium,
-              ),
-              const SizedBox(height: 8),
-            ],
+            if (example.situation != null)
+              Text(example.situation!, style: theme.textTheme.bodyMedium),
             // Actions
             if (example.actions.isNotEmpty) ...[
+              const SizedBox(height: 8),
               ...example.actions.map((action) => Padding(
                 padding: const EdgeInsets.only(bottom: 4),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('• ', style: TextStyle(color: theme.colorScheme.primary)),
-                    Expanded(
-                      child: Text(
-                        action,
-                        style: theme.textTheme.bodySmall,
-                      ),
-                    ),
+                    Text('• ', style: TextStyle(color: widget.accentColor)),
+                    Expanded(child: Text(action, style: theme.textTheme.bodySmall)),
                   ],
                 ),
               )),
@@ -700,18 +897,16 @@ class _RelationshipTabState extends ConsumerState<RelationshipTab>
             if (example.outcomeAndCost.isNotEmpty) ...[
               const SizedBox(height: 8),
               Container(
-                padding: const EdgeInsets.all(8),
+                padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: theme.colorScheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: example.outcomeAndCost.map((outcome) => Text(
-                    outcome,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      fontStyle: FontStyle.italic,
-                    ),
+                  children: example.outcomeAndCost.map((o) => Text(
+                    o,
+                    style: theme.textTheme.bodySmall?.copyWith(fontStyle: FontStyle.italic),
                   )).toList(),
                 ),
               ),
@@ -721,13 +916,45 @@ class _RelationshipTabState extends ConsumerState<RelationshipTab>
       ),
     );
   }
+}
 
-  Widget _buildNextStepsModule(
-    BuildContext context,
-    List<SituationalGuidance>? nextSteps,
-    List<RelationshipExampleRef>? examples,
-  ) {
+// ============================================================================
+// NEXT STEPS TAB
+// ============================================================================
+
+class _RelationshipNextStepsTab extends StatefulWidget {
+  final RelationshipOutput output;
+  final Color accentColor;
+
+  const _RelationshipNextStepsTab({required this.output, required this.accentColor});
+
+  @override
+  State<_RelationshipNextStepsTab> createState() => _RelationshipNextStepsTabState();
+}
+
+class _RelationshipNextStepsTabState extends State<_RelationshipNextStepsTab> {
+  final Set<int> _revealedSections = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _startProgressiveReveal();
+  }
+
+  void _startProgressiveReveal() {
+    final count = (widget.output.narrative?.nextSteps?.length ?? 0) + 1;
+    for (int i = 0; i < count; i++) {
+      Future.delayed(Duration(milliseconds: 150 * i), () {
+        if (mounted) setState(() => _revealedSections.add(i));
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final nextSteps = widget.output.narrative?.nextSteps;
+    final examples = widget.output.examples?.nextSteps;
 
     if (nextSteps == null || nextSteps.isEmpty) {
       return const Center(child: Text('No next steps available'));
@@ -739,80 +966,92 @@ class _RelationshipTabState extends ConsumerState<RelationshipTab>
       itemBuilder: (context, index) {
         if (index < nextSteps.length) {
           final step = nextSteps[index];
-          return Card(
-            margin: const EdgeInsets.only(bottom: 16),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
+          final isRevealed = _revealedSections.contains(index);
+          
+          return AnimatedOpacity(
+            duration: const Duration(milliseconds: 400),
+            opacity: isRevealed ? 1.0 : 0.3,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 400),
+              transform: Matrix4.translationValues(isRevealed ? 0 : 20, 0, 0),
+              child: Card(
+                margin: const EdgeInsets.only(bottom: 12),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        width: 32,
-                        height: 32,
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.primary,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Center(
-                          child: Text(
-                            '${index + 1}',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
+                      Row(
+                        children: [
+                          Container(
+                            width: 36,
+                            height: 36,
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [widget.accentColor, widget.accentColor.withOpacity(0.7)],
+                              ),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Center(
+                              child: Text(
+                                '${index + 1}',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          step.situation ?? 'Situation ${index + 1}',
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              step.situation ?? 'Situation ${index + 1}',
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                           ),
-                        ),
+                        ],
                       ),
+                      if (step.guidance != null) ...[
+                        const SizedBox(height: 16),
+                        Text(
+                          step.guidance!,
+                          style: theme.textTheme.bodyMedium?.copyWith(height: 1.6),
+                        ),
+                      ],
                     ],
                   ),
-                  if (step.guidance != null) ...[
-                    const SizedBox(height: 12),
-                    Text(
-                      step.guidance!,
-                      style: theme.textTheme.bodyMedium?.copyWith(height: 1.5),
-                    ),
-                  ],
-                ],
+                ),
               ),
             ),
           );
         }
         
-        // Examples section at the end
+        // Examples section
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 16),
-            Text(
-              'Examples',
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
+            Padding(
+              padding: const EdgeInsets.only(left: 4, bottom: 12),
+              child: Row(
+                children: [
+                  Icon(Icons.lightbulb, color: widget.accentColor, size: 20),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Related Examples',
+                    style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 12),
-            ...examples!.map((example) => _buildExampleCard(context, example)),
+            ...examples!.map((ex) => _RelationshipModuleTabState()._buildExampleCard(context, ex)),
           ],
         );
       },
     );
   }
-}
-
-class _ModuleInfo {
-  final String label;
-  final IconData icon;
-  final String key;
-
-  const _ModuleInfo(this.label, this.icon, this.key);
 }
