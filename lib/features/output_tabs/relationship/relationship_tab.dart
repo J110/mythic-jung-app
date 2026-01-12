@@ -55,7 +55,7 @@ class _RelationshipTabState extends ConsumerState<RelationshipTab>
     final outputAsync = ref.watch(relationshipOutputRepositoryProvider);
 
     return relationshipAsync.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => _buildLoadingStructure(context, null),
       error: (e, _) => _buildErrorState(context, e.toString()),
       data: (relationship) {
         if (relationship == null || !relationship.enabled) {
@@ -65,16 +65,138 @@ class _RelationshipTabState extends ConsumerState<RelationshipTab>
         _selectedType = relationship.relationshipType;
 
         return outputAsync.when(
-          loading: () => _buildLoadingState(context),
+          loading: () => _buildLoadingStructure(context, relationship),
           error: (e, _) => _buildErrorState(context, e.toString()),
           data: (output) {
             if (output == null) {
-              return _buildGeneratingState(context);
+              return _buildLoadingStructure(context, relationship);
             }
             return _buildContent(context, relationship, output);
           },
         );
       },
+    );
+  }
+
+  /// Progressive loading - shows the structure while content is loading
+  Widget _buildLoadingStructure(BuildContext context, RelationshipCharacterSet? relationship) {
+    final theme = Theme.of(context);
+    final isRomantic = _selectedType == AppConstants.relationshipTypeRomantic;
+    final accentColor = isRomantic ? const Color(0xFFE91E63) : const Color(0xFF2196F3);
+
+    return NestedScrollView(
+      headerSliverBuilder: (context, innerBoxIsScrolled) {
+        return [
+          SliverAppBar(
+            title: Text(
+              isRomantic ? 'Romantic Relationship' : 'Friendship',
+              style: TextStyle(color: accentColor),
+            ),
+            floating: true,
+            snap: true,
+            backgroundColor: theme.scaffoldBackgroundColor,
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.refresh),
+                tooltip: 'Regenerate',
+                onPressed: () {
+                  ref.read(relationshipOutputRepositoryProvider.notifier).regenerate();
+                },
+              ),
+            ],
+            bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(100),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: _buildTypeSelector(context, accentColor),
+                  ),
+                  TabBar(
+                    controller: _tabController,
+                    isScrollable: true,
+                    labelColor: accentColor,
+                    unselectedLabelColor: theme.colorScheme.onSurfaceVariant,
+                    indicatorColor: accentColor,
+                    tabs: _modules.map((m) => Tab(
+                      icon: Icon(m.icon, size: 20),
+                      text: m.label,
+                    )).toList(),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ];
+      },
+      body: Column(
+        children: [
+          _buildDisclaimer(context),
+          // Loading indicator
+          Expanded(
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(
+                    width: 60,
+                    height: 60,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 3,
+                      color: accentColor,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Text(
+                    'Analyzing relationship dynamics...',
+                    style: theme.textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    relationship != null 
+                        ? 'Processing ${relationship.characters.length} characters'
+                        : 'Loading relationship data',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                  // Progress hints
+                  _buildProgressHint(context, 'Recognizing characters', true),
+                  _buildProgressHint(context, 'Discovering profiles', true),
+                  _buildProgressHint(context, 'Building relationship model', false),
+                  _buildProgressHint(context, 'Generating narrative', false),
+                  _buildProgressHint(context, 'Creating examples', false),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProgressHint(BuildContext context, String text, bool complete) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            complete ? Icons.check_circle : Icons.radio_button_unchecked,
+            size: 16,
+            color: complete ? Colors.green : theme.colorScheme.outline,
+          ),
+          const SizedBox(width: 8),
+          Text(
+            text,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: complete ? Colors.green : theme.colorScheme.outline,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -108,37 +230,6 @@ class _RelationshipTabState extends ConsumerState<RelationshipTab>
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildLoadingState(BuildContext context) {
-    return const Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          CircularProgressIndicator(),
-          SizedBox(height: 16),
-          Text('Analyzing relationship dynamics...'),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildGeneratingState(BuildContext context) {
-    return const Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          CircularProgressIndicator(),
-          SizedBox(height: 16),
-          Text('Generating relationship insights...'),
-          SizedBox(height: 8),
-          Text(
-            'This may take a moment',
-            style: TextStyle(color: Colors.grey),
-          ),
-        ],
       ),
     );
   }
@@ -203,16 +294,23 @@ class _RelationshipTabState extends ConsumerState<RelationshipTab>
             floating: true,
             snap: true,
             backgroundColor: theme.scaffoldBackgroundColor,
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.refresh),
+                tooltip: 'Regenerate',
+                onPressed: () {
+                  ref.read(relationshipOutputRepositoryProvider.notifier).regenerate();
+                },
+              ),
+            ],
             bottom: PreferredSize(
               preferredSize: const Size.fromHeight(100),
               child: Column(
                 children: [
-                  // Relationship type selector
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     child: _buildTypeSelector(context, accentColor),
                   ),
-                  // Tab bar
                   TabBar(
                     controller: _tabController,
                     isScrollable: true,
@@ -232,9 +330,7 @@ class _RelationshipTabState extends ConsumerState<RelationshipTab>
       },
       body: Column(
         children: [
-          // Disclaimer
           _buildDisclaimer(context),
-          // Tab content
           Expanded(
             child: TabBarView(
               controller: _tabController,
@@ -249,8 +345,6 @@ class _RelationshipTabState extends ConsumerState<RelationshipTab>
   }
 
   Widget _buildTypeSelector(BuildContext context, Color accentColor) {
-    final theme = Theme.of(context);
-    
     return Row(
       children: [
         Expanded(
@@ -352,36 +446,33 @@ class _RelationshipTabState extends ConsumerState<RelationshipTab>
     RelationshipOutput output,
     String moduleKey,
   ) {
-    final theme = Theme.of(context);
-
-    // Get module-specific content
     switch (moduleKey) {
       case 'myth':
-        return _buildMythModule(context, output.myth);
+        return _buildMythModule(context, output.myth, output.examples);
       case 'relationalField':
-        return _buildNarrativeModule(context, output.narrative?.relationalField, 'Relational Field');
+        return _buildNarrativeModule(context, output.narrative?.relationalField, 'Relational Field', output.examples?.relationalField);
       case 'attractionBonding':
-        return _buildNarrativeModule(context, output.narrative?.attractionBonding, 'Attraction & Bonding');
+        return _buildNarrativeModule(context, output.narrative?.attractionBonding, 'Attraction & Bonding', output.examples?.attractionBonding);
       case 'projectionShadow':
-        return _buildNarrativeModule(context, output.narrative?.projectionShadow, 'Projection & Shadow');
+        return _buildNarrativeModule(context, output.narrative?.projectionShadow, 'Projection & Shadow', output.examples?.projectionShadow);
       case 'egoPersonaMismatch':
-        return _buildNarrativeModule(context, output.narrative?.egoPersonaMismatch, 'Ego-Persona Mismatch');
+        return _buildNarrativeModule(context, output.narrative?.egoPersonaMismatch, 'Ego-Persona Mismatch', output.examples?.egoPersonaMismatch);
       case 'communicationConflict':
-        return _buildNarrativeModule(context, output.narrative?.communicationConflict, 'Communication & Conflict');
+        return _buildNarrativeModule(context, output.narrative?.communicationConflict, 'Communication & Conflict', output.examples?.communicationConflict);
       case 'needsBoundaries':
-        return _buildNarrativeModule(context, output.narrative?.needsBoundaries, 'Needs & Boundaries');
+        return _buildNarrativeModule(context, output.narrative?.needsBoundaries, 'Needs & Boundaries', output.examples?.needsBoundaries);
       case 'growthPath':
-        return _buildNarrativeModule(context, output.narrative?.growthPath, 'Growth Path');
+        return _buildNarrativeModule(context, output.narrative?.growthPath, 'Growth Path', output.examples?.growthPath);
       case 'redFlagsRepair':
-        return _buildNarrativeModule(context, output.narrative?.redFlagsRepair, 'Red Flags & Repair');
+        return _buildNarrativeModule(context, output.narrative?.redFlagsRepair, 'Red Flags & Repair', output.examples?.redFlagsRepair);
       case 'nextSteps':
-        return _buildNextStepsModule(context, output.narrative?.nextSteps);
+        return _buildNextStepsModule(context, output.narrative?.nextSteps, output.examples?.nextSteps);
       default:
         return Center(child: Text('Module: $moduleKey'));
     }
   }
 
-  Widget _buildMythModule(BuildContext context, RelationshipMyth? myth) {
+  Widget _buildMythModule(BuildContext context, RelationshipMyth? myth, RelationshipExamples? examples) {
     final theme = Theme.of(context);
 
     if (myth == null) {
@@ -393,7 +484,6 @@ class _RelationshipTabState extends ConsumerState<RelationshipTab>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Title
           if (myth.title != null) ...[
             Text(
               myth.title!,
@@ -403,7 +493,6 @@ class _RelationshipTabState extends ConsumerState<RelationshipTab>
             ),
             const SizedBox(height: 16),
           ],
-          // Summary
           if (myth.summary != null) ...[
             Container(
               padding: const EdgeInsets.all(16),
@@ -420,7 +509,6 @@ class _RelationshipTabState extends ConsumerState<RelationshipTab>
             ),
             const SizedBox(height: 24),
           ],
-          // Story
           if (myth.story != null) ...[
             Text(
               myth.story!,
@@ -428,7 +516,6 @@ class _RelationshipTabState extends ConsumerState<RelationshipTab>
             ),
             const SizedBox(height: 24),
           ],
-          // Themes
           if (myth.themes.isNotEmpty) ...[
             Text(
               'Themes',
@@ -440,7 +527,7 @@ class _RelationshipTabState extends ConsumerState<RelationshipTab>
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: myth.themes.map((theme) => Chip(label: Text(theme))).toList(),
+              children: myth.themes.map((t) => Chip(label: Text(t))).toList(),
             ),
           ],
         ],
@@ -452,6 +539,7 @@ class _RelationshipTabState extends ConsumerState<RelationshipTab>
     BuildContext context,
     ModuleNarrative? narrative,
     String title,
+    List<RelationshipExampleRef>? examples,
   ) {
     final theme = Theme.of(context);
 
@@ -464,7 +552,6 @@ class _RelationshipTabState extends ConsumerState<RelationshipTab>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Summary
           if (narrative.summary != null) ...[
             Container(
               padding: const EdgeInsets.all(16),
@@ -481,7 +568,6 @@ class _RelationshipTabState extends ConsumerState<RelationshipTab>
             ),
             const SizedBox(height: 24),
           ],
-          // Story
           if (narrative.story != null) ...[
             Text(
               narrative.story!,
@@ -489,7 +575,6 @@ class _RelationshipTabState extends ConsumerState<RelationshipTab>
             ),
             const SizedBox(height: 24),
           ],
-          // Analysis bullets
           if (narrative.analysisBullets.isNotEmpty) ...[
             Text(
               'Key Points',
@@ -509,8 +594,130 @@ class _RelationshipTabState extends ConsumerState<RelationshipTab>
                 ],
               ),
             )),
+            const SizedBox(height: 24),
+          ],
+          // Examples section
+          if (examples != null && examples.isNotEmpty) ...[
+            Text(
+              'Examples',
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 12),
+            ...examples.map((example) => _buildExampleCard(context, example)),
           ],
         ],
+      ),
+    );
+  }
+
+  Widget _buildExampleCard(BuildContext context, RelationshipExampleRef example) {
+    final theme = Theme.of(context);
+    
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Character and reference
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primary.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    example.characterName ?? 'Character',
+                    style: theme.textTheme.labelMedium?.copyWith(
+                      color: theme.colorScheme.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                if (example.reference != null) ...[
+                  Expanded(
+                    child: Text(
+                      '${example.reference!.title ?? ''} (${example.reference!.year ?? ''})',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+                if (example.tier != null && example.tier != 'B') ...[
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: Colors.amber.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      example.tier!,
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: Colors.amber.shade800,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+            const SizedBox(height: 12),
+            // Situation
+            if (example.situation != null) ...[
+              Text(
+                example.situation!,
+                style: theme.textTheme.bodyMedium,
+              ),
+              const SizedBox(height: 8),
+            ],
+            // Actions
+            if (example.actions.isNotEmpty) ...[
+              ...example.actions.map((action) => Padding(
+                padding: const EdgeInsets.only(bottom: 4),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('• ', style: TextStyle(color: theme.colorScheme.primary)),
+                    Expanded(
+                      child: Text(
+                        action,
+                        style: theme.textTheme.bodySmall,
+                      ),
+                    ),
+                  ],
+                ),
+              )),
+            ],
+            // Outcome
+            if (example.outcomeAndCost.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: example.outcomeAndCost.map((outcome) => Text(
+                    outcome,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      fontStyle: FontStyle.italic,
+                    ),
+                  )).toList(),
+                ),
+              ),
+            ],
+          ],
+        ),
       ),
     );
   }
@@ -518,6 +725,7 @@ class _RelationshipTabState extends ConsumerState<RelationshipTab>
   Widget _buildNextStepsModule(
     BuildContext context,
     List<SituationalGuidance>? nextSteps,
+    List<RelationshipExampleRef>? examples,
   ) {
     final theme = Theme.of(context);
 
@@ -527,56 +735,74 @@ class _RelationshipTabState extends ConsumerState<RelationshipTab>
 
     return ListView.builder(
       padding: const EdgeInsets.all(16),
-      itemCount: nextSteps.length,
+      itemCount: nextSteps.length + (examples?.isNotEmpty == true ? 1 : 0),
       itemBuilder: (context, index) {
-        final step = nextSteps[index];
-        return Card(
-          margin: const EdgeInsets.only(bottom: 16),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      width: 32,
-                      height: 32,
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.primary,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Center(
-                        child: Text(
-                          '${index + 1}',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
+        if (index < nextSteps.length) {
+          final step = nextSteps[index];
+          return Card(
+            margin: const EdgeInsets.only(bottom: 16),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        width: 32,
+                        height: 32,
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.primary,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Center(
+                          child: Text(
+                            '${index + 1}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        step.situation ?? 'Situation ${index + 1}',
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          step.situation ?? 'Situation ${index + 1}',
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
+                    ],
+                  ),
+                  if (step.guidance != null) ...[
+                    const SizedBox(height: 12),
+                    Text(
+                      step.guidance!,
+                      style: theme.textTheme.bodyMedium?.copyWith(height: 1.5),
                     ),
                   ],
-                ),
-                if (step.guidance != null) ...[
-                  const SizedBox(height: 12),
-                  Text(
-                    step.guidance!,
-                    style: theme.textTheme.bodyMedium?.copyWith(height: 1.5),
-                  ),
                 ],
-              ],
+              ),
             ),
-          ),
+          );
+        }
+        
+        // Examples section at the end
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 16),
+            Text(
+              'Examples',
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 12),
+            ...examples!.map((example) => _buildExampleCard(context, example)),
+          ],
         );
       },
     );
