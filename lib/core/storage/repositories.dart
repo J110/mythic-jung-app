@@ -170,9 +170,9 @@ class UserSessionRepository extends StateNotifier<UserSessionState> {
 
       print('[UserSession] Logged in: ${response.user.displayName} (returning: ${response.isReturningUser}, hasData: ${response.hasExistingData})');
       
-      // If returning user with existing data, trigger data refresh
+      // If returning user with existing data, sync from backend
       if (response.hasExistingData) {
-        _refreshExistingData();
+        await _syncFromBackend();
       }
 
       return true;
@@ -186,21 +186,37 @@ class UserSessionRepository extends StateNotifier<UserSessionState> {
     }
   }
 
-  /// Refresh data for returning user
-  Future<void> _refreshExistingData() async {
-    // Trigger output refresh from backend
+  /// Sync data from backend for returning user
+  Future<void> _syncFromBackend() async {
     try {
-      // Regenerate triggers loading from backend for cached output
-      ref.read(outputRepositoryProvider.notifier).regenerate();
+      print('[UserSession] Syncing data from backend...');
+      final apiClient = ref.read(apiClientProvider);
+      final syncData = await apiClient.syncUserData();
       
-      // Also refresh relationship if applicable (after a short delay)
-      if (state.dataSummary?.hasRelationship == true) {
-        Future.delayed(const Duration(milliseconds: 500), () {
-          ref.read(relationshipOutputRepositoryProvider.notifier).regenerate();
-        });
+      // Set the Me output directly if available
+      if (syncData.meOutput != null) {
+        print('[UserSession] Setting Me output from sync');
+        ref.read(outputRepositoryProvider.notifier).setFromSync(syncData.meOutput!);
       }
+      
+      // Set relationship settings if available
+      if (syncData.relationshipSettings != null && syncData.relationshipSettings!.enabled) {
+        print('[UserSession] Setting relationship from sync');
+        await ref.read(relationshipRepositoryProvider.notifier).setFromSync(
+          enabled: true,
+          type: syncData.relationshipSettings!.type,
+        );
+        
+        // Set relationship output if available
+        if (syncData.relationshipOutput != null) {
+          ref.read(relationshipOutputRepositoryProvider.notifier).setFromSync(syncData.relationshipOutput!);
+        }
+      }
+      
+      print('[UserSession] Sync complete');
     } catch (e) {
-      print('[UserSession] Failed to refresh existing data: $e');
+      print('[UserSession] Failed to sync from backend: $e');
+      // Don't fail the session restore if sync fails
     }
   }
 
@@ -476,6 +492,12 @@ class OutputRepository extends StateNotifier<AsyncValue<GeneratedOutput?>> {
     state = const AsyncValue.loading();
   }
 
+  /// Set output directly from sync data (when restoring session)
+  void setFromSync(GeneratedOutput output) {
+    print('[OutputRepository] Setting output from sync');
+    state = AsyncValue.data(output);
+  }
+
   void regenerate() {
     _regenerationTimer?.cancel();
     _regenerationTimer = Timer(
@@ -638,6 +660,26 @@ class RelationshipRepository extends StateNotifier<AsyncValue<RelationshipCharac
     // Trigger regeneration with new type
     ref.read(relationshipOutputRepositoryProvider.notifier).regenerate();
   }
+
+  /// Set relationship settings from sync data (when restoring session)
+  Future<void> setFromSync({required bool enabled, required String type}) async {
+    print('[RelationshipRepository] Setting from sync: enabled=$enabled, type=$type');
+    
+    final relationship = RelationshipCharacterSet(
+      userId: 'default-user',
+      enabled: enabled,
+      relationshipType: type,
+      otherLabel: type == 'romantic' ? 'partner' : 'friend',
+      characters: [], // Characters will come from output
+      rawInputs: [],
+      updatedAt: DateTime.now(),
+    );
+    
+    final db = ref.read(appDatabaseProvider);
+    await db.saveRelationship(relationship);
+    
+    state = AsyncValue.data(relationship);
+  }
 }
 
 // ============================================================================
@@ -707,6 +749,12 @@ class RelationshipOutputRepository extends StateNotifier<AsyncValue<Relationship
 
   void clearCache() {
     state = const AsyncValue.loading();
+  }
+
+  /// Set output directly from sync data (when restoring session)
+  void setFromSync(RelationshipOutput output) {
+    print('[RelationshipOutputRepository] Setting output from sync');
+    state = AsyncValue.data(output);
   }
 
   void regenerate() {

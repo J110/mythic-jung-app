@@ -85,3 +85,44 @@ Map<String, dynamic> _$$UserDataStatusImplToJson(
   'tonePreference': instance.tonePreference,
   'lastUpdated': instance.lastUpdated,
 };
+
+_$UserSyncDataImpl _$$UserSyncDataImplFromJson(Map<String, dynamic> json) =>
+    _$UserSyncDataImpl(
+      user: json['user'] == null
+          ? null
+          : AppUser.fromJson(json['user'] as Map<String, dynamic>),
+      meOutput: json['meOutput'] == null
+          ? null
+          : GeneratedOutput.fromJson(json['meOutput'] as Map<String, dynamic>),
+      relationshipOutput: json['relationshipOutput'] == null
+          ? null
+          : RelationshipOutput.fromJson(
+              json['relationshipOutput'] as Map<String, dynamic>,
+            ),
+      relationshipSettings: json['relationshipSettings'] == null
+          ? null
+          : RelationshipSettings.fromJson(
+              json['relationshipSettings'] as Map<String, dynamic>,
+            ),
+      tonePreference: json['tonePreference'] as String,
+    );
+
+Map<String, dynamic> _$$UserSyncDataImplToJson(_$UserSyncDataImpl instance) =>
+    <String, dynamic>{
+      'user': instance.user,
+      'meOutput': instance.meOutput,
+      'relationshipOutput': instance.relationshipOutput,
+      'relationshipSettings': instance.relationshipSettings,
+      'tonePreference': instance.tonePreference,
+    };
+
+_$RelationshipSettingsImpl _$$RelationshipSettingsImplFromJson(
+  Map<String, dynamic> json,
+) => _$RelationshipSettingsImpl(
+  enabled: json['enabled'] as bool,
+  type: json['type'] as String,
+);
+
+Map<String, dynamic> _$$RelationshipSettingsImplToJson(
+  _$RelationshipSettingsImpl instance,
+) => <String, dynamic>{'enabled': instance.enabled, 'type': instance.type};

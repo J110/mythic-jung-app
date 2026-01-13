@@ -127,6 +127,34 @@ class ApiClient {
     }
   }
 
+  /// Sync all user data from backend (for session restore)
+  Future<UserSyncData> syncUserData() async {
+    if (_userId == null) {
+      throw StateError('No user logged in');
+    }
+
+    if (useMock) {
+      await Future.delayed(const Duration(milliseconds: 300));
+      return const UserSyncData(
+        user: null,
+        meOutput: null,
+        relationshipOutput: null,
+        relationshipSettings: null,
+        tonePreference: 'plain',
+      );
+    }
+
+    print('[ApiClient] Syncing user data for: $_userId');
+    try {
+      final response = await _dio.get('/v1/users/$_userId/sync');
+      print('[ApiClient] Sync successful');
+      return UserSyncData.fromJson(response.data);
+    } on DioException catch (e) {
+      print('[ApiClient] Sync failed: ${e.message}');
+      rethrow;
+    }
+  }
+
   Future<void> updateProfile(List<Character> characters) async {
     if (useMock) {
       await Future.delayed(const Duration(milliseconds: 500));

@@ -1,4 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'generated_output.dart';
+import 'relationship.dart';
 
 part 'user.freezed.dart';
 part 'user.g.dart';
@@ -61,4 +63,27 @@ class UserDataStatus with _$UserDataStatus {
   }) = _UserDataStatus;
 
   factory UserDataStatus.fromJson(Map<String, dynamic> json) => _$UserDataStatusFromJson(json);
+}
+
+@freezed
+class UserSyncData with _$UserSyncData {
+  const factory UserSyncData({
+    AppUser? user,
+    GeneratedOutput? meOutput,
+    RelationshipOutput? relationshipOutput,
+    RelationshipSettings? relationshipSettings,
+    required String tonePreference,
+  }) = _UserSyncData;
+
+  factory UserSyncData.fromJson(Map<String, dynamic> json) => _$UserSyncDataFromJson(json);
+}
+
+@freezed
+class RelationshipSettings with _$RelationshipSettings {
+  const factory RelationshipSettings({
+    required bool enabled,
+    required String type,
+  }) = _RelationshipSettings;
+
+  factory RelationshipSettings.fromJson(Map<String, dynamic> json) => _$RelationshipSettingsFromJson(json);
 }

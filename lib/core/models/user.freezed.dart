@@ -1200,3 +1200,508 @@ abstract class _UserDataStatus implements UserDataStatus {
   _$$UserDataStatusImplCopyWith<_$UserDataStatusImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
+
+UserSyncData _$UserSyncDataFromJson(Map<String, dynamic> json) {
+  return _UserSyncData.fromJson(json);
+}
+
+/// @nodoc
+mixin _$UserSyncData {
+  AppUser? get user => throw _privateConstructorUsedError;
+  GeneratedOutput? get meOutput => throw _privateConstructorUsedError;
+  RelationshipOutput? get relationshipOutput =>
+      throw _privateConstructorUsedError;
+  RelationshipSettings? get relationshipSettings =>
+      throw _privateConstructorUsedError;
+  String get tonePreference => throw _privateConstructorUsedError;
+
+  /// Serializes this UserSyncData to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of UserSyncData
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $UserSyncDataCopyWith<UserSyncData> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $UserSyncDataCopyWith<$Res> {
+  factory $UserSyncDataCopyWith(
+    UserSyncData value,
+    $Res Function(UserSyncData) then,
+  ) = _$UserSyncDataCopyWithImpl<$Res, UserSyncData>;
+  @useResult
+  $Res call({
+    AppUser? user,
+    GeneratedOutput? meOutput,
+    RelationshipOutput? relationshipOutput,
+    RelationshipSettings? relationshipSettings,
+    String tonePreference,
+  });
+
+  $AppUserCopyWith<$Res>? get user;
+  $GeneratedOutputCopyWith<$Res>? get meOutput;
+  $RelationshipOutputCopyWith<$Res>? get relationshipOutput;
+  $RelationshipSettingsCopyWith<$Res>? get relationshipSettings;
+}
+
+/// @nodoc
+class _$UserSyncDataCopyWithImpl<$Res, $Val extends UserSyncData>
+    implements $UserSyncDataCopyWith<$Res> {
+  _$UserSyncDataCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of UserSyncData
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? user = freezed,
+    Object? meOutput = freezed,
+    Object? relationshipOutput = freezed,
+    Object? relationshipSettings = freezed,
+    Object? tonePreference = null,
+  }) {
+    return _then(
+      _value.copyWith(
+            user: freezed == user
+                ? _value.user
+                : user // ignore: cast_nullable_to_non_nullable
+                      as AppUser?,
+            meOutput: freezed == meOutput
+                ? _value.meOutput
+                : meOutput // ignore: cast_nullable_to_non_nullable
+                      as GeneratedOutput?,
+            relationshipOutput: freezed == relationshipOutput
+                ? _value.relationshipOutput
+                : relationshipOutput // ignore: cast_nullable_to_non_nullable
+                      as RelationshipOutput?,
+            relationshipSettings: freezed == relationshipSettings
+                ? _value.relationshipSettings
+                : relationshipSettings // ignore: cast_nullable_to_non_nullable
+                      as RelationshipSettings?,
+            tonePreference: null == tonePreference
+                ? _value.tonePreference
+                : tonePreference // ignore: cast_nullable_to_non_nullable
+                      as String,
+          )
+          as $Val,
+    );
+  }
+
+  /// Create a copy of UserSyncData
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $AppUserCopyWith<$Res>? get user {
+    if (_value.user == null) {
+      return null;
+    }
+
+    return $AppUserCopyWith<$Res>(_value.user!, (value) {
+      return _then(_value.copyWith(user: value) as $Val);
+    });
+  }
+
+  /// Create a copy of UserSyncData
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $GeneratedOutputCopyWith<$Res>? get meOutput {
+    if (_value.meOutput == null) {
+      return null;
+    }
+
+    return $GeneratedOutputCopyWith<$Res>(_value.meOutput!, (value) {
+      return _then(_value.copyWith(meOutput: value) as $Val);
+    });
+  }
+
+  /// Create a copy of UserSyncData
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $RelationshipOutputCopyWith<$Res>? get relationshipOutput {
+    if (_value.relationshipOutput == null) {
+      return null;
+    }
+
+    return $RelationshipOutputCopyWith<$Res>(_value.relationshipOutput!, (
+      value,
+    ) {
+      return _then(_value.copyWith(relationshipOutput: value) as $Val);
+    });
+  }
+
+  /// Create a copy of UserSyncData
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $RelationshipSettingsCopyWith<$Res>? get relationshipSettings {
+    if (_value.relationshipSettings == null) {
+      return null;
+    }
+
+    return $RelationshipSettingsCopyWith<$Res>(_value.relationshipSettings!, (
+      value,
+    ) {
+      return _then(_value.copyWith(relationshipSettings: value) as $Val);
+    });
+  }
+}
+
+/// @nodoc
+abstract class _$$UserSyncDataImplCopyWith<$Res>
+    implements $UserSyncDataCopyWith<$Res> {
+  factory _$$UserSyncDataImplCopyWith(
+    _$UserSyncDataImpl value,
+    $Res Function(_$UserSyncDataImpl) then,
+  ) = __$$UserSyncDataImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({
+    AppUser? user,
+    GeneratedOutput? meOutput,
+    RelationshipOutput? relationshipOutput,
+    RelationshipSettings? relationshipSettings,
+    String tonePreference,
+  });
+
+  @override
+  $AppUserCopyWith<$Res>? get user;
+  @override
+  $GeneratedOutputCopyWith<$Res>? get meOutput;
+  @override
+  $RelationshipOutputCopyWith<$Res>? get relationshipOutput;
+  @override
+  $RelationshipSettingsCopyWith<$Res>? get relationshipSettings;
+}
+
+/// @nodoc
+class __$$UserSyncDataImplCopyWithImpl<$Res>
+    extends _$UserSyncDataCopyWithImpl<$Res, _$UserSyncDataImpl>
+    implements _$$UserSyncDataImplCopyWith<$Res> {
+  __$$UserSyncDataImplCopyWithImpl(
+    _$UserSyncDataImpl _value,
+    $Res Function(_$UserSyncDataImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of UserSyncData
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? user = freezed,
+    Object? meOutput = freezed,
+    Object? relationshipOutput = freezed,
+    Object? relationshipSettings = freezed,
+    Object? tonePreference = null,
+  }) {
+    return _then(
+      _$UserSyncDataImpl(
+        user: freezed == user
+            ? _value.user
+            : user // ignore: cast_nullable_to_non_nullable
+                  as AppUser?,
+        meOutput: freezed == meOutput
+            ? _value.meOutput
+            : meOutput // ignore: cast_nullable_to_non_nullable
+                  as GeneratedOutput?,
+        relationshipOutput: freezed == relationshipOutput
+            ? _value.relationshipOutput
+            : relationshipOutput // ignore: cast_nullable_to_non_nullable
+                  as RelationshipOutput?,
+        relationshipSettings: freezed == relationshipSettings
+            ? _value.relationshipSettings
+            : relationshipSettings // ignore: cast_nullable_to_non_nullable
+                  as RelationshipSettings?,
+        tonePreference: null == tonePreference
+            ? _value.tonePreference
+            : tonePreference // ignore: cast_nullable_to_non_nullable
+                  as String,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$UserSyncDataImpl implements _UserSyncData {
+  const _$UserSyncDataImpl({
+    this.user,
+    this.meOutput,
+    this.relationshipOutput,
+    this.relationshipSettings,
+    required this.tonePreference,
+  });
+
+  factory _$UserSyncDataImpl.fromJson(Map<String, dynamic> json) =>
+      _$$UserSyncDataImplFromJson(json);
+
+  @override
+  final AppUser? user;
+  @override
+  final GeneratedOutput? meOutput;
+  @override
+  final RelationshipOutput? relationshipOutput;
+  @override
+  final RelationshipSettings? relationshipSettings;
+  @override
+  final String tonePreference;
+
+  @override
+  String toString() {
+    return 'UserSyncData(user: $user, meOutput: $meOutput, relationshipOutput: $relationshipOutput, relationshipSettings: $relationshipSettings, tonePreference: $tonePreference)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$UserSyncDataImpl &&
+            (identical(other.user, user) || other.user == user) &&
+            (identical(other.meOutput, meOutput) ||
+                other.meOutput == meOutput) &&
+            (identical(other.relationshipOutput, relationshipOutput) ||
+                other.relationshipOutput == relationshipOutput) &&
+            (identical(other.relationshipSettings, relationshipSettings) ||
+                other.relationshipSettings == relationshipSettings) &&
+            (identical(other.tonePreference, tonePreference) ||
+                other.tonePreference == tonePreference));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+    runtimeType,
+    user,
+    meOutput,
+    relationshipOutput,
+    relationshipSettings,
+    tonePreference,
+  );
+
+  /// Create a copy of UserSyncData
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$UserSyncDataImplCopyWith<_$UserSyncDataImpl> get copyWith =>
+      __$$UserSyncDataImplCopyWithImpl<_$UserSyncDataImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$UserSyncDataImplToJson(this);
+  }
+}
+
+abstract class _UserSyncData implements UserSyncData {
+  const factory _UserSyncData({
+    final AppUser? user,
+    final GeneratedOutput? meOutput,
+    final RelationshipOutput? relationshipOutput,
+    final RelationshipSettings? relationshipSettings,
+    required final String tonePreference,
+  }) = _$UserSyncDataImpl;
+
+  factory _UserSyncData.fromJson(Map<String, dynamic> json) =
+      _$UserSyncDataImpl.fromJson;
+
+  @override
+  AppUser? get user;
+  @override
+  GeneratedOutput? get meOutput;
+  @override
+  RelationshipOutput? get relationshipOutput;
+  @override
+  RelationshipSettings? get relationshipSettings;
+  @override
+  String get tonePreference;
+
+  /// Create a copy of UserSyncData
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$UserSyncDataImplCopyWith<_$UserSyncDataImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+RelationshipSettings _$RelationshipSettingsFromJson(Map<String, dynamic> json) {
+  return _RelationshipSettings.fromJson(json);
+}
+
+/// @nodoc
+mixin _$RelationshipSettings {
+  bool get enabled => throw _privateConstructorUsedError;
+  String get type => throw _privateConstructorUsedError;
+
+  /// Serializes this RelationshipSettings to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of RelationshipSettings
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $RelationshipSettingsCopyWith<RelationshipSettings> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $RelationshipSettingsCopyWith<$Res> {
+  factory $RelationshipSettingsCopyWith(
+    RelationshipSettings value,
+    $Res Function(RelationshipSettings) then,
+  ) = _$RelationshipSettingsCopyWithImpl<$Res, RelationshipSettings>;
+  @useResult
+  $Res call({bool enabled, String type});
+}
+
+/// @nodoc
+class _$RelationshipSettingsCopyWithImpl<
+  $Res,
+  $Val extends RelationshipSettings
+>
+    implements $RelationshipSettingsCopyWith<$Res> {
+  _$RelationshipSettingsCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of RelationshipSettings
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? enabled = null, Object? type = null}) {
+    return _then(
+      _value.copyWith(
+            enabled: null == enabled
+                ? _value.enabled
+                : enabled // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            type: null == type
+                ? _value.type
+                : type // ignore: cast_nullable_to_non_nullable
+                      as String,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$RelationshipSettingsImplCopyWith<$Res>
+    implements $RelationshipSettingsCopyWith<$Res> {
+  factory _$$RelationshipSettingsImplCopyWith(
+    _$RelationshipSettingsImpl value,
+    $Res Function(_$RelationshipSettingsImpl) then,
+  ) = __$$RelationshipSettingsImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({bool enabled, String type});
+}
+
+/// @nodoc
+class __$$RelationshipSettingsImplCopyWithImpl<$Res>
+    extends _$RelationshipSettingsCopyWithImpl<$Res, _$RelationshipSettingsImpl>
+    implements _$$RelationshipSettingsImplCopyWith<$Res> {
+  __$$RelationshipSettingsImplCopyWithImpl(
+    _$RelationshipSettingsImpl _value,
+    $Res Function(_$RelationshipSettingsImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of RelationshipSettings
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? enabled = null, Object? type = null}) {
+    return _then(
+      _$RelationshipSettingsImpl(
+        enabled: null == enabled
+            ? _value.enabled
+            : enabled // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        type: null == type
+            ? _value.type
+            : type // ignore: cast_nullable_to_non_nullable
+                  as String,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$RelationshipSettingsImpl implements _RelationshipSettings {
+  const _$RelationshipSettingsImpl({required this.enabled, required this.type});
+
+  factory _$RelationshipSettingsImpl.fromJson(Map<String, dynamic> json) =>
+      _$$RelationshipSettingsImplFromJson(json);
+
+  @override
+  final bool enabled;
+  @override
+  final String type;
+
+  @override
+  String toString() {
+    return 'RelationshipSettings(enabled: $enabled, type: $type)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$RelationshipSettingsImpl &&
+            (identical(other.enabled, enabled) || other.enabled == enabled) &&
+            (identical(other.type, type) || other.type == type));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, enabled, type);
+
+  /// Create a copy of RelationshipSettings
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$RelationshipSettingsImplCopyWith<_$RelationshipSettingsImpl>
+  get copyWith =>
+      __$$RelationshipSettingsImplCopyWithImpl<_$RelationshipSettingsImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$RelationshipSettingsImplToJson(this);
+  }
+}
+
+abstract class _RelationshipSettings implements RelationshipSettings {
+  const factory _RelationshipSettings({
+    required final bool enabled,
+    required final String type,
+  }) = _$RelationshipSettingsImpl;
+
+  factory _RelationshipSettings.fromJson(Map<String, dynamic> json) =
+      _$RelationshipSettingsImpl.fromJson;
+
+  @override
+  bool get enabled;
+  @override
+  String get type;
+
+  /// Create a copy of RelationshipSettings
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$RelationshipSettingsImplCopyWith<_$RelationshipSettingsImpl>
+  get copyWith => throw _privateConstructorUsedError;
+}
