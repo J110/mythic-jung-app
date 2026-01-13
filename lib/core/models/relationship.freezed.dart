@@ -3142,8 +3142,17 @@ mixin _$RelationshipOutput {
   RelationshipModel? get relationshipModel =>
       throw _privateConstructorUsedError;
   RelationshipNarrative? get narrative => throw _privateConstructorUsedError;
-  RelationshipExamples? get examples => throw _privateConstructorUsedError;
-  RelationshipMeta? get meta => throw _privateConstructorUsedError;
+  RelationshipExamples? get examples =>
+      throw _privateConstructorUsedError; // NEW: What-If Scenarios for key relationship themes
+  List<WhatIfScenario> get whatIfScenarios =>
+      throw _privateConstructorUsedError; // NEW: Ease zones (where it works naturally)
+  EaseZones? get easeZones =>
+      throw _privateConstructorUsedError; // NEW: Rupture loops (where it breaks)
+  RuptureLoops? get ruptureLoops => throw _privateConstructorUsedError;
+  RelationshipMeta? get meta =>
+      throw _privateConstructorUsedError; // NEW: Relationship archetype constellation
+  RelationshipConstellationResponse? get constellation =>
+      throw _privateConstructorUsedError;
 
   /// Serializes this RelationshipOutput to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -3167,14 +3176,21 @@ abstract class $RelationshipOutputCopyWith<$Res> {
     RelationshipModel? relationshipModel,
     RelationshipNarrative? narrative,
     RelationshipExamples? examples,
+    List<WhatIfScenario> whatIfScenarios,
+    EaseZones? easeZones,
+    RuptureLoops? ruptureLoops,
     RelationshipMeta? meta,
+    RelationshipConstellationResponse? constellation,
   });
 
   $RelationshipMythCopyWith<$Res>? get myth;
   $RelationshipModelCopyWith<$Res>? get relationshipModel;
   $RelationshipNarrativeCopyWith<$Res>? get narrative;
   $RelationshipExamplesCopyWith<$Res>? get examples;
+  $EaseZonesCopyWith<$Res>? get easeZones;
+  $RuptureLoopsCopyWith<$Res>? get ruptureLoops;
   $RelationshipMetaCopyWith<$Res>? get meta;
+  $RelationshipConstellationResponseCopyWith<$Res>? get constellation;
 }
 
 /// @nodoc
@@ -3196,7 +3212,11 @@ class _$RelationshipOutputCopyWithImpl<$Res, $Val extends RelationshipOutput>
     Object? relationshipModel = freezed,
     Object? narrative = freezed,
     Object? examples = freezed,
+    Object? whatIfScenarios = null,
+    Object? easeZones = freezed,
+    Object? ruptureLoops = freezed,
     Object? meta = freezed,
+    Object? constellation = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -3216,10 +3236,26 @@ class _$RelationshipOutputCopyWithImpl<$Res, $Val extends RelationshipOutput>
                 ? _value.examples
                 : examples // ignore: cast_nullable_to_non_nullable
                       as RelationshipExamples?,
+            whatIfScenarios: null == whatIfScenarios
+                ? _value.whatIfScenarios
+                : whatIfScenarios // ignore: cast_nullable_to_non_nullable
+                      as List<WhatIfScenario>,
+            easeZones: freezed == easeZones
+                ? _value.easeZones
+                : easeZones // ignore: cast_nullable_to_non_nullable
+                      as EaseZones?,
+            ruptureLoops: freezed == ruptureLoops
+                ? _value.ruptureLoops
+                : ruptureLoops // ignore: cast_nullable_to_non_nullable
+                      as RuptureLoops?,
             meta: freezed == meta
                 ? _value.meta
                 : meta // ignore: cast_nullable_to_non_nullable
                       as RelationshipMeta?,
+            constellation: freezed == constellation
+                ? _value.constellation
+                : constellation // ignore: cast_nullable_to_non_nullable
+                      as RelationshipConstellationResponse?,
           )
           as $Val,
     );
@@ -3285,6 +3321,34 @@ class _$RelationshipOutputCopyWithImpl<$Res, $Val extends RelationshipOutput>
   /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
+  $EaseZonesCopyWith<$Res>? get easeZones {
+    if (_value.easeZones == null) {
+      return null;
+    }
+
+    return $EaseZonesCopyWith<$Res>(_value.easeZones!, (value) {
+      return _then(_value.copyWith(easeZones: value) as $Val);
+    });
+  }
+
+  /// Create a copy of RelationshipOutput
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $RuptureLoopsCopyWith<$Res>? get ruptureLoops {
+    if (_value.ruptureLoops == null) {
+      return null;
+    }
+
+    return $RuptureLoopsCopyWith<$Res>(_value.ruptureLoops!, (value) {
+      return _then(_value.copyWith(ruptureLoops: value) as $Val);
+    });
+  }
+
+  /// Create a copy of RelationshipOutput
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
   $RelationshipMetaCopyWith<$Res>? get meta {
     if (_value.meta == null) {
       return null;
@@ -3293,6 +3357,23 @@ class _$RelationshipOutputCopyWithImpl<$Res, $Val extends RelationshipOutput>
     return $RelationshipMetaCopyWith<$Res>(_value.meta!, (value) {
       return _then(_value.copyWith(meta: value) as $Val);
     });
+  }
+
+  /// Create a copy of RelationshipOutput
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $RelationshipConstellationResponseCopyWith<$Res>? get constellation {
+    if (_value.constellation == null) {
+      return null;
+    }
+
+    return $RelationshipConstellationResponseCopyWith<$Res>(
+      _value.constellation!,
+      (value) {
+        return _then(_value.copyWith(constellation: value) as $Val);
+      },
+    );
   }
 }
 
@@ -3310,7 +3391,11 @@ abstract class _$$RelationshipOutputImplCopyWith<$Res>
     RelationshipModel? relationshipModel,
     RelationshipNarrative? narrative,
     RelationshipExamples? examples,
+    List<WhatIfScenario> whatIfScenarios,
+    EaseZones? easeZones,
+    RuptureLoops? ruptureLoops,
     RelationshipMeta? meta,
+    RelationshipConstellationResponse? constellation,
   });
 
   @override
@@ -3322,7 +3407,13 @@ abstract class _$$RelationshipOutputImplCopyWith<$Res>
   @override
   $RelationshipExamplesCopyWith<$Res>? get examples;
   @override
+  $EaseZonesCopyWith<$Res>? get easeZones;
+  @override
+  $RuptureLoopsCopyWith<$Res>? get ruptureLoops;
+  @override
   $RelationshipMetaCopyWith<$Res>? get meta;
+  @override
+  $RelationshipConstellationResponseCopyWith<$Res>? get constellation;
 }
 
 /// @nodoc
@@ -3343,7 +3434,11 @@ class __$$RelationshipOutputImplCopyWithImpl<$Res>
     Object? relationshipModel = freezed,
     Object? narrative = freezed,
     Object? examples = freezed,
+    Object? whatIfScenarios = null,
+    Object? easeZones = freezed,
+    Object? ruptureLoops = freezed,
     Object? meta = freezed,
+    Object? constellation = freezed,
   }) {
     return _then(
       _$RelationshipOutputImpl(
@@ -3363,10 +3458,26 @@ class __$$RelationshipOutputImplCopyWithImpl<$Res>
             ? _value.examples
             : examples // ignore: cast_nullable_to_non_nullable
                   as RelationshipExamples?,
+        whatIfScenarios: null == whatIfScenarios
+            ? _value._whatIfScenarios
+            : whatIfScenarios // ignore: cast_nullable_to_non_nullable
+                  as List<WhatIfScenario>,
+        easeZones: freezed == easeZones
+            ? _value.easeZones
+            : easeZones // ignore: cast_nullable_to_non_nullable
+                  as EaseZones?,
+        ruptureLoops: freezed == ruptureLoops
+            ? _value.ruptureLoops
+            : ruptureLoops // ignore: cast_nullable_to_non_nullable
+                  as RuptureLoops?,
         meta: freezed == meta
             ? _value.meta
             : meta // ignore: cast_nullable_to_non_nullable
                   as RelationshipMeta?,
+        constellation: freezed == constellation
+            ? _value.constellation
+            : constellation // ignore: cast_nullable_to_non_nullable
+                  as RelationshipConstellationResponse?,
       ),
     );
   }
@@ -3380,8 +3491,12 @@ class _$RelationshipOutputImpl implements _RelationshipOutput {
     this.relationshipModel,
     this.narrative,
     this.examples,
+    final List<WhatIfScenario> whatIfScenarios = const [],
+    this.easeZones,
+    this.ruptureLoops,
     this.meta,
-  });
+    this.constellation,
+  }) : _whatIfScenarios = whatIfScenarios;
 
   factory _$RelationshipOutputImpl.fromJson(Map<String, dynamic> json) =>
       _$$RelationshipOutputImplFromJson(json);
@@ -3394,12 +3509,32 @@ class _$RelationshipOutputImpl implements _RelationshipOutput {
   final RelationshipNarrative? narrative;
   @override
   final RelationshipExamples? examples;
+  // NEW: What-If Scenarios for key relationship themes
+  final List<WhatIfScenario> _whatIfScenarios;
+  // NEW: What-If Scenarios for key relationship themes
+  @override
+  @JsonKey()
+  List<WhatIfScenario> get whatIfScenarios {
+    if (_whatIfScenarios is EqualUnmodifiableListView) return _whatIfScenarios;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_whatIfScenarios);
+  }
+
+  // NEW: Ease zones (where it works naturally)
+  @override
+  final EaseZones? easeZones;
+  // NEW: Rupture loops (where it breaks)
+  @override
+  final RuptureLoops? ruptureLoops;
   @override
   final RelationshipMeta? meta;
+  // NEW: Relationship archetype constellation
+  @override
+  final RelationshipConstellationResponse? constellation;
 
   @override
   String toString() {
-    return 'RelationshipOutput(myth: $myth, relationshipModel: $relationshipModel, narrative: $narrative, examples: $examples, meta: $meta)';
+    return 'RelationshipOutput(myth: $myth, relationshipModel: $relationshipModel, narrative: $narrative, examples: $examples, whatIfScenarios: $whatIfScenarios, easeZones: $easeZones, ruptureLoops: $ruptureLoops, meta: $meta, constellation: $constellation)';
   }
 
   @override
@@ -3414,7 +3549,17 @@ class _$RelationshipOutputImpl implements _RelationshipOutput {
                 other.narrative == narrative) &&
             (identical(other.examples, examples) ||
                 other.examples == examples) &&
-            (identical(other.meta, meta) || other.meta == meta));
+            const DeepCollectionEquality().equals(
+              other._whatIfScenarios,
+              _whatIfScenarios,
+            ) &&
+            (identical(other.easeZones, easeZones) ||
+                other.easeZones == easeZones) &&
+            (identical(other.ruptureLoops, ruptureLoops) ||
+                other.ruptureLoops == ruptureLoops) &&
+            (identical(other.meta, meta) || other.meta == meta) &&
+            (identical(other.constellation, constellation) ||
+                other.constellation == constellation));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -3425,7 +3570,11 @@ class _$RelationshipOutputImpl implements _RelationshipOutput {
     relationshipModel,
     narrative,
     examples,
+    const DeepCollectionEquality().hash(_whatIfScenarios),
+    easeZones,
+    ruptureLoops,
     meta,
+    constellation,
   );
 
   /// Create a copy of RelationshipOutput
@@ -3451,7 +3600,11 @@ abstract class _RelationshipOutput implements RelationshipOutput {
     final RelationshipModel? relationshipModel,
     final RelationshipNarrative? narrative,
     final RelationshipExamples? examples,
+    final List<WhatIfScenario> whatIfScenarios,
+    final EaseZones? easeZones,
+    final RuptureLoops? ruptureLoops,
     final RelationshipMeta? meta,
+    final RelationshipConstellationResponse? constellation,
   }) = _$RelationshipOutputImpl;
 
   factory _RelationshipOutput.fromJson(Map<String, dynamic> json) =
@@ -3464,15 +3617,1581 @@ abstract class _RelationshipOutput implements RelationshipOutput {
   @override
   RelationshipNarrative? get narrative;
   @override
-  RelationshipExamples? get examples;
+  RelationshipExamples? get examples; // NEW: What-If Scenarios for key relationship themes
   @override
-  RelationshipMeta? get meta;
+  List<WhatIfScenario> get whatIfScenarios; // NEW: Ease zones (where it works naturally)
+  @override
+  EaseZones? get easeZones; // NEW: Rupture loops (where it breaks)
+  @override
+  RuptureLoops? get ruptureLoops;
+  @override
+  RelationshipMeta? get meta; // NEW: Relationship archetype constellation
+  @override
+  RelationshipConstellationResponse? get constellation;
 
   /// Create a copy of RelationshipOutput
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$RelationshipOutputImplCopyWith<_$RelationshipOutputImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+WhatIfScenario _$WhatIfScenarioFromJson(Map<String, dynamic> json) {
+  return _WhatIfScenario.fromJson(json);
+}
+
+/// @nodoc
+mixin _$WhatIfScenario {
+  String get theme =>
+      throw _privateConstructorUsedError; // 'conflict', 'intimacy', 'trust', 'autonomy', 'authority'
+  String? get myMode =>
+      throw _privateConstructorUsedError; // e.g., 'char_x_phase_y'
+  String? get theirMode =>
+      throw _privateConstructorUsedError; // e.g., 'char_a_phase_b'
+  String? get setup =>
+      throw _privateConstructorUsedError; // Specific real-life situation
+  String? get unconsciousPattern =>
+      throw _privateConstructorUsedError; // Likely projection/trigger
+  String? get unconsciousPath =>
+      throw _privateConstructorUsedError; // What happens if unconscious
+  String? get consciousPath =>
+      throw _privateConstructorUsedError; // What happens with individuation
+  List<String> get actions =>
+      throw _privateConstructorUsedError; // Actions that change trajectory
+  List<String> get avoid => throw _privateConstructorUsedError; // What to avoid
+  List<RelationshipExampleRef> get examples =>
+      throw _privateConstructorUsedError;
+
+  /// Serializes this WhatIfScenario to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of WhatIfScenario
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $WhatIfScenarioCopyWith<WhatIfScenario> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $WhatIfScenarioCopyWith<$Res> {
+  factory $WhatIfScenarioCopyWith(
+    WhatIfScenario value,
+    $Res Function(WhatIfScenario) then,
+  ) = _$WhatIfScenarioCopyWithImpl<$Res, WhatIfScenario>;
+  @useResult
+  $Res call({
+    String theme,
+    String? myMode,
+    String? theirMode,
+    String? setup,
+    String? unconsciousPattern,
+    String? unconsciousPath,
+    String? consciousPath,
+    List<String> actions,
+    List<String> avoid,
+    List<RelationshipExampleRef> examples,
+  });
+}
+
+/// @nodoc
+class _$WhatIfScenarioCopyWithImpl<$Res, $Val extends WhatIfScenario>
+    implements $WhatIfScenarioCopyWith<$Res> {
+  _$WhatIfScenarioCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of WhatIfScenario
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? theme = null,
+    Object? myMode = freezed,
+    Object? theirMode = freezed,
+    Object? setup = freezed,
+    Object? unconsciousPattern = freezed,
+    Object? unconsciousPath = freezed,
+    Object? consciousPath = freezed,
+    Object? actions = null,
+    Object? avoid = null,
+    Object? examples = null,
+  }) {
+    return _then(
+      _value.copyWith(
+            theme: null == theme
+                ? _value.theme
+                : theme // ignore: cast_nullable_to_non_nullable
+                      as String,
+            myMode: freezed == myMode
+                ? _value.myMode
+                : myMode // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            theirMode: freezed == theirMode
+                ? _value.theirMode
+                : theirMode // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            setup: freezed == setup
+                ? _value.setup
+                : setup // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            unconsciousPattern: freezed == unconsciousPattern
+                ? _value.unconsciousPattern
+                : unconsciousPattern // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            unconsciousPath: freezed == unconsciousPath
+                ? _value.unconsciousPath
+                : unconsciousPath // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            consciousPath: freezed == consciousPath
+                ? _value.consciousPath
+                : consciousPath // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            actions: null == actions
+                ? _value.actions
+                : actions // ignore: cast_nullable_to_non_nullable
+                      as List<String>,
+            avoid: null == avoid
+                ? _value.avoid
+                : avoid // ignore: cast_nullable_to_non_nullable
+                      as List<String>,
+            examples: null == examples
+                ? _value.examples
+                : examples // ignore: cast_nullable_to_non_nullable
+                      as List<RelationshipExampleRef>,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$WhatIfScenarioImplCopyWith<$Res>
+    implements $WhatIfScenarioCopyWith<$Res> {
+  factory _$$WhatIfScenarioImplCopyWith(
+    _$WhatIfScenarioImpl value,
+    $Res Function(_$WhatIfScenarioImpl) then,
+  ) = __$$WhatIfScenarioImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({
+    String theme,
+    String? myMode,
+    String? theirMode,
+    String? setup,
+    String? unconsciousPattern,
+    String? unconsciousPath,
+    String? consciousPath,
+    List<String> actions,
+    List<String> avoid,
+    List<RelationshipExampleRef> examples,
+  });
+}
+
+/// @nodoc
+class __$$WhatIfScenarioImplCopyWithImpl<$Res>
+    extends _$WhatIfScenarioCopyWithImpl<$Res, _$WhatIfScenarioImpl>
+    implements _$$WhatIfScenarioImplCopyWith<$Res> {
+  __$$WhatIfScenarioImplCopyWithImpl(
+    _$WhatIfScenarioImpl _value,
+    $Res Function(_$WhatIfScenarioImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of WhatIfScenario
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? theme = null,
+    Object? myMode = freezed,
+    Object? theirMode = freezed,
+    Object? setup = freezed,
+    Object? unconsciousPattern = freezed,
+    Object? unconsciousPath = freezed,
+    Object? consciousPath = freezed,
+    Object? actions = null,
+    Object? avoid = null,
+    Object? examples = null,
+  }) {
+    return _then(
+      _$WhatIfScenarioImpl(
+        theme: null == theme
+            ? _value.theme
+            : theme // ignore: cast_nullable_to_non_nullable
+                  as String,
+        myMode: freezed == myMode
+            ? _value.myMode
+            : myMode // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        theirMode: freezed == theirMode
+            ? _value.theirMode
+            : theirMode // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        setup: freezed == setup
+            ? _value.setup
+            : setup // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        unconsciousPattern: freezed == unconsciousPattern
+            ? _value.unconsciousPattern
+            : unconsciousPattern // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        unconsciousPath: freezed == unconsciousPath
+            ? _value.unconsciousPath
+            : unconsciousPath // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        consciousPath: freezed == consciousPath
+            ? _value.consciousPath
+            : consciousPath // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        actions: null == actions
+            ? _value._actions
+            : actions // ignore: cast_nullable_to_non_nullable
+                  as List<String>,
+        avoid: null == avoid
+            ? _value._avoid
+            : avoid // ignore: cast_nullable_to_non_nullable
+                  as List<String>,
+        examples: null == examples
+            ? _value._examples
+            : examples // ignore: cast_nullable_to_non_nullable
+                  as List<RelationshipExampleRef>,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$WhatIfScenarioImpl implements _WhatIfScenario {
+  const _$WhatIfScenarioImpl({
+    required this.theme,
+    this.myMode,
+    this.theirMode,
+    this.setup,
+    this.unconsciousPattern,
+    this.unconsciousPath,
+    this.consciousPath,
+    final List<String> actions = const [],
+    final List<String> avoid = const [],
+    final List<RelationshipExampleRef> examples = const [],
+  }) : _actions = actions,
+       _avoid = avoid,
+       _examples = examples;
+
+  factory _$WhatIfScenarioImpl.fromJson(Map<String, dynamic> json) =>
+      _$$WhatIfScenarioImplFromJson(json);
+
+  @override
+  final String theme;
+  // 'conflict', 'intimacy', 'trust', 'autonomy', 'authority'
+  @override
+  final String? myMode;
+  // e.g., 'char_x_phase_y'
+  @override
+  final String? theirMode;
+  // e.g., 'char_a_phase_b'
+  @override
+  final String? setup;
+  // Specific real-life situation
+  @override
+  final String? unconsciousPattern;
+  // Likely projection/trigger
+  @override
+  final String? unconsciousPath;
+  // What happens if unconscious
+  @override
+  final String? consciousPath;
+  // What happens with individuation
+  final List<String> _actions;
+  // What happens with individuation
+  @override
+  @JsonKey()
+  List<String> get actions {
+    if (_actions is EqualUnmodifiableListView) return _actions;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_actions);
+  }
+
+  // Actions that change trajectory
+  final List<String> _avoid;
+  // Actions that change trajectory
+  @override
+  @JsonKey()
+  List<String> get avoid {
+    if (_avoid is EqualUnmodifiableListView) return _avoid;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_avoid);
+  }
+
+  // What to avoid
+  final List<RelationshipExampleRef> _examples;
+  // What to avoid
+  @override
+  @JsonKey()
+  List<RelationshipExampleRef> get examples {
+    if (_examples is EqualUnmodifiableListView) return _examples;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_examples);
+  }
+
+  @override
+  String toString() {
+    return 'WhatIfScenario(theme: $theme, myMode: $myMode, theirMode: $theirMode, setup: $setup, unconsciousPattern: $unconsciousPattern, unconsciousPath: $unconsciousPath, consciousPath: $consciousPath, actions: $actions, avoid: $avoid, examples: $examples)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$WhatIfScenarioImpl &&
+            (identical(other.theme, theme) || other.theme == theme) &&
+            (identical(other.myMode, myMode) || other.myMode == myMode) &&
+            (identical(other.theirMode, theirMode) ||
+                other.theirMode == theirMode) &&
+            (identical(other.setup, setup) || other.setup == setup) &&
+            (identical(other.unconsciousPattern, unconsciousPattern) ||
+                other.unconsciousPattern == unconsciousPattern) &&
+            (identical(other.unconsciousPath, unconsciousPath) ||
+                other.unconsciousPath == unconsciousPath) &&
+            (identical(other.consciousPath, consciousPath) ||
+                other.consciousPath == consciousPath) &&
+            const DeepCollectionEquality().equals(other._actions, _actions) &&
+            const DeepCollectionEquality().equals(other._avoid, _avoid) &&
+            const DeepCollectionEquality().equals(other._examples, _examples));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+    runtimeType,
+    theme,
+    myMode,
+    theirMode,
+    setup,
+    unconsciousPattern,
+    unconsciousPath,
+    consciousPath,
+    const DeepCollectionEquality().hash(_actions),
+    const DeepCollectionEquality().hash(_avoid),
+    const DeepCollectionEquality().hash(_examples),
+  );
+
+  /// Create a copy of WhatIfScenario
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$WhatIfScenarioImplCopyWith<_$WhatIfScenarioImpl> get copyWith =>
+      __$$WhatIfScenarioImplCopyWithImpl<_$WhatIfScenarioImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$WhatIfScenarioImplToJson(this);
+  }
+}
+
+abstract class _WhatIfScenario implements WhatIfScenario {
+  const factory _WhatIfScenario({
+    required final String theme,
+    final String? myMode,
+    final String? theirMode,
+    final String? setup,
+    final String? unconsciousPattern,
+    final String? unconsciousPath,
+    final String? consciousPath,
+    final List<String> actions,
+    final List<String> avoid,
+    final List<RelationshipExampleRef> examples,
+  }) = _$WhatIfScenarioImpl;
+
+  factory _WhatIfScenario.fromJson(Map<String, dynamic> json) =
+      _$WhatIfScenarioImpl.fromJson;
+
+  @override
+  String get theme; // 'conflict', 'intimacy', 'trust', 'autonomy', 'authority'
+  @override
+  String? get myMode; // e.g., 'char_x_phase_y'
+  @override
+  String? get theirMode; // e.g., 'char_a_phase_b'
+  @override
+  String? get setup; // Specific real-life situation
+  @override
+  String? get unconsciousPattern; // Likely projection/trigger
+  @override
+  String? get unconsciousPath; // What happens if unconscious
+  @override
+  String? get consciousPath; // What happens with individuation
+  @override
+  List<String> get actions; // Actions that change trajectory
+  @override
+  List<String> get avoid; // What to avoid
+  @override
+  List<RelationshipExampleRef> get examples;
+
+  /// Create a copy of WhatIfScenario
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$WhatIfScenarioImplCopyWith<_$WhatIfScenarioImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+EaseZones _$EaseZonesFromJson(Map<String, dynamic> json) {
+  return _EaseZones.fromJson(json);
+}
+
+/// @nodoc
+mixin _$EaseZones {
+  String? get summary => throw _privateConstructorUsedError;
+  List<String> get zones =>
+      throw _privateConstructorUsedError; // List of ease zone names
+  /// Detailed zones with examples (from AI)
+  List<EaseZoneDetail> get zonesWithExamples =>
+      throw _privateConstructorUsedError;
+
+  /// Examples for this module
+  List<RelationshipExampleRef> get exampleRefs =>
+      throw _privateConstructorUsedError;
+
+  /// Serializes this EaseZones to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of EaseZones
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $EaseZonesCopyWith<EaseZones> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $EaseZonesCopyWith<$Res> {
+  factory $EaseZonesCopyWith(EaseZones value, $Res Function(EaseZones) then) =
+      _$EaseZonesCopyWithImpl<$Res, EaseZones>;
+  @useResult
+  $Res call({
+    String? summary,
+    List<String> zones,
+    List<EaseZoneDetail> zonesWithExamples,
+    List<RelationshipExampleRef> exampleRefs,
+  });
+}
+
+/// @nodoc
+class _$EaseZonesCopyWithImpl<$Res, $Val extends EaseZones>
+    implements $EaseZonesCopyWith<$Res> {
+  _$EaseZonesCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of EaseZones
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? summary = freezed,
+    Object? zones = null,
+    Object? zonesWithExamples = null,
+    Object? exampleRefs = null,
+  }) {
+    return _then(
+      _value.copyWith(
+            summary: freezed == summary
+                ? _value.summary
+                : summary // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            zones: null == zones
+                ? _value.zones
+                : zones // ignore: cast_nullable_to_non_nullable
+                      as List<String>,
+            zonesWithExamples: null == zonesWithExamples
+                ? _value.zonesWithExamples
+                : zonesWithExamples // ignore: cast_nullable_to_non_nullable
+                      as List<EaseZoneDetail>,
+            exampleRefs: null == exampleRefs
+                ? _value.exampleRefs
+                : exampleRefs // ignore: cast_nullable_to_non_nullable
+                      as List<RelationshipExampleRef>,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$EaseZonesImplCopyWith<$Res>
+    implements $EaseZonesCopyWith<$Res> {
+  factory _$$EaseZonesImplCopyWith(
+    _$EaseZonesImpl value,
+    $Res Function(_$EaseZonesImpl) then,
+  ) = __$$EaseZonesImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({
+    String? summary,
+    List<String> zones,
+    List<EaseZoneDetail> zonesWithExamples,
+    List<RelationshipExampleRef> exampleRefs,
+  });
+}
+
+/// @nodoc
+class __$$EaseZonesImplCopyWithImpl<$Res>
+    extends _$EaseZonesCopyWithImpl<$Res, _$EaseZonesImpl>
+    implements _$$EaseZonesImplCopyWith<$Res> {
+  __$$EaseZonesImplCopyWithImpl(
+    _$EaseZonesImpl _value,
+    $Res Function(_$EaseZonesImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of EaseZones
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? summary = freezed,
+    Object? zones = null,
+    Object? zonesWithExamples = null,
+    Object? exampleRefs = null,
+  }) {
+    return _then(
+      _$EaseZonesImpl(
+        summary: freezed == summary
+            ? _value.summary
+            : summary // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        zones: null == zones
+            ? _value._zones
+            : zones // ignore: cast_nullable_to_non_nullable
+                  as List<String>,
+        zonesWithExamples: null == zonesWithExamples
+            ? _value._zonesWithExamples
+            : zonesWithExamples // ignore: cast_nullable_to_non_nullable
+                  as List<EaseZoneDetail>,
+        exampleRefs: null == exampleRefs
+            ? _value._exampleRefs
+            : exampleRefs // ignore: cast_nullable_to_non_nullable
+                  as List<RelationshipExampleRef>,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$EaseZonesImpl implements _EaseZones {
+  const _$EaseZonesImpl({
+    this.summary,
+    final List<String> zones = const [],
+    final List<EaseZoneDetail> zonesWithExamples = const [],
+    final List<RelationshipExampleRef> exampleRefs = const [],
+  }) : _zones = zones,
+       _zonesWithExamples = zonesWithExamples,
+       _exampleRefs = exampleRefs;
+
+  factory _$EaseZonesImpl.fromJson(Map<String, dynamic> json) =>
+      _$$EaseZonesImplFromJson(json);
+
+  @override
+  final String? summary;
+  final List<String> _zones;
+  @override
+  @JsonKey()
+  List<String> get zones {
+    if (_zones is EqualUnmodifiableListView) return _zones;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_zones);
+  }
+
+  // List of ease zone names
+  /// Detailed zones with examples (from AI)
+  final List<EaseZoneDetail> _zonesWithExamples;
+  // List of ease zone names
+  /// Detailed zones with examples (from AI)
+  @override
+  @JsonKey()
+  List<EaseZoneDetail> get zonesWithExamples {
+    if (_zonesWithExamples is EqualUnmodifiableListView)
+      return _zonesWithExamples;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_zonesWithExamples);
+  }
+
+  /// Examples for this module
+  final List<RelationshipExampleRef> _exampleRefs;
+
+  /// Examples for this module
+  @override
+  @JsonKey()
+  List<RelationshipExampleRef> get exampleRefs {
+    if (_exampleRefs is EqualUnmodifiableListView) return _exampleRefs;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_exampleRefs);
+  }
+
+  @override
+  String toString() {
+    return 'EaseZones(summary: $summary, zones: $zones, zonesWithExamples: $zonesWithExamples, exampleRefs: $exampleRefs)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$EaseZonesImpl &&
+            (identical(other.summary, summary) || other.summary == summary) &&
+            const DeepCollectionEquality().equals(other._zones, _zones) &&
+            const DeepCollectionEquality().equals(
+              other._zonesWithExamples,
+              _zonesWithExamples,
+            ) &&
+            const DeepCollectionEquality().equals(
+              other._exampleRefs,
+              _exampleRefs,
+            ));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+    runtimeType,
+    summary,
+    const DeepCollectionEquality().hash(_zones),
+    const DeepCollectionEquality().hash(_zonesWithExamples),
+    const DeepCollectionEquality().hash(_exampleRefs),
+  );
+
+  /// Create a copy of EaseZones
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$EaseZonesImplCopyWith<_$EaseZonesImpl> get copyWith =>
+      __$$EaseZonesImplCopyWithImpl<_$EaseZonesImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$EaseZonesImplToJson(this);
+  }
+}
+
+abstract class _EaseZones implements EaseZones {
+  const factory _EaseZones({
+    final String? summary,
+    final List<String> zones,
+    final List<EaseZoneDetail> zonesWithExamples,
+    final List<RelationshipExampleRef> exampleRefs,
+  }) = _$EaseZonesImpl;
+
+  factory _EaseZones.fromJson(Map<String, dynamic> json) =
+      _$EaseZonesImpl.fromJson;
+
+  @override
+  String? get summary;
+  @override
+  List<String> get zones; // List of ease zone names
+  /// Detailed zones with examples (from AI)
+  @override
+  List<EaseZoneDetail> get zonesWithExamples;
+
+  /// Examples for this module
+  @override
+  List<RelationshipExampleRef> get exampleRefs;
+
+  /// Create a copy of EaseZones
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$EaseZonesImplCopyWith<_$EaseZonesImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+EaseZoneDetail _$EaseZoneDetailFromJson(Map<String, dynamic> json) {
+  return _EaseZoneDetail.fromJson(json);
+}
+
+/// @nodoc
+mixin _$EaseZoneDetail {
+  String? get zone => throw _privateConstructorUsedError;
+  String? get description => throw _privateConstructorUsedError;
+  EaseZoneExample? get example => throw _privateConstructorUsedError;
+
+  /// Serializes this EaseZoneDetail to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of EaseZoneDetail
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $EaseZoneDetailCopyWith<EaseZoneDetail> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $EaseZoneDetailCopyWith<$Res> {
+  factory $EaseZoneDetailCopyWith(
+    EaseZoneDetail value,
+    $Res Function(EaseZoneDetail) then,
+  ) = _$EaseZoneDetailCopyWithImpl<$Res, EaseZoneDetail>;
+  @useResult
+  $Res call({String? zone, String? description, EaseZoneExample? example});
+
+  $EaseZoneExampleCopyWith<$Res>? get example;
+}
+
+/// @nodoc
+class _$EaseZoneDetailCopyWithImpl<$Res, $Val extends EaseZoneDetail>
+    implements $EaseZoneDetailCopyWith<$Res> {
+  _$EaseZoneDetailCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of EaseZoneDetail
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? zone = freezed,
+    Object? description = freezed,
+    Object? example = freezed,
+  }) {
+    return _then(
+      _value.copyWith(
+            zone: freezed == zone
+                ? _value.zone
+                : zone // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            description: freezed == description
+                ? _value.description
+                : description // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            example: freezed == example
+                ? _value.example
+                : example // ignore: cast_nullable_to_non_nullable
+                      as EaseZoneExample?,
+          )
+          as $Val,
+    );
+  }
+
+  /// Create a copy of EaseZoneDetail
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $EaseZoneExampleCopyWith<$Res>? get example {
+    if (_value.example == null) {
+      return null;
+    }
+
+    return $EaseZoneExampleCopyWith<$Res>(_value.example!, (value) {
+      return _then(_value.copyWith(example: value) as $Val);
+    });
+  }
+}
+
+/// @nodoc
+abstract class _$$EaseZoneDetailImplCopyWith<$Res>
+    implements $EaseZoneDetailCopyWith<$Res> {
+  factory _$$EaseZoneDetailImplCopyWith(
+    _$EaseZoneDetailImpl value,
+    $Res Function(_$EaseZoneDetailImpl) then,
+  ) = __$$EaseZoneDetailImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String? zone, String? description, EaseZoneExample? example});
+
+  @override
+  $EaseZoneExampleCopyWith<$Res>? get example;
+}
+
+/// @nodoc
+class __$$EaseZoneDetailImplCopyWithImpl<$Res>
+    extends _$EaseZoneDetailCopyWithImpl<$Res, _$EaseZoneDetailImpl>
+    implements _$$EaseZoneDetailImplCopyWith<$Res> {
+  __$$EaseZoneDetailImplCopyWithImpl(
+    _$EaseZoneDetailImpl _value,
+    $Res Function(_$EaseZoneDetailImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of EaseZoneDetail
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? zone = freezed,
+    Object? description = freezed,
+    Object? example = freezed,
+  }) {
+    return _then(
+      _$EaseZoneDetailImpl(
+        zone: freezed == zone
+            ? _value.zone
+            : zone // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        description: freezed == description
+            ? _value.description
+            : description // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        example: freezed == example
+            ? _value.example
+            : example // ignore: cast_nullable_to_non_nullable
+                  as EaseZoneExample?,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$EaseZoneDetailImpl implements _EaseZoneDetail {
+  const _$EaseZoneDetailImpl({this.zone, this.description, this.example});
+
+  factory _$EaseZoneDetailImpl.fromJson(Map<String, dynamic> json) =>
+      _$$EaseZoneDetailImplFromJson(json);
+
+  @override
+  final String? zone;
+  @override
+  final String? description;
+  @override
+  final EaseZoneExample? example;
+
+  @override
+  String toString() {
+    return 'EaseZoneDetail(zone: $zone, description: $description, example: $example)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$EaseZoneDetailImpl &&
+            (identical(other.zone, zone) || other.zone == zone) &&
+            (identical(other.description, description) ||
+                other.description == description) &&
+            (identical(other.example, example) || other.example == example));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, zone, description, example);
+
+  /// Create a copy of EaseZoneDetail
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$EaseZoneDetailImplCopyWith<_$EaseZoneDetailImpl> get copyWith =>
+      __$$EaseZoneDetailImplCopyWithImpl<_$EaseZoneDetailImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$EaseZoneDetailImplToJson(this);
+  }
+}
+
+abstract class _EaseZoneDetail implements EaseZoneDetail {
+  const factory _EaseZoneDetail({
+    final String? zone,
+    final String? description,
+    final EaseZoneExample? example,
+  }) = _$EaseZoneDetailImpl;
+
+  factory _EaseZoneDetail.fromJson(Map<String, dynamic> json) =
+      _$EaseZoneDetailImpl.fromJson;
+
+  @override
+  String? get zone;
+  @override
+  String? get description;
+  @override
+  EaseZoneExample? get example;
+
+  /// Create a copy of EaseZoneDetail
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$EaseZoneDetailImplCopyWith<_$EaseZoneDetailImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+EaseZoneExample _$EaseZoneExampleFromJson(Map<String, dynamic> json) {
+  return _EaseZoneExample.fromJson(json);
+}
+
+/// @nodoc
+mixin _$EaseZoneExample {
+  String? get characterName => throw _privateConstructorUsedError;
+  RelationshipExampleReference? get reference =>
+      throw _privateConstructorUsedError;
+  String? get scene => throw _privateConstructorUsedError;
+
+  /// Serializes this EaseZoneExample to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of EaseZoneExample
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $EaseZoneExampleCopyWith<EaseZoneExample> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $EaseZoneExampleCopyWith<$Res> {
+  factory $EaseZoneExampleCopyWith(
+    EaseZoneExample value,
+    $Res Function(EaseZoneExample) then,
+  ) = _$EaseZoneExampleCopyWithImpl<$Res, EaseZoneExample>;
+  @useResult
+  $Res call({
+    String? characterName,
+    RelationshipExampleReference? reference,
+    String? scene,
+  });
+
+  $RelationshipExampleReferenceCopyWith<$Res>? get reference;
+}
+
+/// @nodoc
+class _$EaseZoneExampleCopyWithImpl<$Res, $Val extends EaseZoneExample>
+    implements $EaseZoneExampleCopyWith<$Res> {
+  _$EaseZoneExampleCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of EaseZoneExample
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? characterName = freezed,
+    Object? reference = freezed,
+    Object? scene = freezed,
+  }) {
+    return _then(
+      _value.copyWith(
+            characterName: freezed == characterName
+                ? _value.characterName
+                : characterName // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            reference: freezed == reference
+                ? _value.reference
+                : reference // ignore: cast_nullable_to_non_nullable
+                      as RelationshipExampleReference?,
+            scene: freezed == scene
+                ? _value.scene
+                : scene // ignore: cast_nullable_to_non_nullable
+                      as String?,
+          )
+          as $Val,
+    );
+  }
+
+  /// Create a copy of EaseZoneExample
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $RelationshipExampleReferenceCopyWith<$Res>? get reference {
+    if (_value.reference == null) {
+      return null;
+    }
+
+    return $RelationshipExampleReferenceCopyWith<$Res>(_value.reference!, (
+      value,
+    ) {
+      return _then(_value.copyWith(reference: value) as $Val);
+    });
+  }
+}
+
+/// @nodoc
+abstract class _$$EaseZoneExampleImplCopyWith<$Res>
+    implements $EaseZoneExampleCopyWith<$Res> {
+  factory _$$EaseZoneExampleImplCopyWith(
+    _$EaseZoneExampleImpl value,
+    $Res Function(_$EaseZoneExampleImpl) then,
+  ) = __$$EaseZoneExampleImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({
+    String? characterName,
+    RelationshipExampleReference? reference,
+    String? scene,
+  });
+
+  @override
+  $RelationshipExampleReferenceCopyWith<$Res>? get reference;
+}
+
+/// @nodoc
+class __$$EaseZoneExampleImplCopyWithImpl<$Res>
+    extends _$EaseZoneExampleCopyWithImpl<$Res, _$EaseZoneExampleImpl>
+    implements _$$EaseZoneExampleImplCopyWith<$Res> {
+  __$$EaseZoneExampleImplCopyWithImpl(
+    _$EaseZoneExampleImpl _value,
+    $Res Function(_$EaseZoneExampleImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of EaseZoneExample
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? characterName = freezed,
+    Object? reference = freezed,
+    Object? scene = freezed,
+  }) {
+    return _then(
+      _$EaseZoneExampleImpl(
+        characterName: freezed == characterName
+            ? _value.characterName
+            : characterName // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        reference: freezed == reference
+            ? _value.reference
+            : reference // ignore: cast_nullable_to_non_nullable
+                  as RelationshipExampleReference?,
+        scene: freezed == scene
+            ? _value.scene
+            : scene // ignore: cast_nullable_to_non_nullable
+                  as String?,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$EaseZoneExampleImpl implements _EaseZoneExample {
+  const _$EaseZoneExampleImpl({this.characterName, this.reference, this.scene});
+
+  factory _$EaseZoneExampleImpl.fromJson(Map<String, dynamic> json) =>
+      _$$EaseZoneExampleImplFromJson(json);
+
+  @override
+  final String? characterName;
+  @override
+  final RelationshipExampleReference? reference;
+  @override
+  final String? scene;
+
+  @override
+  String toString() {
+    return 'EaseZoneExample(characterName: $characterName, reference: $reference, scene: $scene)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$EaseZoneExampleImpl &&
+            (identical(other.characterName, characterName) ||
+                other.characterName == characterName) &&
+            (identical(other.reference, reference) ||
+                other.reference == reference) &&
+            (identical(other.scene, scene) || other.scene == scene));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, characterName, reference, scene);
+
+  /// Create a copy of EaseZoneExample
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$EaseZoneExampleImplCopyWith<_$EaseZoneExampleImpl> get copyWith =>
+      __$$EaseZoneExampleImplCopyWithImpl<_$EaseZoneExampleImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$EaseZoneExampleImplToJson(this);
+  }
+}
+
+abstract class _EaseZoneExample implements EaseZoneExample {
+  const factory _EaseZoneExample({
+    final String? characterName,
+    final RelationshipExampleReference? reference,
+    final String? scene,
+  }) = _$EaseZoneExampleImpl;
+
+  factory _EaseZoneExample.fromJson(Map<String, dynamic> json) =
+      _$EaseZoneExampleImpl.fromJson;
+
+  @override
+  String? get characterName;
+  @override
+  RelationshipExampleReference? get reference;
+  @override
+  String? get scene;
+
+  /// Create a copy of EaseZoneExample
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$EaseZoneExampleImplCopyWith<_$EaseZoneExampleImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+RuptureLoops _$RuptureLoopsFromJson(Map<String, dynamic> json) {
+  return _RuptureLoops.fromJson(json);
+}
+
+/// @nodoc
+mixin _$RuptureLoops {
+  String? get summary => throw _privateConstructorUsedError;
+  List<RuptureLoop> get loops => throw _privateConstructorUsedError;
+
+  /// Examples for this module
+  List<RelationshipExampleRef> get exampleRefs =>
+      throw _privateConstructorUsedError;
+
+  /// Serializes this RuptureLoops to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of RuptureLoops
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $RuptureLoopsCopyWith<RuptureLoops> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $RuptureLoopsCopyWith<$Res> {
+  factory $RuptureLoopsCopyWith(
+    RuptureLoops value,
+    $Res Function(RuptureLoops) then,
+  ) = _$RuptureLoopsCopyWithImpl<$Res, RuptureLoops>;
+  @useResult
+  $Res call({
+    String? summary,
+    List<RuptureLoop> loops,
+    List<RelationshipExampleRef> exampleRefs,
+  });
+}
+
+/// @nodoc
+class _$RuptureLoopsCopyWithImpl<$Res, $Val extends RuptureLoops>
+    implements $RuptureLoopsCopyWith<$Res> {
+  _$RuptureLoopsCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of RuptureLoops
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? summary = freezed,
+    Object? loops = null,
+    Object? exampleRefs = null,
+  }) {
+    return _then(
+      _value.copyWith(
+            summary: freezed == summary
+                ? _value.summary
+                : summary // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            loops: null == loops
+                ? _value.loops
+                : loops // ignore: cast_nullable_to_non_nullable
+                      as List<RuptureLoop>,
+            exampleRefs: null == exampleRefs
+                ? _value.exampleRefs
+                : exampleRefs // ignore: cast_nullable_to_non_nullable
+                      as List<RelationshipExampleRef>,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$RuptureLoopsImplCopyWith<$Res>
+    implements $RuptureLoopsCopyWith<$Res> {
+  factory _$$RuptureLoopsImplCopyWith(
+    _$RuptureLoopsImpl value,
+    $Res Function(_$RuptureLoopsImpl) then,
+  ) = __$$RuptureLoopsImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({
+    String? summary,
+    List<RuptureLoop> loops,
+    List<RelationshipExampleRef> exampleRefs,
+  });
+}
+
+/// @nodoc
+class __$$RuptureLoopsImplCopyWithImpl<$Res>
+    extends _$RuptureLoopsCopyWithImpl<$Res, _$RuptureLoopsImpl>
+    implements _$$RuptureLoopsImplCopyWith<$Res> {
+  __$$RuptureLoopsImplCopyWithImpl(
+    _$RuptureLoopsImpl _value,
+    $Res Function(_$RuptureLoopsImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of RuptureLoops
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? summary = freezed,
+    Object? loops = null,
+    Object? exampleRefs = null,
+  }) {
+    return _then(
+      _$RuptureLoopsImpl(
+        summary: freezed == summary
+            ? _value.summary
+            : summary // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        loops: null == loops
+            ? _value._loops
+            : loops // ignore: cast_nullable_to_non_nullable
+                  as List<RuptureLoop>,
+        exampleRefs: null == exampleRefs
+            ? _value._exampleRefs
+            : exampleRefs // ignore: cast_nullable_to_non_nullable
+                  as List<RelationshipExampleRef>,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$RuptureLoopsImpl implements _RuptureLoops {
+  const _$RuptureLoopsImpl({
+    this.summary,
+    final List<RuptureLoop> loops = const [],
+    final List<RelationshipExampleRef> exampleRefs = const [],
+  }) : _loops = loops,
+       _exampleRefs = exampleRefs;
+
+  factory _$RuptureLoopsImpl.fromJson(Map<String, dynamic> json) =>
+      _$$RuptureLoopsImplFromJson(json);
+
+  @override
+  final String? summary;
+  final List<RuptureLoop> _loops;
+  @override
+  @JsonKey()
+  List<RuptureLoop> get loops {
+    if (_loops is EqualUnmodifiableListView) return _loops;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_loops);
+  }
+
+  /// Examples for this module
+  final List<RelationshipExampleRef> _exampleRefs;
+
+  /// Examples for this module
+  @override
+  @JsonKey()
+  List<RelationshipExampleRef> get exampleRefs {
+    if (_exampleRefs is EqualUnmodifiableListView) return _exampleRefs;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_exampleRefs);
+  }
+
+  @override
+  String toString() {
+    return 'RuptureLoops(summary: $summary, loops: $loops, exampleRefs: $exampleRefs)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$RuptureLoopsImpl &&
+            (identical(other.summary, summary) || other.summary == summary) &&
+            const DeepCollectionEquality().equals(other._loops, _loops) &&
+            const DeepCollectionEquality().equals(
+              other._exampleRefs,
+              _exampleRefs,
+            ));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+    runtimeType,
+    summary,
+    const DeepCollectionEquality().hash(_loops),
+    const DeepCollectionEquality().hash(_exampleRefs),
+  );
+
+  /// Create a copy of RuptureLoops
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$RuptureLoopsImplCopyWith<_$RuptureLoopsImpl> get copyWith =>
+      __$$RuptureLoopsImplCopyWithImpl<_$RuptureLoopsImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$RuptureLoopsImplToJson(this);
+  }
+}
+
+abstract class _RuptureLoops implements RuptureLoops {
+  const factory _RuptureLoops({
+    final String? summary,
+    final List<RuptureLoop> loops,
+    final List<RelationshipExampleRef> exampleRefs,
+  }) = _$RuptureLoopsImpl;
+
+  factory _RuptureLoops.fromJson(Map<String, dynamic> json) =
+      _$RuptureLoopsImpl.fromJson;
+
+  @override
+  String? get summary;
+  @override
+  List<RuptureLoop> get loops;
+
+  /// Examples for this module
+  @override
+  List<RelationshipExampleRef> get exampleRefs;
+
+  /// Create a copy of RuptureLoops
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$RuptureLoopsImplCopyWith<_$RuptureLoopsImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+RuptureLoop _$RuptureLoopFromJson(Map<String, dynamic> json) {
+  return _RuptureLoop.fromJson(json);
+}
+
+/// @nodoc
+mixin _$RuptureLoop {
+  String? get name => throw _privateConstructorUsedError;
+  String? get trigger => throw _privateConstructorUsedError;
+  String? get pattern => throw _privateConstructorUsedError;
+  String? get repair => throw _privateConstructorUsedError;
+
+  /// Serializes this RuptureLoop to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of RuptureLoop
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $RuptureLoopCopyWith<RuptureLoop> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $RuptureLoopCopyWith<$Res> {
+  factory $RuptureLoopCopyWith(
+    RuptureLoop value,
+    $Res Function(RuptureLoop) then,
+  ) = _$RuptureLoopCopyWithImpl<$Res, RuptureLoop>;
+  @useResult
+  $Res call({String? name, String? trigger, String? pattern, String? repair});
+}
+
+/// @nodoc
+class _$RuptureLoopCopyWithImpl<$Res, $Val extends RuptureLoop>
+    implements $RuptureLoopCopyWith<$Res> {
+  _$RuptureLoopCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of RuptureLoop
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? name = freezed,
+    Object? trigger = freezed,
+    Object? pattern = freezed,
+    Object? repair = freezed,
+  }) {
+    return _then(
+      _value.copyWith(
+            name: freezed == name
+                ? _value.name
+                : name // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            trigger: freezed == trigger
+                ? _value.trigger
+                : trigger // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            pattern: freezed == pattern
+                ? _value.pattern
+                : pattern // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            repair: freezed == repair
+                ? _value.repair
+                : repair // ignore: cast_nullable_to_non_nullable
+                      as String?,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$RuptureLoopImplCopyWith<$Res>
+    implements $RuptureLoopCopyWith<$Res> {
+  factory _$$RuptureLoopImplCopyWith(
+    _$RuptureLoopImpl value,
+    $Res Function(_$RuptureLoopImpl) then,
+  ) = __$$RuptureLoopImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String? name, String? trigger, String? pattern, String? repair});
+}
+
+/// @nodoc
+class __$$RuptureLoopImplCopyWithImpl<$Res>
+    extends _$RuptureLoopCopyWithImpl<$Res, _$RuptureLoopImpl>
+    implements _$$RuptureLoopImplCopyWith<$Res> {
+  __$$RuptureLoopImplCopyWithImpl(
+    _$RuptureLoopImpl _value,
+    $Res Function(_$RuptureLoopImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of RuptureLoop
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? name = freezed,
+    Object? trigger = freezed,
+    Object? pattern = freezed,
+    Object? repair = freezed,
+  }) {
+    return _then(
+      _$RuptureLoopImpl(
+        name: freezed == name
+            ? _value.name
+            : name // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        trigger: freezed == trigger
+            ? _value.trigger
+            : trigger // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        pattern: freezed == pattern
+            ? _value.pattern
+            : pattern // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        repair: freezed == repair
+            ? _value.repair
+            : repair // ignore: cast_nullable_to_non_nullable
+                  as String?,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$RuptureLoopImpl implements _RuptureLoop {
+  const _$RuptureLoopImpl({this.name, this.trigger, this.pattern, this.repair});
+
+  factory _$RuptureLoopImpl.fromJson(Map<String, dynamic> json) =>
+      _$$RuptureLoopImplFromJson(json);
+
+  @override
+  final String? name;
+  @override
+  final String? trigger;
+  @override
+  final String? pattern;
+  @override
+  final String? repair;
+
+  @override
+  String toString() {
+    return 'RuptureLoop(name: $name, trigger: $trigger, pattern: $pattern, repair: $repair)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$RuptureLoopImpl &&
+            (identical(other.name, name) || other.name == name) &&
+            (identical(other.trigger, trigger) || other.trigger == trigger) &&
+            (identical(other.pattern, pattern) || other.pattern == pattern) &&
+            (identical(other.repair, repair) || other.repair == repair));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, name, trigger, pattern, repair);
+
+  /// Create a copy of RuptureLoop
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$RuptureLoopImplCopyWith<_$RuptureLoopImpl> get copyWith =>
+      __$$RuptureLoopImplCopyWithImpl<_$RuptureLoopImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$RuptureLoopImplToJson(this);
+  }
+}
+
+abstract class _RuptureLoop implements RuptureLoop {
+  const factory _RuptureLoop({
+    final String? name,
+    final String? trigger,
+    final String? pattern,
+    final String? repair,
+  }) = _$RuptureLoopImpl;
+
+  factory _RuptureLoop.fromJson(Map<String, dynamic> json) =
+      _$RuptureLoopImpl.fromJson;
+
+  @override
+  String? get name;
+  @override
+  String? get trigger;
+  @override
+  String? get pattern;
+  @override
+  String? get repair;
+
+  /// Create a copy of RuptureLoop
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$RuptureLoopImplCopyWith<_$RuptureLoopImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 

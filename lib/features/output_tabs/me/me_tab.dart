@@ -6,8 +6,10 @@ import '../identification/identification_tab.dart';
 import '../functioning/functioning_tab.dart';
 import '../actions/actions_tab.dart';
 import '../life_domains/life_domains_tab.dart';
+import '../constellation/constellation_tab.dart';
 import '../../../core/storage/repositories.dart';
 import '../../../app/theme/app_theme.dart';
+import '../../shared/tone_selector.dart';
 
 class MeTab extends ConsumerStatefulWidget {
   const MeTab({super.key});
@@ -21,6 +23,7 @@ class _MeTabState extends ConsumerState<MeTab> with SingleTickerProviderStateMix
 
   final List<_TabItem> _tabItems = const [
     _TabItem(title: 'Story', icon: Icons.auto_stories),
+    _TabItem(title: 'Archetypes', icon: Icons.auto_awesome),
     _TabItem(title: 'Identity', icon: Icons.person),
     _TabItem(title: 'Functioning', icon: Icons.psychology),
     _TabItem(title: 'Actions', icon: Icons.directions_run),
@@ -65,6 +68,8 @@ class _MeTabState extends ConsumerState<MeTab> with SingleTickerProviderStateMix
           ],
         ),
         actions: [
+          // Tone selector
+          const ToneSelector(compact: true),
           IconButton(
             icon: const Icon(Icons.edit_outlined),
             tooltip: 'Edit Characters',
@@ -105,6 +110,7 @@ class _MeTabState extends ConsumerState<MeTab> with SingleTickerProviderStateMix
         controller: _tabController,
         children: const [
           StoryTab(embedded: true),
+          ConstellationTab(embedded: true, isRelationship: false),
           IdentificationTab(embedded: true),
           FunctioningTab(embedded: true),
           ActionsTab(embedded: true),

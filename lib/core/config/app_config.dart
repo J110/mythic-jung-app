@@ -2,10 +2,10 @@
 class AppConfig {
   /// The base URL for the API
   /// In production, this should point to your Render deployment
-  /// For local development, use http://127.0.0.1:3000
+  /// For local development, use http://127.0.0.1:3001
   static const String apiBaseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'http://127.0.0.1:3000',
+    defaultValue: 'http://127.0.0.1:3001',
   );
 
   /// Whether to use mock data (for development without backend)

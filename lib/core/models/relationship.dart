@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'character.dart';
+import 'constellation.dart';
 
 part 'relationship.freezed.dart';
 part 'relationship.g.dart';
@@ -168,6 +169,7 @@ class NextStepSituation with _$NextStepSituation {
 }
 
 /// Full relationship output from backend
+/// V2: Relationship-centered with What-If Scenarios
 @freezed
 class RelationshipOutput with _$RelationshipOutput {
   const factory RelationshipOutput({
@@ -175,11 +177,109 @@ class RelationshipOutput with _$RelationshipOutput {
     RelationshipModel? relationshipModel,
     RelationshipNarrative? narrative,
     RelationshipExamples? examples,
+    // NEW: What-If Scenarios for key relationship themes
+    @Default([]) List<WhatIfScenario> whatIfScenarios,
+    // NEW: Ease zones (where it works naturally)
+    EaseZones? easeZones,
+    // NEW: Rupture loops (where it breaks)
+    RuptureLoops? ruptureLoops,
     RelationshipMeta? meta,
+    // NEW: Relationship archetype constellation
+    RelationshipConstellationResponse? constellation,
   }) = _RelationshipOutput;
 
   factory RelationshipOutput.fromJson(Map<String, dynamic> json) =>
       _$RelationshipOutputFromJson(json);
+}
+
+/// What-If Scenario - character-to-character moment analysis
+@freezed
+class WhatIfScenario with _$WhatIfScenario {
+  const factory WhatIfScenario({
+    required String theme, // 'conflict', 'intimacy', 'trust', 'autonomy', 'authority'
+    String? myMode, // e.g., 'char_x_phase_y'
+    String? theirMode, // e.g., 'char_a_phase_b'
+    String? setup, // Specific real-life situation
+    String? unconsciousPattern, // Likely projection/trigger
+    String? unconsciousPath, // What happens if unconscious
+    String? consciousPath, // What happens with individuation
+    @Default([]) List<String> actions, // Actions that change trajectory
+    @Default([]) List<String> avoid, // What to avoid
+    @Default([]) List<RelationshipExampleRef> examples,
+  }) = _WhatIfScenario;
+
+  factory WhatIfScenario.fromJson(Map<String, dynamic> json) =>
+      _$WhatIfScenarioFromJson(json);
+}
+
+/// Ease Zones - where the relationship works naturally
+@freezed
+class EaseZones with _$EaseZones {
+  const factory EaseZones({
+    String? summary,
+    @Default([]) List<String> zones, // List of ease zone names
+    /// Detailed zones with examples (from AI)
+    @Default([]) List<EaseZoneDetail> zonesWithExamples,
+    /// Examples for this module
+    @Default([]) List<RelationshipExampleRef> exampleRefs,
+  }) = _EaseZones;
+
+  factory EaseZones.fromJson(Map<String, dynamic> json) =>
+      _$EaseZonesFromJson(json);
+}
+
+/// Detail for a single ease zone
+@freezed
+class EaseZoneDetail with _$EaseZoneDetail {
+  const factory EaseZoneDetail({
+    String? zone,
+    String? description,
+    EaseZoneExample? example,
+  }) = _EaseZoneDetail;
+
+  factory EaseZoneDetail.fromJson(Map<String, dynamic> json) =>
+      _$EaseZoneDetailFromJson(json);
+}
+
+/// Example for an ease zone
+@freezed
+class EaseZoneExample with _$EaseZoneExample {
+  const factory EaseZoneExample({
+    String? characterName,
+    RelationshipExampleReference? reference,
+    String? scene,
+  }) = _EaseZoneExample;
+
+  factory EaseZoneExample.fromJson(Map<String, dynamic> json) =>
+      _$EaseZoneExampleFromJson(json);
+}
+
+/// Rupture Loops - where the relationship breaks
+@freezed
+class RuptureLoops with _$RuptureLoops {
+  const factory RuptureLoops({
+    String? summary,
+    @Default([]) List<RuptureLoop> loops,
+    /// Examples for this module
+    @Default([]) List<RelationshipExampleRef> exampleRefs,
+  }) = _RuptureLoops;
+
+  factory RuptureLoops.fromJson(Map<String, dynamic> json) =>
+      _$RuptureLoopsFromJson(json);
+}
+
+/// A single rupture loop pattern
+@freezed
+class RuptureLoop with _$RuptureLoop {
+  const factory RuptureLoop({
+    String? name,
+    String? trigger,
+    String? pattern,
+    String? repair,
+  }) = _RuptureLoop;
+
+  factory RuptureLoop.fromJson(Map<String, dynamic> json) =>
+      _$RuptureLoopFromJson(json);
 }
 
 /// The mythic story of the relationship

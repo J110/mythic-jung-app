@@ -32,6 +32,9 @@ _$GeneratedOutputImpl _$$GeneratedOutputImplFromJson(
   deltaSummary: json['deltaSummary'] == null
       ? null
       : DeltaSummary.fromJson(json['deltaSummary'] as Map<String, dynamic>),
+  constellation: json['constellation'] == null
+      ? null
+      : Constellation.fromJson(json['constellation'] as Map<String, dynamic>),
 );
 
 Map<String, dynamic> _$$GeneratedOutputImplToJson(
@@ -46,6 +49,7 @@ Map<String, dynamic> _$$GeneratedOutputImplToJson(
   'examples': instance.examples,
   'identification_v2': instance.identificationV2,
   'deltaSummary': instance.deltaSummary,
+  'constellation': instance.constellation,
 };
 
 _$StoryOutputImpl _$$StoryOutputImplFromJson(Map<String, dynamic> json) =>

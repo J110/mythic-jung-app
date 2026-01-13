@@ -30,7 +30,9 @@ mixin _$GeneratedOutput {
   ExamplesOutput? get examples => throw _privateConstructorUsedError;
   @JsonKey(name: 'identification_v2')
   IdentificationV2? get identificationV2 => throw _privateConstructorUsedError; // Center/Orbit system
-  DeltaSummary? get deltaSummary => throw _privateConstructorUsedError;
+  DeltaSummary? get deltaSummary =>
+      throw _privateConstructorUsedError; // Assessment-driven change summary
+  Constellation? get constellation => throw _privateConstructorUsedError;
 
   /// Serializes this GeneratedOutput to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -59,6 +61,7 @@ abstract class $GeneratedOutputCopyWith<$Res> {
     ExamplesOutput? examples,
     @JsonKey(name: 'identification_v2') IdentificationV2? identificationV2,
     DeltaSummary? deltaSummary,
+    Constellation? constellation,
   });
 
   $StoryOutputCopyWith<$Res> get story;
@@ -70,6 +73,7 @@ abstract class $GeneratedOutputCopyWith<$Res> {
   $ExamplesOutputCopyWith<$Res>? get examples;
   $IdentificationV2CopyWith<$Res>? get identificationV2;
   $DeltaSummaryCopyWith<$Res>? get deltaSummary;
+  $ConstellationCopyWith<$Res>? get constellation;
 }
 
 /// @nodoc
@@ -96,6 +100,7 @@ class _$GeneratedOutputCopyWithImpl<$Res, $Val extends GeneratedOutput>
     Object? examples = freezed,
     Object? identificationV2 = freezed,
     Object? deltaSummary = freezed,
+    Object? constellation = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -135,6 +140,10 @@ class _$GeneratedOutputCopyWithImpl<$Res, $Val extends GeneratedOutput>
                 ? _value.deltaSummary
                 : deltaSummary // ignore: cast_nullable_to_non_nullable
                       as DeltaSummary?,
+            constellation: freezed == constellation
+                ? _value.constellation
+                : constellation // ignore: cast_nullable_to_non_nullable
+                      as Constellation?,
           )
           as $Val,
     );
@@ -241,6 +250,20 @@ class _$GeneratedOutputCopyWithImpl<$Res, $Val extends GeneratedOutput>
       return _then(_value.copyWith(deltaSummary: value) as $Val);
     });
   }
+
+  /// Create a copy of GeneratedOutput
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $ConstellationCopyWith<$Res>? get constellation {
+    if (_value.constellation == null) {
+      return null;
+    }
+
+    return $ConstellationCopyWith<$Res>(_value.constellation!, (value) {
+      return _then(_value.copyWith(constellation: value) as $Val);
+    });
+  }
 }
 
 /// @nodoc
@@ -262,6 +285,7 @@ abstract class _$$GeneratedOutputImplCopyWith<$Res>
     ExamplesOutput? examples,
     @JsonKey(name: 'identification_v2') IdentificationV2? identificationV2,
     DeltaSummary? deltaSummary,
+    Constellation? constellation,
   });
 
   @override
@@ -282,6 +306,8 @@ abstract class _$$GeneratedOutputImplCopyWith<$Res>
   $IdentificationV2CopyWith<$Res>? get identificationV2;
   @override
   $DeltaSummaryCopyWith<$Res>? get deltaSummary;
+  @override
+  $ConstellationCopyWith<$Res>? get constellation;
 }
 
 /// @nodoc
@@ -307,6 +333,7 @@ class __$$GeneratedOutputImplCopyWithImpl<$Res>
     Object? examples = freezed,
     Object? identificationV2 = freezed,
     Object? deltaSummary = freezed,
+    Object? constellation = freezed,
   }) {
     return _then(
       _$GeneratedOutputImpl(
@@ -346,6 +373,10 @@ class __$$GeneratedOutputImplCopyWithImpl<$Res>
             ? _value.deltaSummary
             : deltaSummary // ignore: cast_nullable_to_non_nullable
                   as DeltaSummary?,
+        constellation: freezed == constellation
+            ? _value.constellation
+            : constellation // ignore: cast_nullable_to_non_nullable
+                  as Constellation?,
       ),
     );
   }
@@ -364,6 +395,7 @@ class _$GeneratedOutputImpl implements _GeneratedOutput {
     this.examples,
     @JsonKey(name: 'identification_v2') this.identificationV2,
     this.deltaSummary,
+    this.constellation,
   });
 
   factory _$GeneratedOutputImpl.fromJson(Map<String, dynamic> json) =>
@@ -389,10 +421,13 @@ class _$GeneratedOutputImpl implements _GeneratedOutput {
   // Center/Orbit system
   @override
   final DeltaSummary? deltaSummary;
+  // Assessment-driven change summary
+  @override
+  final Constellation? constellation;
 
   @override
   String toString() {
-    return 'GeneratedOutput(story: $story, identification: $identification, functioning: $functioning, actions: $actions, lifeDomains: $lifeDomains, meta: $meta, examples: $examples, identificationV2: $identificationV2, deltaSummary: $deltaSummary)';
+    return 'GeneratedOutput(story: $story, identification: $identification, functioning: $functioning, actions: $actions, lifeDomains: $lifeDomains, meta: $meta, examples: $examples, identificationV2: $identificationV2, deltaSummary: $deltaSummary, constellation: $constellation)';
   }
 
   @override
@@ -414,7 +449,9 @@ class _$GeneratedOutputImpl implements _GeneratedOutput {
             (identical(other.identificationV2, identificationV2) ||
                 other.identificationV2 == identificationV2) &&
             (identical(other.deltaSummary, deltaSummary) ||
-                other.deltaSummary == deltaSummary));
+                other.deltaSummary == deltaSummary) &&
+            (identical(other.constellation, constellation) ||
+                other.constellation == constellation));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -430,6 +467,7 @@ class _$GeneratedOutputImpl implements _GeneratedOutput {
     examples,
     identificationV2,
     deltaSummary,
+    constellation,
   );
 
   /// Create a copy of GeneratedOutput
@@ -461,6 +499,7 @@ abstract class _GeneratedOutput implements GeneratedOutput {
     @JsonKey(name: 'identification_v2')
     final IdentificationV2? identificationV2,
     final DeltaSummary? deltaSummary,
+    final Constellation? constellation,
   }) = _$GeneratedOutputImpl;
 
   factory _GeneratedOutput.fromJson(Map<String, dynamic> json) =
@@ -484,7 +523,9 @@ abstract class _GeneratedOutput implements GeneratedOutput {
   @JsonKey(name: 'identification_v2')
   IdentificationV2? get identificationV2; // Center/Orbit system
   @override
-  DeltaSummary? get deltaSummary;
+  DeltaSummary? get deltaSummary; // Assessment-driven change summary
+  @override
+  Constellation? get constellation;
 
   /// Create a copy of GeneratedOutput
   /// with the given fields replaced by the non-null parameter values.

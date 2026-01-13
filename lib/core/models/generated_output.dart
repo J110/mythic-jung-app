@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'constellation.dart';
 
 part 'generated_output.freezed.dart';
 part 'generated_output.g.dart';
@@ -76,6 +77,7 @@ class GeneratedOutput with _$GeneratedOutput {
     ExamplesOutput? examples,
     @JsonKey(name: 'identification_v2') IdentificationV2? identificationV2, // Center/Orbit system
     DeltaSummary? deltaSummary, // Assessment-driven change summary
+    Constellation? constellation, // Archetype constellation (structural + motifs)
   }) = _GeneratedOutput;
 
   factory GeneratedOutput.fromJson(Map<String, dynamic> json) =>

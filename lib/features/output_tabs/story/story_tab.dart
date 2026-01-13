@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/storage/repositories.dart';
 import '../../../core/models/generated_output.dart';
+import '../../../core/models/tone.dart';
 import '../../../core/widgets/output_card.dart';
 import '../../../core/widgets/examples_sheet.dart';
 import '../../../app/theme/app_theme.dart';
@@ -93,6 +94,10 @@ class _StoryTabState extends ConsumerState<StoryTab> {
   @override
   Widget build(BuildContext context) {
     final outputAsync = ref.watch(outputRepositoryProvider);
+    // Use effective output which includes tone-rendered content when available
+    final effectiveOutput = ref.watch(effectiveMeOutputProvider);
+    // Watch tone state for loading state
+    final toneState = ref.watch(toneRepositoryProvider);
     final theme = Theme.of(context);
 
     final content = Container(
@@ -106,10 +111,45 @@ class _StoryTabState extends ConsumerState<StoryTab> {
           ],
         ),
       ),
-      child: outputAsync.when(
-        data: (output) => _buildContent(context, output),
-        loading: () => _buildLoadingState(context),
-        error: (error, stack) => _buildErrorState(context, error),
+      child: Stack(
+        children: [
+          outputAsync.when(
+            data: (_) => _buildContent(context, effectiveOutput),
+            loading: () => _buildLoadingState(context),
+            error: (error, stack) => _buildErrorState(context, error),
+          ),
+          // Tone loading overlay
+          if (toneState.isLoading)
+            Positioned.fill(
+              child: Container(
+                color: theme.scaffoldBackgroundColor.withOpacity(0.85),
+                child: Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation(theme.colorScheme.primary),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Adjusting narrative tone...',
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          color: theme.colorScheme.onSurface.withOpacity(0.7),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Rewriting in ${toneState.currentTone.label} style',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurface.withOpacity(0.5),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+        ],
       ),
     );
 

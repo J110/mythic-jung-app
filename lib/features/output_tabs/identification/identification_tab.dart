@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/storage/repositories.dart';
 import '../../../core/models/generated_output.dart';
+import '../../../core/models/constellation.dart';
+import '../../../core/models/psyche_model.dart';
 import '../../../core/widgets/output_card.dart';
 import '../../../core/widgets/examples_sheet.dart';
 import '../../../core/widgets/progressive_output_page.dart';
+import '../../shared/constellation_card.dart';
 
 class IdentificationTab extends ConsumerWidget {
   final bool embedded;
@@ -50,6 +53,12 @@ class IdentificationTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final outputAsync = ref.watch(outputRepositoryProvider);
+    // Use effective output which includes tone-rendered content when available
+    final effectiveOutput = ref.watch(effectiveMeOutputProvider);
+    // Watch PsycheModel - SINGLE SOURCE OF TRUTH for structural positions
+    final psycheModelAsync = ref.watch(mePsycheModelProvider);
+    // Watch tone state for loading state
+    final toneState = ref.watch(toneRepositoryProvider);
     final theme = Theme.of(context);
 
     final content = Container(
@@ -63,10 +72,31 @@ class IdentificationTab extends ConsumerWidget {
           ],
         ),
       ),
-      child: outputAsync.when(
-        data: (output) => _buildContent(context, output),
-        loading: () => ProgressiveLoadingWidget(sections: _loadingSections),
-        error: (error, stack) => _buildErrorState(context, ref, error),
+      child: Stack(
+        children: [
+          outputAsync.when(
+            data: (_) => _buildContent(context, ref, effectiveOutput, psycheModelAsync.valueOrNull),
+            loading: () => ProgressiveLoadingWidget(sections: _loadingSections),
+            error: (error, stack) => _buildErrorState(context, ref, error),
+          ),
+          // Tone loading overlay
+          if (toneState.isLoading)
+            Positioned.fill(
+              child: Container(
+                color: theme.scaffoldBackgroundColor.withOpacity(0.85),
+                child: const Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      CircularProgressIndicator(),
+                      SizedBox(height: 16),
+                      Text('Adjusting narrative tone...'),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+        ],
       ),
     );
 
@@ -108,7 +138,7 @@ class IdentificationTab extends ConsumerWidget {
     );
   }
 
-  Widget _buildContent(BuildContext context, GeneratedOutput? output) {
+  Widget _buildContent(BuildContext context, WidgetRef ref, GeneratedOutput? output, PsycheModel? psycheModel) {
     if (output == null) {
       return const Center(
         child: Padding(
@@ -121,19 +151,33 @@ class IdentificationTab extends ConsumerWidget {
       );
     }
 
+    // Use PsycheModel as SINGLE SOURCE OF TRUTH for structural positions
+    // This ensures Identification and Archetypes pages show the same character assignments
+    final structuralPositions = psycheModel?.structuralPositions;
+    
     // Use identification_v2 if available (Center/Orbit system)
     final v2 = output.identificationV2;
     if (v2 != null) {
-      return _buildV2Content(context, output, v2);
+      return _buildV2Content(context, output, v2, structuralPositions);
     }
 
     // Fallback to legacy identification
-    return _buildLegacyContent(context, output);
+    return _buildLegacyContent(context, output, structuralPositions);
   }
 
   /// Build the new Center/Orbit/Compensation UI
-  Widget _buildV2Content(BuildContext context, GeneratedOutput output, IdentificationV2 v2) {
+  Widget _buildV2Content(BuildContext context, GeneratedOutput output, IdentificationV2 v2, StructuralPositions? structuralPositions) {
     final examples = output.examples?.identification;
+    
+    // Get character overrides from PsycheModel (single source of truth)
+    // This ensures consistency between Identification and Archetypes pages
+    final characterOverrides = <String, String?>{
+      'ego': structuralPositions?.ego?.primary,
+      'persona': structuralPositions?.persona?.primary,
+      'shadow': structuralPositions?.shadow?.primary,
+      'feelingFunction': structuralPositions?.feelingFunction?.primary,
+      'erosAxis': structuralPositions?.erosAxis?.primary,
+    };
     
     final archetypes = [
       ('ego', v2.ego, examples?.ego ?? []),
@@ -144,14 +188,18 @@ class IdentificationTab extends ConsumerWidget {
       ('erosAxis', v2.erosAxis, examples?.erosAxis ?? []),
     ];
 
-    final sections = <Widget>[];
+    final sections = <Widget>[
+      // Constellation Card at the top
+      _ConstellationSection(),
+      const SizedBox(height: 8),
+    ];
     int index = 0;
     
     for (final (key, dynamics, exampleList) in archetypes) {
       if (dynamics != null) {
         sections.add(AnimatedContentCard(
           index: index++,
-          child: _buildDynamicsCard(context, key, dynamics, exampleList),
+          child: _buildDynamicsCard(context, key, dynamics, exampleList, characterOverrides[key]),
         ));
       }
     }
@@ -163,21 +211,33 @@ class IdentificationTab extends ConsumerWidget {
   }
 
   /// Build the legacy identification UI (fallback)
-  Widget _buildLegacyContent(BuildContext context, GeneratedOutput output) {
+  Widget _buildLegacyContent(BuildContext context, GeneratedOutput output, StructuralPositions? structuralPositions) {
     final identification = output.identification;
     final examples = output.examples?.identification;
+    
+    // Get character overrides from PsycheModel (single source of truth)
+    final characterOverrides = <String, String?>{
+      'Ego': structuralPositions?.ego?.primary,
+      'Persona': structuralPositions?.persona?.primary,
+      'Shadow': structuralPositions?.shadow?.primary,
+      'Feeling Function': structuralPositions?.feelingFunction?.primary,
+      'Eros Axis': structuralPositions?.erosAxis?.primary,
+    };
 
     final sections = <Widget>[
-      AnimatedContentCard(index: 0, child: _buildArchetypeCard(context, 'Ego', identification.ego, examples?.ego ?? [])),
-      AnimatedContentCard(index: 1, child: _buildArchetypeCard(context, 'Persona', identification.persona, examples?.persona ?? [])),
-      AnimatedContentCard(index: 2, child: _buildArchetypeCard(context, 'Shadow', identification.shadow, examples?.shadow ?? [])),
+      // Constellation Card at the top (for legacy UI too)
+      _ConstellationSection(),
+      const SizedBox(height: 8),
+      AnimatedContentCard(index: 0, child: _buildArchetypeCard(context, 'Ego', identification.ego, examples?.ego ?? [], characterOverrides['Ego'])),
+      AnimatedContentCard(index: 1, child: _buildArchetypeCard(context, 'Persona', identification.persona, examples?.persona ?? [], characterOverrides['Persona'])),
+      AnimatedContentCard(index: 2, child: _buildArchetypeCard(context, 'Shadow', identification.shadow, examples?.shadow ?? [], characterOverrides['Shadow'])),
       if (identification.shadowVirtue != null)
-        AnimatedContentCard(index: 3, child: _buildArchetypeCard(context, 'Shadow Virtue', identification.shadowVirtue!, examples?.shadowVirtue ?? [])),
-      AnimatedContentCard(index: 4, child: _buildArchetypeCard(context, 'Feeling Function', identification.feelingFunction, examples?.feelingFunction ?? [])),
+        AnimatedContentCard(index: 3, child: _buildArchetypeCard(context, 'Shadow Virtue', identification.shadowVirtue!, examples?.shadowVirtue ?? [], null)),
+      AnimatedContentCard(index: 4, child: _buildArchetypeCard(context, 'Feeling Function', identification.feelingFunction, examples?.feelingFunction ?? [], characterOverrides['Feeling Function'])),
       if (identification.erosAxis != null)
-        AnimatedContentCard(index: 5, child: _buildArchetypeCard(context, 'Eros Axis', identification.erosAxis!, examples?.erosAxis ?? [])),
+        AnimatedContentCard(index: 5, child: _buildArchetypeCard(context, 'Eros Axis', identification.erosAxis!, examples?.erosAxis ?? [], characterOverrides['Eros Axis'])),
       if (identification.moralOrientation != null)
-        AnimatedContentCard(index: 6, child: _buildArchetypeCard(context, 'Moral Orientation', identification.moralOrientation!, [])),
+        AnimatedContentCard(index: 6, child: _buildArchetypeCard(context, 'Moral Orientation', identification.moralOrientation!, [], null)),
     ];
 
     return ListView(
@@ -187,23 +247,41 @@ class IdentificationTab extends ConsumerWidget {
   }
 
   /// Build a card for the new dynamics structure (Center/Orbit/Compensation)
+  /// [characterOverride] - from PsycheModel to ensure consistency with Archetypes page
   Widget _buildDynamicsCard(
     BuildContext context,
     String key,
     ArchetypeDynamics dynamics,
     List<ExampleItem> examples,
+    String? characterOverride,
   ) {
     final color = _colorMap[key] ?? const Color(0xFF7C3AED);
     final icon = _iconMap[key] ?? Icons.person;
     final label = _labelMap[key] ?? key;
     final center = dynamics.center;
+    
+    // Use character from PsycheModel if available (single source of truth)
+    // Otherwise fall back to original center.characters
+    // Filter out duplicates to avoid showing the same character twice
+    List<String> displayCharacters;
+    if (characterOverride != null && characterOverride.isNotEmpty) {
+      final otherCharacters = center.characters
+          .where((c) => c.toLowerCase() != characterOverride.toLowerCase())
+          .toList();
+      displayCharacters = _deduplicateCharacters([characterOverride, ...otherCharacters]);
+    } else {
+      displayCharacters = _deduplicateCharacters(center.characters);
+    }
+    
+    // Also replace wrong character name in preview/summary text
+    final displayPreview = _replaceCharacterInText(center.summary, characterOverride, center.characters);
 
     return OutputCard(
       title: center.label,
-      preview: center.summary,
+      preview: displayPreview,
       icon: icon,
       accentColor: color,
-      onTap: () => _showDynamicsDetail(context, key, dynamics, examples, label),
+      onTap: () => _showDynamicsDetail(context, key, dynamics, examples, label, characterOverride),
       onShowExamples: examples.isNotEmpty ? () => showExamplesSheet(
         context: context,
         examples: examples,
@@ -212,8 +290,8 @@ class IdentificationTab extends ConsumerWidget {
       trailing: Wrap(
         spacing: 6,
         children: [
-          // Character chips
-          ...center.characters.take(2).map((char) => Container(
+          // Character chips - uses PsycheModel character if available
+          ...displayCharacters.take(2).map((char) => Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
               color: color.withOpacity(0.15),
@@ -249,11 +327,14 @@ class IdentificationTab extends ConsumerWidget {
     );
   }
 
+  /// Build archetype card for legacy identification
+  /// [characterOverride] - from PsycheModel to ensure consistency with Archetypes page
   Widget _buildArchetypeCard(
     BuildContext context,
     String label,
     ArchetypeBlock archetype,
     List<ExampleItem> examples,
+    String? characterOverride,
   ) {
     final iconMap = {
       'Ego': Icons.person,
@@ -275,9 +356,25 @@ class IdentificationTab extends ConsumerWidget {
       'Moral Orientation': const Color(0xFF06B6D4),
     };
     
+    // Use character from PsycheModel if available (single source of truth)
+    // Otherwise fall back to original archetype.characters
+    // Filter out duplicates to avoid showing the same character twice
+    List<String> displayCharacters;
+    if (characterOverride != null && characterOverride.isNotEmpty) {
+      final otherCharacters = archetype.characters
+          .where((c) => c.toLowerCase() != characterOverride.toLowerCase())
+          .toList();
+      displayCharacters = _deduplicateCharacters([characterOverride, ...otherCharacters]);
+    } else {
+      displayCharacters = _deduplicateCharacters(archetype.characters);
+    }
+    
+    // Also replace wrong character name in preview/summary text
+    final displayPreview = _replaceCharacterInText(archetype.summary, characterOverride, archetype.characters);
+    
     return OutputCard(
       title: archetype.title,
-      preview: archetype.summary,
+      preview: displayPreview,
       icon: iconMap[label] ?? Icons.person,
       accentColor: colorMap[label],
       onTap: () => _showArchetypeDetail(
@@ -285,17 +382,18 @@ class IdentificationTab extends ConsumerWidget {
         archetype,
         examples,
         label,
+        characterOverride,
       ),
       onShowExamples: examples.isNotEmpty ? () => showExamplesSheet(
         context: context,
         examples: examples,
         sectionTitle: label,
       ) : null,
-      trailing: archetype.characters.isEmpty
+      trailing: displayCharacters.isEmpty
           ? null
           : Wrap(
               spacing: 6,
-              children: archetype.characters
+              children: displayCharacters
                   .take(3)
                   .map((char) => Container(
                         padding: const EdgeInsets.symmetric(
@@ -327,12 +425,14 @@ class IdentificationTab extends ConsumerWidget {
   }
 
   /// Show detailed view for dynamics (Center/Orbit/Compensation)
+  /// [characterOverride] - from PsycheModel if available
   void _showDynamicsDetail(
     BuildContext context,
     String key,
     ArchetypeDynamics dynamics,
     List<ExampleItem> examples,
     String label,
+    String? characterOverride,
   ) {
     final color = _colorMap[key] ?? const Color(0xFF7C3AED);
     final theme = Theme.of(context);
@@ -402,7 +502,7 @@ class IdentificationTab extends ConsumerWidget {
                       // === CENTER SECTION ===
                       _buildSectionHeader(context, '🎯 Center', 'Where you stand most often', color),
                       const SizedBox(height: 12),
-                      _buildCenterCard(context, dynamics.center, color),
+                      _buildCenterCard(context, dynamics.center, color, characterOverride),
                       
                       // === ORBIT SECTION ===
                       if (dynamics.orbit.isNotEmpty) ...[
@@ -448,8 +548,60 @@ class IdentificationTab extends ConsumerWidget {
     );
   }
 
-  Widget _buildCenterCard(BuildContext context, CenterPosition center, Color color) {
+  /// Helper to replace wrong character name in narrative text with correct one
+  String _replaceCharacterInText(String text, String? correctChar, List<String> originalChars) {
+    if (correctChar == null || correctChar.isEmpty) return text;
+    if (originalChars.isEmpty) return text;
+    
+    String result = text;
+    final correctCharLower = correctChar.toLowerCase();
+    
+    // Replace each original character name that doesn't match the correct one
+    for (final origChar in originalChars) {
+      if (origChar.toLowerCase() != correctCharLower) {
+        // Use case-insensitive replacement
+        result = result.replaceAll(RegExp(RegExp.escape(origChar), caseSensitive: false), correctChar);
+      }
+    }
+    return result;
+  }
+  
+  /// Helper to deduplicate characters list (case-insensitive)
+  List<String> _deduplicateCharacters(List<String> characters) {
+    final seen = <String>{};
+    final result = <String>[];
+    for (final char in characters) {
+      final lower = char.toLowerCase();
+      if (!seen.contains(lower)) {
+        seen.add(lower);
+        result.add(char);
+      }
+    }
+    return result;
+  }
+
+  Widget _buildCenterCard(BuildContext context, CenterPosition center, Color color, String? characterOverride) {
     final theme = Theme.of(context);
+    
+    // Use character from PsycheModel if available (single source of truth)
+    // Filter out duplicates to avoid showing the same character twice
+    List<String> displayCharacters;
+    if (characterOverride != null && characterOverride.isNotEmpty) {
+      // Start with the override, then add other characters that aren't duplicates
+      final otherCharacters = center.characters
+          .where((c) => c.toLowerCase() != characterOverride.toLowerCase())
+          .toList();
+      displayCharacters = _deduplicateCharacters([characterOverride, ...otherCharacters]);
+    } else {
+      displayCharacters = _deduplicateCharacters(center.characters);
+    }
+    
+    // Also replace wrong character name in narrative text
+    final displaySummary = _replaceCharacterInText(center.summary, characterOverride, center.characters);
+    final displayDetails = center.details != null 
+        ? _replaceCharacterInText(center.details!, characterOverride, center.characters)
+        : null;
+    
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -460,23 +612,23 @@ class IdentificationTab extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Characters
+          // Characters - uses PsycheModel character if available
           Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: center.characters.map((char) => Chip(
+            children: displayCharacters.map((char) => Chip(
               label: Text(char, style: TextStyle(color: color, fontWeight: FontWeight.w600)),
               backgroundColor: color.withOpacity(0.15),
               side: BorderSide.none,
             )).toList(),
           ),
           const SizedBox(height: 12),
-          // Summary
-          Text(center.summary, style: theme.textTheme.bodyLarge),
-          // Details
-          if (center.details != null && center.details!.isNotEmpty) ...[
+          // Summary - with corrected character name
+          Text(displaySummary, style: theme.textTheme.bodyLarge),
+          // Details - with corrected character name
+          if (displayDetails != null && displayDetails.isNotEmpty) ...[
             const SizedBox(height: 12),
-            Text(center.details!, style: theme.textTheme.bodyMedium?.copyWith(color: Colors.grey.shade700)),
+            Text(displayDetails, style: theme.textTheme.bodyMedium?.copyWith(color: Colors.grey.shade700)),
           ],
         ],
       ),
@@ -657,11 +809,14 @@ class IdentificationTab extends ConsumerWidget {
     );
   }
 
+  /// Show detailed view for legacy archetype
+  /// [characterOverride] - from PsycheModel if available
   void _showArchetypeDetail(
     BuildContext context,
     ArchetypeBlock archetype,
     List<ExampleItem> examples,
     String label,
+    String? characterOverride,
   ) {
     showModalBottomSheet(
       context: context,
@@ -670,7 +825,26 @@ class IdentificationTab extends ConsumerWidget {
         initialChildSize: 0.8,
         minChildSize: 0.5,
         maxChildSize: 0.95,
-        builder: (context, scrollController) => Container(
+        builder: (context, scrollController) {
+          // Use character from PsycheModel if available (single source of truth)
+          // Filter out duplicates to avoid showing the same character twice
+          List<String> displayCharacters;
+          if (characterOverride != null && characterOverride.isNotEmpty) {
+            final otherCharacters = archetype.characters
+                .where((c) => c.toLowerCase() != characterOverride.toLowerCase())
+                .toList();
+            displayCharacters = _deduplicateCharacters([characterOverride, ...otherCharacters]);
+          } else {
+            displayCharacters = _deduplicateCharacters(archetype.characters);
+          }
+          
+          // Also replace wrong character name in narrative text
+          final displaySummary = _replaceCharacterInText(archetype.summary, characterOverride, archetype.characters);
+          final displayDetails = archetype.details != null 
+              ? _replaceCharacterInText(archetype.details!, characterOverride, archetype.characters)
+              : null;
+          
+          return Container(
           padding: const EdgeInsets.all(24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -680,10 +854,10 @@ class IdentificationTab extends ConsumerWidget {
                 style: Theme.of(context).textTheme.headlineMedium,
               ),
               const SizedBox(height: 16),
-              if (archetype.characters.isNotEmpty) ...[
+              if (displayCharacters.isNotEmpty) ...[
                 Wrap(
                   spacing: 8,
-                  children: archetype.characters
+                  children: displayCharacters
                       .map((char) => Chip(label: Text(char)))
                       .toList(),
                 ),
@@ -695,10 +869,10 @@ class IdentificationTab extends ConsumerWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                archetype.summary,
+                displaySummary,
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
-              if (archetype.details != null && archetype.details!.isNotEmpty) ...[
+              if (displayDetails != null && displayDetails.isNotEmpty) ...[
                 const SizedBox(height: 16),
                 Text(
                   'Details',
@@ -709,7 +883,7 @@ class IdentificationTab extends ConsumerWidget {
                   child: SingleChildScrollView(
                     controller: scrollController,
                     child: Text(
-                      archetype.details!,
+                      displayDetails,
                       style: Theme.of(context).textTheme.bodyLarge,
                     ),
                   ),
@@ -732,8 +906,243 @@ class IdentificationTab extends ConsumerWidget {
               ],
             ],
           ),
-        ),
+        );
+        },
       ),
     );
+  }
+}
+
+/// Widget to display constellation data in the Identification tab
+/// Uses mePsycheModelProvider for consistency with the Archetypes tab (single source of truth)
+class _ConstellationSection extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Use PsycheModel as the single source of truth (same as ConstellationTab)
+    final psycheModelAsync = ref.watch(mePsycheModelProvider);
+    final theme = Theme.of(context);
+
+    return psycheModelAsync.when(
+      data: (psycheModel) {
+        print('🔮 [Constellation] PsycheModel received: ${psycheModel != null}');
+        if (psycheModel == null) {
+          // Show a placeholder if no data
+          return Container(
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: theme.colorScheme.outline.withOpacity(0.2)),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.auto_awesome, color: theme.colorScheme.primary.withOpacity(0.5)),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'Archetype constellation will appear here after generating your profile.',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurface.withOpacity(0.6),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+        // Build constellation display from PsycheModel
+        return _buildConstellationFromPsyche(context, psycheModel);
+      },
+      loading: () => Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.5),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: const Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CircularProgressIndicator(strokeWidth: 2),
+              SizedBox(height: 12),
+              Text('Loading constellation...'),
+            ],
+          ),
+        ),
+      ),
+      error: (error, stack) {
+        print('❌ [Constellation] Error: $error');
+        return Container(
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.red.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Colors.red.withOpacity(0.3)),
+          ),
+          child: Row(
+            children: [
+              const Icon(Icons.error_outline, color: Colors.red),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  'Could not load constellation: $error',
+                  style: theme.textTheme.bodySmall?.copyWith(color: Colors.red),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+  
+  Widget _buildConstellationFromPsyche(BuildContext context, PsycheModel psycheModel) {
+    final theme = Theme.of(context);
+    final positions = psycheModel.structuralPositions;
+    final motifs = psycheModel.motifDistribution;
+    
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            theme.colorScheme.primary.withOpacity(0.05),
+            theme.colorScheme.secondary.withOpacity(0.05),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: theme.colorScheme.primary.withOpacity(0.2)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.auto_awesome, color: theme.colorScheme.primary),
+              const SizedBox(width: 8),
+              Text(
+                'Archetype Constellation',
+                style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          // Show structural positions as chips (with null safety)
+          if (positions != null) Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              if (positions.ego?.primary != null)
+                _buildPositionChip(context, 'Ego', positions.ego!.primary!, Colors.purple),
+              if (positions.persona?.primary != null)
+                _buildPositionChip(context, 'Persona', positions.persona!.primary!, Colors.blue),
+              if (positions.shadow?.primary != null)
+                _buildPositionChip(context, 'Shadow', positions.shadow!.primary!, Colors.grey.shade700),
+              if (positions.feelingFunction?.primary != null)
+                _buildPositionChip(context, 'Feeling', positions.feelingFunction!.primary!, Colors.pink),
+              if (positions.erosAxis?.primary != null)
+                _buildPositionChip(context, 'Eros', positions.erosAxis!.primary!, Colors.orange),
+            ],
+          ),
+          if (motifs.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            const Divider(height: 1),
+            const SizedBox(height: 12),
+            Text(
+              'Top Archetypal Energies',
+              style: theme.textTheme.labelMedium?.copyWith(
+                color: theme.colorScheme.onSurface.withOpacity(0.6),
+              ),
+            ),
+            const SizedBox(height: 8),
+            ...motifs.take(3).map((motif) => Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      _formatMotifName(motif.motif),
+                      style: theme.textTheme.bodySmall,
+                    ),
+                  ),
+                  Container(
+                    width: 100,
+                    height: 6,
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.primary.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(3),
+                    ),
+                    child: FractionallySizedBox(
+                      alignment: Alignment.centerLeft,
+                      widthFactor: motif.score.clamp(0.0, 1.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.primary,
+                          borderRadius: BorderRadius.circular(3),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  SizedBox(
+                    width: 35,
+                    child: Text(
+                      '${(motif.score * 100).toInt()}%',
+                      style: theme.textTheme.labelSmall?.copyWith(fontWeight: FontWeight.bold),
+                      textAlign: TextAlign.right,
+                    ),
+                  ),
+                ],
+              ),
+            )),
+          ],
+        ],
+      ),
+    );
+  }
+  
+  Widget _buildPositionChip(BuildContext context, String role, String character, Color color) {
+    final theme = Theme.of(context);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withOpacity(0.3)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            role,
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: color,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(width: 6),
+          Text(
+            character,
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: theme.colorScheme.onSurface,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  
+  String _formatMotifName(String motif) {
+    // Convert SNAKE_CASE to Title Case
+    return motif
+        .split('_')
+        .map((word) => word.isNotEmpty 
+            ? '${word[0].toUpperCase()}${word.substring(1).toLowerCase()}'
+            : '')
+        .join(' ');
   }
 }

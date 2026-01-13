@@ -340,9 +340,25 @@ _$RelationshipOutputImpl _$$RelationshipOutputImplFromJson(
   examples: json['examples'] == null
       ? null
       : RelationshipExamples.fromJson(json['examples'] as Map<String, dynamic>),
+  whatIfScenarios:
+      (json['whatIfScenarios'] as List<dynamic>?)
+          ?.map((e) => WhatIfScenario.fromJson(e as Map<String, dynamic>))
+          .toList() ??
+      const [],
+  easeZones: json['easeZones'] == null
+      ? null
+      : EaseZones.fromJson(json['easeZones'] as Map<String, dynamic>),
+  ruptureLoops: json['ruptureLoops'] == null
+      ? null
+      : RuptureLoops.fromJson(json['ruptureLoops'] as Map<String, dynamic>),
   meta: json['meta'] == null
       ? null
       : RelationshipMeta.fromJson(json['meta'] as Map<String, dynamic>),
+  constellation: json['constellation'] == null
+      ? null
+      : RelationshipConstellationResponse.fromJson(
+          json['constellation'] as Map<String, dynamic>,
+        ),
 );
 
 Map<String, dynamic> _$$RelationshipOutputImplToJson(
@@ -352,8 +368,161 @@ Map<String, dynamic> _$$RelationshipOutputImplToJson(
   'relationshipModel': instance.relationshipModel,
   'narrative': instance.narrative,
   'examples': instance.examples,
+  'whatIfScenarios': instance.whatIfScenarios,
+  'easeZones': instance.easeZones,
+  'ruptureLoops': instance.ruptureLoops,
   'meta': instance.meta,
+  'constellation': instance.constellation,
 };
+
+_$WhatIfScenarioImpl _$$WhatIfScenarioImplFromJson(Map<String, dynamic> json) =>
+    _$WhatIfScenarioImpl(
+      theme: json['theme'] as String,
+      myMode: json['myMode'] as String?,
+      theirMode: json['theirMode'] as String?,
+      setup: json['setup'] as String?,
+      unconsciousPattern: json['unconsciousPattern'] as String?,
+      unconsciousPath: json['unconsciousPath'] as String?,
+      consciousPath: json['consciousPath'] as String?,
+      actions:
+          (json['actions'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          const [],
+      avoid:
+          (json['avoid'] as List<dynamic>?)?.map((e) => e as String).toList() ??
+          const [],
+      examples:
+          (json['examples'] as List<dynamic>?)
+              ?.map(
+                (e) =>
+                    RelationshipExampleRef.fromJson(e as Map<String, dynamic>),
+              )
+              .toList() ??
+          const [],
+    );
+
+Map<String, dynamic> _$$WhatIfScenarioImplToJson(
+  _$WhatIfScenarioImpl instance,
+) => <String, dynamic>{
+  'theme': instance.theme,
+  'myMode': instance.myMode,
+  'theirMode': instance.theirMode,
+  'setup': instance.setup,
+  'unconsciousPattern': instance.unconsciousPattern,
+  'unconsciousPath': instance.unconsciousPath,
+  'consciousPath': instance.consciousPath,
+  'actions': instance.actions,
+  'avoid': instance.avoid,
+  'examples': instance.examples,
+};
+
+_$EaseZonesImpl _$$EaseZonesImplFromJson(Map<String, dynamic> json) =>
+    _$EaseZonesImpl(
+      summary: json['summary'] as String?,
+      zones:
+          (json['zones'] as List<dynamic>?)?.map((e) => e as String).toList() ??
+          const [],
+      zonesWithExamples:
+          (json['zonesWithExamples'] as List<dynamic>?)
+              ?.map((e) => EaseZoneDetail.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
+      exampleRefs:
+          (json['exampleRefs'] as List<dynamic>?)
+              ?.map(
+                (e) =>
+                    RelationshipExampleRef.fromJson(e as Map<String, dynamic>),
+              )
+              .toList() ??
+          const [],
+    );
+
+Map<String, dynamic> _$$EaseZonesImplToJson(_$EaseZonesImpl instance) =>
+    <String, dynamic>{
+      'summary': instance.summary,
+      'zones': instance.zones,
+      'zonesWithExamples': instance.zonesWithExamples,
+      'exampleRefs': instance.exampleRefs,
+    };
+
+_$EaseZoneDetailImpl _$$EaseZoneDetailImplFromJson(Map<String, dynamic> json) =>
+    _$EaseZoneDetailImpl(
+      zone: json['zone'] as String?,
+      description: json['description'] as String?,
+      example: json['example'] == null
+          ? null
+          : EaseZoneExample.fromJson(json['example'] as Map<String, dynamic>),
+    );
+
+Map<String, dynamic> _$$EaseZoneDetailImplToJson(
+  _$EaseZoneDetailImpl instance,
+) => <String, dynamic>{
+  'zone': instance.zone,
+  'description': instance.description,
+  'example': instance.example,
+};
+
+_$EaseZoneExampleImpl _$$EaseZoneExampleImplFromJson(
+  Map<String, dynamic> json,
+) => _$EaseZoneExampleImpl(
+  characterName: json['characterName'] as String?,
+  reference: json['reference'] == null
+      ? null
+      : RelationshipExampleReference.fromJson(
+          json['reference'] as Map<String, dynamic>,
+        ),
+  scene: json['scene'] as String?,
+);
+
+Map<String, dynamic> _$$EaseZoneExampleImplToJson(
+  _$EaseZoneExampleImpl instance,
+) => <String, dynamic>{
+  'characterName': instance.characterName,
+  'reference': instance.reference,
+  'scene': instance.scene,
+};
+
+_$RuptureLoopsImpl _$$RuptureLoopsImplFromJson(Map<String, dynamic> json) =>
+    _$RuptureLoopsImpl(
+      summary: json['summary'] as String?,
+      loops:
+          (json['loops'] as List<dynamic>?)
+              ?.map((e) => RuptureLoop.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
+      exampleRefs:
+          (json['exampleRefs'] as List<dynamic>?)
+              ?.map(
+                (e) =>
+                    RelationshipExampleRef.fromJson(e as Map<String, dynamic>),
+              )
+              .toList() ??
+          const [],
+    );
+
+Map<String, dynamic> _$$RuptureLoopsImplToJson(_$RuptureLoopsImpl instance) =>
+    <String, dynamic>{
+      'summary': instance.summary,
+      'loops': instance.loops,
+      'exampleRefs': instance.exampleRefs,
+    };
+
+_$RuptureLoopImpl _$$RuptureLoopImplFromJson(Map<String, dynamic> json) =>
+    _$RuptureLoopImpl(
+      name: json['name'] as String?,
+      trigger: json['trigger'] as String?,
+      pattern: json['pattern'] as String?,
+      repair: json['repair'] as String?,
+    );
+
+Map<String, dynamic> _$$RuptureLoopImplToJson(_$RuptureLoopImpl instance) =>
+    <String, dynamic>{
+      'name': instance.name,
+      'trigger': instance.trigger,
+      'pattern': instance.pattern,
+      'repair': instance.repair,
+    };
 
 _$RelationshipMythImpl _$$RelationshipMythImplFromJson(
   Map<String, dynamic> json,

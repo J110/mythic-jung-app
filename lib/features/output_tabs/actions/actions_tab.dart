@@ -22,6 +22,10 @@ class ActionsTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final outputAsync = ref.watch(outputRepositoryProvider);
+    // Use effective output which includes tone-rendered content when available
+    final effectiveOutput = ref.watch(effectiveMeOutputProvider);
+    // Watch tone state for loading state
+    final toneState = ref.watch(toneRepositoryProvider);
     final theme = Theme.of(context);
 
     final content = Container(
@@ -35,10 +39,31 @@ class ActionsTab extends ConsumerWidget {
           ],
         ),
       ),
-      child: outputAsync.when(
-        data: (output) => _buildContent(context, output),
-        loading: () => ProgressiveLoadingWidget(sections: _loadingSections),
-        error: (error, stack) => _buildErrorState(context, ref, error),
+      child: Stack(
+        children: [
+          outputAsync.when(
+            data: (_) => _buildContent(context, effectiveOutput),
+            loading: () => ProgressiveLoadingWidget(sections: _loadingSections),
+            error: (error, stack) => _buildErrorState(context, ref, error),
+          ),
+          // Tone loading overlay
+          if (toneState.isLoading)
+            Positioned.fill(
+              child: Container(
+                color: theme.scaffoldBackgroundColor.withOpacity(0.85),
+                child: const Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      CircularProgressIndicator(),
+                      SizedBox(height: 16),
+                      Text('Adjusting narrative tone...'),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+        ],
       ),
     );
 
