@@ -147,20 +147,36 @@ class ApiClient {
     print('[ApiClient] Syncing user data for: $_userId');
     try {
       final response = await _dio.get('/v1/users/$_userId/sync');
-      print('[ApiClient] Sync successful');
+      print('[ApiClient] Sync response received');
       
       // Parse with defensive handling for incomplete data
       final data = response.data as Map<String, dynamic>;
+      print('[ApiClient] Sync data keys: ${data.keys.toList()}');
       
       // Try to parse meOutput, but handle parsing errors gracefully
       GeneratedOutput? meOutput;
       if (data['meOutput'] != null) {
         try {
-          meOutput = GeneratedOutput.fromJson(data['meOutput'] as Map<String, dynamic>);
-        } catch (e) {
-          print('[ApiClient] Warning: Could not parse meOutput: $e');
+          final meOutputData = data['meOutput'];
+          print('[ApiClient] meOutput type: ${meOutputData.runtimeType}');
+          if (meOutputData is Map<String, dynamic>) {
+            print('[ApiClient] meOutput keys: ${meOutputData.keys.toList()}');
+            print('[ApiClient] meOutput.story type: ${meOutputData['story']?.runtimeType}');
+            print('[ApiClient] meOutput.identification type: ${meOutputData['identification']?.runtimeType}');
+            print('[ApiClient] meOutput.functioning type: ${meOutputData['functioning']?.runtimeType}');
+            print('[ApiClient] meOutput.actions type: ${meOutputData['actions']?.runtimeType}');
+            print('[ApiClient] meOutput.lifeDomains type: ${meOutputData['lifeDomains']?.runtimeType}');
+            print('[ApiClient] meOutput.meta type: ${meOutputData['meta']?.runtimeType}');
+          }
+          meOutput = GeneratedOutput.fromJson(meOutputData as Map<String, dynamic>);
+          print('[ApiClient] meOutput parsed successfully');
+        } catch (e, stack) {
+          print('[ApiClient] ERROR parsing meOutput: $e');
+          print('[ApiClient] Stack: $stack');
           meOutput = null;
         }
+      } else {
+        print('[ApiClient] meOutput is null in response');
       }
       
       // Try to parse relationshipOutput
@@ -168,8 +184,9 @@ class ApiClient {
       if (data['relationshipOutput'] != null) {
         try {
           relationshipOutput = RelationshipOutput.fromJson(data['relationshipOutput'] as Map<String, dynamic>);
+          print('[ApiClient] relationshipOutput parsed successfully');
         } catch (e) {
-          print('[ApiClient] Warning: Could not parse relationshipOutput: $e');
+          print('[ApiClient] ERROR parsing relationshipOutput: $e');
           relationshipOutput = null;
         }
       }
@@ -179,8 +196,9 @@ class ApiClient {
       if (data['relationshipSettings'] != null) {
         try {
           relationshipSettings = RelationshipSettings.fromJson(data['relationshipSettings'] as Map<String, dynamic>);
+          print('[ApiClient] relationshipSettings parsed successfully');
         } catch (e) {
-          print('[ApiClient] Warning: Could not parse relationshipSettings: $e');
+          print('[ApiClient] ERROR parsing relationshipSettings: $e');
           relationshipSettings = null;
         }
       }
@@ -189,12 +207,17 @@ class ApiClient {
       AppUser? user;
       if (data['user'] != null) {
         try {
-          user = AppUser.fromJson(data['user'] as Map<String, dynamic>);
+          final userData = data['user'];
+          print('[ApiClient] user data: $userData');
+          user = AppUser.fromJson(userData as Map<String, dynamic>);
+          print('[ApiClient] user parsed successfully');
         } catch (e) {
-          print('[ApiClient] Warning: Could not parse user: $e');
+          print('[ApiClient] ERROR parsing user: $e');
           user = null;
         }
       }
+      
+      print('[ApiClient] Sync parsing complete - meOutput: ${meOutput != null}, relationshipOutput: ${relationshipOutput != null}');
       
       return UserSyncData(
         user: user,
