@@ -148,7 +148,61 @@ class ApiClient {
     try {
       final response = await _dio.get('/v1/users/$_userId/sync');
       print('[ApiClient] Sync successful');
-      return UserSyncData.fromJson(response.data);
+      
+      // Parse with defensive handling for incomplete data
+      final data = response.data as Map<String, dynamic>;
+      
+      // Try to parse meOutput, but handle parsing errors gracefully
+      GeneratedOutput? meOutput;
+      if (data['meOutput'] != null) {
+        try {
+          meOutput = GeneratedOutput.fromJson(data['meOutput'] as Map<String, dynamic>);
+        } catch (e) {
+          print('[ApiClient] Warning: Could not parse meOutput: $e');
+          meOutput = null;
+        }
+      }
+      
+      // Try to parse relationshipOutput
+      RelationshipOutput? relationshipOutput;
+      if (data['relationshipOutput'] != null) {
+        try {
+          relationshipOutput = RelationshipOutput.fromJson(data['relationshipOutput'] as Map<String, dynamic>);
+        } catch (e) {
+          print('[ApiClient] Warning: Could not parse relationshipOutput: $e');
+          relationshipOutput = null;
+        }
+      }
+      
+      // Try to parse relationshipSettings
+      RelationshipSettings? relationshipSettings;
+      if (data['relationshipSettings'] != null) {
+        try {
+          relationshipSettings = RelationshipSettings.fromJson(data['relationshipSettings'] as Map<String, dynamic>);
+        } catch (e) {
+          print('[ApiClient] Warning: Could not parse relationshipSettings: $e');
+          relationshipSettings = null;
+        }
+      }
+      
+      // Try to parse user
+      AppUser? user;
+      if (data['user'] != null) {
+        try {
+          user = AppUser.fromJson(data['user'] as Map<String, dynamic>);
+        } catch (e) {
+          print('[ApiClient] Warning: Could not parse user: $e');
+          user = null;
+        }
+      }
+      
+      return UserSyncData(
+        user: user,
+        meOutput: meOutput,
+        relationshipOutput: relationshipOutput,
+        relationshipSettings: relationshipSettings,
+        tonePreference: (data['tonePreference'] as String?) ?? 'plain',
+      );
     } on DioException catch (e) {
       print('[ApiClient] Sync failed: ${e.message}');
       rethrow;
