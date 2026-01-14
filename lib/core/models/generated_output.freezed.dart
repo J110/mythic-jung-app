@@ -26,7 +26,8 @@ mixin _$GeneratedOutput {
   FunctioningOutput get functioning => throw _privateConstructorUsedError;
   ActionsOutput get actions => throw _privateConstructorUsedError;
   LifeDomainsOutput get lifeDomains => throw _privateConstructorUsedError;
-  MetaOutput get meta => throw _privateConstructorUsedError;
+  MetaOutput? get meta =>
+      throw _privateConstructorUsedError; // Made optional - old data may not have this
   ExamplesOutput? get examples => throw _privateConstructorUsedError;
   @JsonKey(name: 'identification_v2')
   IdentificationV2? get identificationV2 => throw _privateConstructorUsedError; // Center/Orbit system
@@ -57,7 +58,7 @@ abstract class $GeneratedOutputCopyWith<$Res> {
     FunctioningOutput functioning,
     ActionsOutput actions,
     LifeDomainsOutput lifeDomains,
-    MetaOutput meta,
+    MetaOutput? meta,
     ExamplesOutput? examples,
     @JsonKey(name: 'identification_v2') IdentificationV2? identificationV2,
     DeltaSummary? deltaSummary,
@@ -69,7 +70,7 @@ abstract class $GeneratedOutputCopyWith<$Res> {
   $FunctioningOutputCopyWith<$Res> get functioning;
   $ActionsOutputCopyWith<$Res> get actions;
   $LifeDomainsOutputCopyWith<$Res> get lifeDomains;
-  $MetaOutputCopyWith<$Res> get meta;
+  $MetaOutputCopyWith<$Res>? get meta;
   $ExamplesOutputCopyWith<$Res>? get examples;
   $IdentificationV2CopyWith<$Res>? get identificationV2;
   $DeltaSummaryCopyWith<$Res>? get deltaSummary;
@@ -96,7 +97,7 @@ class _$GeneratedOutputCopyWithImpl<$Res, $Val extends GeneratedOutput>
     Object? functioning = null,
     Object? actions = null,
     Object? lifeDomains = null,
-    Object? meta = null,
+    Object? meta = freezed,
     Object? examples = freezed,
     Object? identificationV2 = freezed,
     Object? deltaSummary = freezed,
@@ -124,10 +125,10 @@ class _$GeneratedOutputCopyWithImpl<$Res, $Val extends GeneratedOutput>
                 ? _value.lifeDomains
                 : lifeDomains // ignore: cast_nullable_to_non_nullable
                       as LifeDomainsOutput,
-            meta: null == meta
+            meta: freezed == meta
                 ? _value.meta
                 : meta // ignore: cast_nullable_to_non_nullable
-                      as MetaOutput,
+                      as MetaOutput?,
             examples: freezed == examples
                 ? _value.examples
                 : examples // ignore: cast_nullable_to_non_nullable
@@ -203,8 +204,12 @@ class _$GeneratedOutputCopyWithImpl<$Res, $Val extends GeneratedOutput>
   /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
-  $MetaOutputCopyWith<$Res> get meta {
-    return $MetaOutputCopyWith<$Res>(_value.meta, (value) {
+  $MetaOutputCopyWith<$Res>? get meta {
+    if (_value.meta == null) {
+      return null;
+    }
+
+    return $MetaOutputCopyWith<$Res>(_value.meta!, (value) {
       return _then(_value.copyWith(meta: value) as $Val);
     });
   }
@@ -281,7 +286,7 @@ abstract class _$$GeneratedOutputImplCopyWith<$Res>
     FunctioningOutput functioning,
     ActionsOutput actions,
     LifeDomainsOutput lifeDomains,
-    MetaOutput meta,
+    MetaOutput? meta,
     ExamplesOutput? examples,
     @JsonKey(name: 'identification_v2') IdentificationV2? identificationV2,
     DeltaSummary? deltaSummary,
@@ -299,7 +304,7 @@ abstract class _$$GeneratedOutputImplCopyWith<$Res>
   @override
   $LifeDomainsOutputCopyWith<$Res> get lifeDomains;
   @override
-  $MetaOutputCopyWith<$Res> get meta;
+  $MetaOutputCopyWith<$Res>? get meta;
   @override
   $ExamplesOutputCopyWith<$Res>? get examples;
   @override
@@ -329,7 +334,7 @@ class __$$GeneratedOutputImplCopyWithImpl<$Res>
     Object? functioning = null,
     Object? actions = null,
     Object? lifeDomains = null,
-    Object? meta = null,
+    Object? meta = freezed,
     Object? examples = freezed,
     Object? identificationV2 = freezed,
     Object? deltaSummary = freezed,
@@ -357,10 +362,10 @@ class __$$GeneratedOutputImplCopyWithImpl<$Res>
             ? _value.lifeDomains
             : lifeDomains // ignore: cast_nullable_to_non_nullable
                   as LifeDomainsOutput,
-        meta: null == meta
+        meta: freezed == meta
             ? _value.meta
             : meta // ignore: cast_nullable_to_non_nullable
-                  as MetaOutput,
+                  as MetaOutput?,
         examples: freezed == examples
             ? _value.examples
             : examples // ignore: cast_nullable_to_non_nullable
@@ -391,7 +396,7 @@ class _$GeneratedOutputImpl implements _GeneratedOutput {
     required this.functioning,
     required this.actions,
     required this.lifeDomains,
-    required this.meta,
+    this.meta,
     this.examples,
     @JsonKey(name: 'identification_v2') this.identificationV2,
     this.deltaSummary,
@@ -412,7 +417,8 @@ class _$GeneratedOutputImpl implements _GeneratedOutput {
   @override
   final LifeDomainsOutput lifeDomains;
   @override
-  final MetaOutput meta;
+  final MetaOutput? meta;
+  // Made optional - old data may not have this
   @override
   final ExamplesOutput? examples;
   @override
@@ -494,7 +500,7 @@ abstract class _GeneratedOutput implements GeneratedOutput {
     required final FunctioningOutput functioning,
     required final ActionsOutput actions,
     required final LifeDomainsOutput lifeDomains,
-    required final MetaOutput meta,
+    final MetaOutput? meta,
     final ExamplesOutput? examples,
     @JsonKey(name: 'identification_v2')
     final IdentificationV2? identificationV2,
@@ -516,7 +522,7 @@ abstract class _GeneratedOutput implements GeneratedOutput {
   @override
   LifeDomainsOutput get lifeDomains;
   @override
-  MetaOutput get meta;
+  MetaOutput? get meta; // Made optional - old data may not have this
   @override
   ExamplesOutput? get examples;
   @override

@@ -20,7 +20,9 @@ _$GeneratedOutputImpl _$$GeneratedOutputImplFromJson(
   lifeDomains: LifeDomainsOutput.fromJson(
     json['lifeDomains'] as Map<String, dynamic>,
   ),
-  meta: MetaOutput.fromJson(json['meta'] as Map<String, dynamic>),
+  meta: json['meta'] == null
+      ? null
+      : MetaOutput.fromJson(json['meta'] as Map<String, dynamic>),
   examples: json['examples'] == null
       ? null
       : ExamplesOutput.fromJson(json['examples'] as Map<String, dynamic>),

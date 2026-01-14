@@ -89,10 +89,12 @@ class AppDatabase extends _$AppDatabase {
           CachedOutputsCompanion.insert(
             id: 'current',
             outputJson: jsonEncode(output.toJson()),
-            promptVersion: output.meta.promptVersion,
-            modelVersion: output.meta.modelVersion,
-            schemaVersion: output.meta.schemaVersion,
-            generatedAt: DateTime.parse(output.meta.generatedAt),
+            promptVersion: output.meta?.promptVersion ?? 'unknown',
+            modelVersion: output.meta?.modelVersion ?? 'unknown',
+            schemaVersion: output.meta?.schemaVersion ?? 'unknown',
+            generatedAt: output.meta != null 
+                ? DateTime.parse(output.meta!.generatedAt) 
+                : DateTime.now(),
             cachedAt: DateTime.now(),
           ),
         );

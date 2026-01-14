@@ -73,7 +73,7 @@ class GeneratedOutput with _$GeneratedOutput {
     required FunctioningOutput functioning,
     required ActionsOutput actions,
     required LifeDomainsOutput lifeDomains,
-    required MetaOutput meta,
+    MetaOutput? meta, // Made optional - old data may not have this
     ExamplesOutput? examples,
     @JsonKey(name: 'identification_v2') IdentificationV2? identificationV2, // Center/Orbit system
     DeltaSummary? deltaSummary, // Assessment-driven change summary
