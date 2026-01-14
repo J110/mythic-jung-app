@@ -5,6 +5,7 @@ import 'me/me_tab.dart';
 import 'relationship/relationship_tab.dart';
 import '../../features/assessment/assessment_tab.dart';
 import '../../core/storage/repositories.dart';
+import '../shared/generation_progress_overlay.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -197,65 +198,69 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
 
     if (isWeb) {
-      return Scaffold(
-        body: Row(
-          children: [
-            NavigationRail(
-              selectedIndex: _currentIndex,
-              onDestinationSelected: (index) {
-                setState(() {
-                  _currentIndex = index;
-                });
-              },
-              labelType: NavigationRailLabelType.all,
-              leading: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                child: Column(
-                  children: [
-                    Icon(
-                      Icons.auto_awesome,
-                      size: 32,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                    const SizedBox(height: 16),
-                    userButton,
-                  ],
+      return GenerationProgressOverlay(
+        child: Scaffold(
+          body: Row(
+            children: [
+              NavigationRail(
+                selectedIndex: _currentIndex,
+                onDestinationSelected: (index) {
+                  setState(() {
+                    _currentIndex = index;
+                  });
+                },
+                labelType: NavigationRailLabelType.all,
+                leading: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  child: Column(
+                    children: [
+                      Icon(
+                        Icons.auto_awesome,
+                        size: 32,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      const SizedBox(height: 16),
+                      userButton,
+                    ],
+                  ),
                 ),
+                destinations: railDestinations,
               ),
-              destinations: railDestinations,
-            ),
-            const VerticalDivider(thickness: 1, width: 1),
-            Expanded(
-              child: tabs[_currentIndex],
-            ),
-          ],
+              const VerticalDivider(thickness: 1, width: 1),
+              Expanded(
+                child: tabs[_currentIndex],
+              ),
+            ],
+          ),
         ),
       );
     }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          _currentIndex == 0 
-              ? 'Me' 
-              : _currentIndex == 1 && isRelationshipEnabled 
-                  ? 'Relations' 
-                  : 'Assessments',
+    return GenerationProgressOverlay(
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            _currentIndex == 0 
+                ? 'Me' 
+                : _currentIndex == 1 && isRelationshipEnabled 
+                    ? 'Relations' 
+                    : 'Assessments',
+          ),
+          actions: [
+            userButton,
+            const SizedBox(width: 8),
+          ],
         ),
-        actions: [
-          userButton,
-          const SizedBox(width: 8),
-        ],
-      ),
-      body: tabs[_currentIndex],
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _currentIndex,
-        onDestinationSelected: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        destinations: destinations,
+        body: tabs[_currentIndex],
+        bottomNavigationBar: NavigationBar(
+          selectedIndex: _currentIndex,
+          onDestinationSelected: (index) {
+            setState(() {
+              _currentIndex = index;
+            });
+          },
+          destinations: destinations,
+        ),
       ),
     );
   }

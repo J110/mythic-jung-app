@@ -266,67 +266,95 @@ class ApiClient {
     }
   }
 
-  Future<GeneratedOutput> generateOutput({bool force = false}) async {
+  /// Start generation and poll for completion with progress updates
+  /// [onProgress] is called with (currentStep, totalSteps, stepLabel) as generation progresses
+  Future<GeneratedOutput> generateOutput({
+    bool force = false,
+    void Function(int currentStep, int totalSteps, String stepLabel)? onProgress,
+  }) async {
     if (useMock) {
       await Future.delayed(const Duration(milliseconds: 1500));
       // Return mock data - in real app, load from fixture
       throw UnimplementedError('Mock generation - use fixture loader');
     }
     
-    print('[ApiClient] Calling POST /v1/generate with force=$force');
+    print('[ApiClient] Starting async generation with force=$force');
+    
     try {
-      final response = await _dio.post('/v1/generate', data: {'force': force});
-      print('[ApiClient] Backend response received: ${response.statusCode}');
-      print('[ApiClient] Response data type: ${response.data.runtimeType}');
+      // Step 1: Start the generation job
+      final startResponse = await _dio.post('/v1/generate', data: {'force': force, 'async': true});
+      final startData = startResponse.data as Map<String, dynamic>;
       
-      if (response.data is Map<String, dynamic>) {
-        final data = response.data as Map<String, dynamic>;
-        print('[ApiClient] Response keys: ${data.keys.toList()}');
-        print('[ApiClient] Has constellation: ${data['constellation'] != null}');
-        print('[ApiClient] constellation type: ${data['constellation']?.runtimeType}');
+      // Check if we got cached output directly (when cache hit)
+      if (startData.containsKey('story')) {
+        print('[ApiClient] Got cached output directly');
+        return GeneratedOutput.fromJson(startData);
       }
       
-      print('[ApiClient] Parsing GeneratedOutput...');
-      final output = GeneratedOutput.fromJson(response.data);
-      print('[ApiClient] GeneratedOutput parsed successfully');
-      print('[ApiClient] output.constellation: ${output.constellation != null}');
-      return output;
+      // Got a job ID - need to poll for status
+      final jobId = startData['jobId'] as String;
+      print('[ApiClient] Job started: $jobId');
+      
+      // Step 2: Poll for job status until completion
+      const pollInterval = Duration(seconds: 2);
+      const maxPolls = 180; // 6 minutes max (180 * 2 seconds)
+      
+      for (int poll = 0; poll < maxPolls; poll++) {
+        await Future.delayed(pollInterval);
+        
+        try {
+          final statusResponse = await _dio.get('/v1/generate/status/$jobId');
+          final statusData = statusResponse.data as Map<String, dynamic>;
+          
+          final status = statusData['status'] as String;
+          final currentStep = (statusData['currentStep'] as num?)?.toInt() ?? 0;
+          final totalSteps = (statusData['totalSteps'] as num?)?.toInt() ?? 6;
+          final stepLabel = statusData['stepLabel'] as String? ?? 'Processing...';
+          
+          // Report progress
+          onProgress?.call(currentStep, totalSteps, stepLabel);
+          print('[ApiClient] Job $jobId: Step $currentStep/$totalSteps - $stepLabel');
+          
+          if (status == 'completed') {
+            // Job completed - result should be in the response
+            if (statusData['result'] != null) {
+              print('[ApiClient] ✅ Generation complete! Parsing result...');
+              return GeneratedOutput.fromJson(statusData['result'] as Map<String, dynamic>);
+            } else {
+              // Fallback: fetch from cache
+              print('[ApiClient] Job complete but no result - fetching from cache');
+              final cached = await getCachedOutput();
+              if (cached != null) return cached;
+              throw Exception('Generation completed but no output available');
+            }
+          }
+          
+          if (status == 'failed') {
+            final error = statusData['error'] as String? ?? 'Unknown error';
+            print('[ApiClient] ❌ Generation failed: $error');
+            throw Exception('Generation failed: $error');
+          }
+          
+          // Still running - continue polling
+        } catch (pollError) {
+          if (pollError is DioException) {
+            print('[ApiClient] Poll error (will retry): ${pollError.message}');
+            // Continue polling on network errors
+          } else {
+            rethrow;
+          }
+        }
+      }
+      
+      // Timeout after max polls
+      print('[ApiClient] ❌ Generation timed out after ${maxPolls * 2} seconds');
+      throw Exception('Generation timed out. Please try again.');
+      
     } on DioException catch (e) {
       print('[ApiClient] DioException: ${e.type}');
       print('[ApiClient] DioException message: ${e.message}');
       print('[ApiClient] Response data: ${e.response?.data}');
       print('[ApiClient] Status: ${e.response?.statusCode}');
-      
-      // Handle 502 Bad Gateway (Render timeout) - the backend may have completed
-      // and cached the output. Wait and try to fetch the cached output.
-      if (e.response?.statusCode == 502 || 
-          e.type == DioExceptionType.connectionError ||
-          e.type == DioExceptionType.receiveTimeout) {
-        print('[ApiClient] Timeout/502 detected - waiting for backend to complete and checking cache...');
-        final requestTime = DateTime.now();
-        
-        // Wait a bit for backend to finish processing
-        for (int attempt = 1; attempt <= 5; attempt++) {
-          await Future.delayed(Duration(seconds: 5 * attempt)); // 5s, 10s, 15s, 20s, 25s
-          print('[ApiClient] Retry attempt $attempt: checking for cached output...');
-          
-          try {
-            final cached = await getCachedOutput();
-            if (cached != null) {
-              // Verify the cached output has constellation (indicates complete generation)
-              if (cached.constellation != null) {
-                print('[ApiClient] ✅ Found complete cached output after timeout! Returning cached result.');
-                return cached;
-              } else {
-                print('[ApiClient] Found cached output but missing constellation - waiting for complete generation...');
-              }
-            }
-          } catch (cacheError) {
-            print('[ApiClient] Cache check failed: $cacheError');
-          }
-        }
-        print('[ApiClient] ❌ No complete cached output found after retries');
-      }
       
       // Handle validation errors with user-friendly messages
       if (e.response?.statusCode == 400) {

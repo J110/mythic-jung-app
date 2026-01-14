@@ -5,6 +5,7 @@ import 'dart:async';
 import '../models/character.dart' as models;
 import '../models/assessment_answer.dart' as models;
 import '../models/generated_output.dart';
+import '../models/generation_job.dart';
 import '../models/user_profile.dart';
 import '../models/relationship.dart';
 import '../models/resonance.dart';
@@ -17,6 +18,97 @@ import '../utils/fixture_loader.dart';
 import '../utils/constants.dart';
 import '../config/app_config.dart';
 import 'local_db.dart';
+
+// ============================================================================
+// GENERATION PROGRESS TRACKING
+// ============================================================================
+
+/// State for generation progress
+class GenerationProgressState {
+  final bool isGenerating;
+  final int currentStep;
+  final int totalSteps;
+  final String stepLabel;
+  final int progressPercent;
+
+  const GenerationProgressState({
+    this.isGenerating = false,
+    this.currentStep = 0,
+    this.totalSteps = 6,
+    this.stepLabel = '',
+    this.progressPercent = 0,
+  });
+
+  GenerationProgressState copyWith({
+    bool? isGenerating,
+    int? currentStep,
+    int? totalSteps,
+    String? stepLabel,
+    int? progressPercent,
+  }) {
+    return GenerationProgressState(
+      isGenerating: isGenerating ?? this.isGenerating,
+      currentStep: currentStep ?? this.currentStep,
+      totalSteps: totalSteps ?? this.totalSteps,
+      stepLabel: stepLabel ?? this.stepLabel,
+      progressPercent: progressPercent ?? this.progressPercent,
+    );
+  }
+}
+
+/// Provider for generation progress - UI can listen to this
+final generationProgressProvider = StateNotifierProvider<GenerationProgressNotifier, GenerationProgressState>((ref) {
+  return GenerationProgressNotifier();
+});
+
+class GenerationProgressNotifier extends StateNotifier<GenerationProgressState> {
+  GenerationProgressNotifier() : super(const GenerationProgressState());
+
+  void startGeneration() {
+    state = const GenerationProgressState(
+      isGenerating: true,
+      currentStep: 0,
+      totalSteps: 6,
+      stepLabel: 'Starting...',
+      progressPercent: 0,
+    );
+  }
+
+  void updateProgress(int currentStep, int totalSteps, String stepLabel) {
+    final percent = totalSteps > 0 ? ((currentStep / totalSteps) * 100).round() : 0;
+    state = GenerationProgressState(
+      isGenerating: true,
+      currentStep: currentStep,
+      totalSteps: totalSteps,
+      stepLabel: stepLabel,
+      progressPercent: percent,
+    );
+  }
+
+  void completeGeneration() {
+    state = const GenerationProgressState(
+      isGenerating: false,
+      currentStep: 6,
+      totalSteps: 6,
+      stepLabel: 'Complete!',
+      progressPercent: 100,
+    );
+  }
+
+  void failGeneration(String error) {
+    state = GenerationProgressState(
+      isGenerating: false,
+      currentStep: state.currentStep,
+      totalSteps: state.totalSteps,
+      stepLabel: 'Failed: $error',
+      progressPercent: state.progressPercent,
+    );
+  }
+
+  void reset() {
+    state = const GenerationProgressState();
+  }
+}
 
 final appDatabaseProvider = Provider<AppDatabase>((ref) {
   return AppDatabase();
@@ -463,15 +555,32 @@ class OutputRepository extends StateNotifier<AsyncValue<GeneratedOutput?>> {
           // If no cached output, generate new one (with lock)
           _isGenerating = true;
           print('🔄 No cached output, generating new output from backend...');
-          final output = await apiClient.generateOutput(force: false);
-          _isGenerating = false;
-          print('✅ Generated output from backend');
-          state = AsyncValue.data(output);
-          // Update local cache
-          final updated = profile!.copyWith(cachedOutput: output);
-          final db = ref.read(appDatabaseProvider);
-          await db.saveProfile(updated);
-          return;
+          
+          // Start progress tracking
+          final progressNotifier = ref.read(generationProgressProvider.notifier);
+          progressNotifier.startGeneration();
+          
+          try {
+            final output = await apiClient.generateOutput(
+              force: false,
+              onProgress: (step, total, label) {
+                progressNotifier.updateProgress(step, total, label);
+              },
+            );
+            _isGenerating = false;
+            progressNotifier.completeGeneration();
+            print('✅ Generated output from backend');
+            state = AsyncValue.data(output);
+            // Update local cache
+            final updated = profile!.copyWith(cachedOutput: output);
+            final db = ref.read(appDatabaseProvider);
+            await db.saveProfile(updated);
+            return;
+          } catch (genError) {
+            _isGenerating = false;
+            progressNotifier.failGeneration(genError.toString());
+            rethrow;
+          }
         } catch (e, stack) {
           _isGenerating = false;
           print('❌ Backend error in _loadOutput: $e');
@@ -552,15 +661,26 @@ class OutputRepository extends StateNotifier<AsyncValue<GeneratedOutput?>> {
           
           // Call backend API if not in mock mode
           if (!apiClient.useMock) {
+            // Start progress tracking
+            final progressNotifier = ref.read(generationProgressProvider.notifier);
+            progressNotifier.startGeneration();
+            
             try {
               _isGenerating = true;
               print('🔄 Calling backend to generate output with ${profile.characters.length} characters...');
               // Force regeneration to get fresh output based on current inputs
-              output = await apiClient.generateOutput(force: true);
+              output = await apiClient.generateOutput(
+                force: true,
+                onProgress: (step, total, label) {
+                  progressNotifier.updateProgress(step, total, label);
+                },
+              );
               _isGenerating = false;
+              progressNotifier.completeGeneration();
               print('✅ Backend generated output successfully');
             } catch (e, stack) {
               _isGenerating = false;
+              progressNotifier.failGeneration(e.toString());
               print('❌ Backend generation failed: $e');
               print('Stack: $stack');
               
