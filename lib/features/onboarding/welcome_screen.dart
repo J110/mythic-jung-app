@@ -1,194 +1,133 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/theme/app_theme.dart';
-import '../../core/storage/repositories.dart';
 
-/// Welcome screen with Silent Moon-inspired design
-/// Calm, inviting, with beautiful illustration area
-class WelcomeScreen extends ConsumerWidget {
+class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final sessionState = ref.watch(userSessionProvider);
-    final userName = sessionState.user?.displayName ?? 'Friend';
+    final isDark = theme.brightness == Brightness.dark;
     
     return Scaffold(
-      backgroundColor: AppTheme.primarySoft,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Top section with branding
-            Padding(
-              padding: const EdgeInsets.only(top: AppTheme.spacingL),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    width: 32,
-                    height: 32,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.psychology_rounded,
-                      size: 18,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'B l i s s',
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(0.9),
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
-                      letterSpacing: 4,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            
-            const SizedBox(height: AppTheme.spacingXXL),
-            
-            // Welcome message
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppTheme.spacingL),
-              child: Column(
-                children: [
-                  Text(
-                    'Hi $userName, Welcome',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 28,
-                      fontWeight: FontWeight.w700,
-                      height: 1.3,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 4),
-                  const Text(
-                    'to Bliss',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 28,
-                      fontWeight: FontWeight.w300,
-                      height: 1.3,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: AppTheme.spacingM),
-                  Text(
-                    'Discover your inner archetypes through\nthe characters that resonate with you.',
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(0.85),
-                      fontSize: 16,
-                      height: 1.6,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              ),
-            ),
-            
-            // Illustration area
-            Expanded(
-              child: Center(
-                child: Container(
-                  padding: const EdgeInsets.all(AppTheme.spacingXL),
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      // Background glow
-                      Container(
-                        width: 200,
-                        height: 200,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          gradient: RadialGradient(
-                            colors: [
-                              Colors.white.withOpacity(0.2),
-                              Colors.white.withOpacity(0.05),
-                              Colors.transparent,
-                            ],
-                          ),
-                        ),
-                      ),
-                      // Central icon
-                      Container(
-                        width: 120,
-                        height: 120,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.15),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.self_improvement_rounded,
-                          size: 60,
-                          color: Colors.white,
-                        ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: isDark
+                ? [
+                    const Color(0xFF1E1B2E),
+                    const Color(0xFF2D1B3D),
+                    const Color(0xFF1E1B2E),
+                  ]
+                : [
+                    const Color(0xFFFAF5FF),
+                    Colors.white,
+                    const Color(0xFFF3E8FF),
+                  ],
+          ),
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(32),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Spacer(flex: 2),
+                // Mythical icon with gradient
+                Container(
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: AppTheme.primaryGradient,
+                    boxShadow: [
+                      BoxShadow(
+                        color: theme.colorScheme.primary.withOpacity(0.3),
+                        blurRadius: 30,
+                        spreadRadius: 5,
                       ),
                     ],
                   ),
+                  child: Icon(
+                    Icons.auto_stories,
+                    size: 80,
+                    color: Colors.white,
+                  ),
                 ),
-              ),
-            ),
-            
-            // Bottom section with card and button
-            Container(
-              padding: const EdgeInsets.all(AppTheme.spacingL),
-              decoration: const BoxDecoration(
-                color: AppTheme.surfacePrimary,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(32),
-                  topRight: Radius.circular(32),
-                ),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Reflective journey note
-                  Container(
-                    padding: const EdgeInsets.all(AppTheme.spacingM),
-                    decoration: BoxDecoration(
-                      color: AppTheme.surfaceSecondary,
-                      borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+                const SizedBox(height: 32),
+                ShaderMask(
+                  shaderCallback: (bounds) => AppTheme.primaryGradient.createShader(
+                    Rect.fromLTWH(0, 0, bounds.width, bounds.height),
+                  ),
+                  child: Text(
+                    'Mythic Jung',
+                    style: theme.textTheme.displayLarge?.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: -1.5,
                     ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Discover your mythic narrative through\ncharacter-based Jungian exploration',
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    fontSize: 18,
+                    height: 1.6,
+                    letterSpacing: 0.3,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 48),
+                // Mindful disclaimer card
+                Card(
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    side: BorderSide(
+                      color: theme.colorScheme.primary.withOpacity(0.3),
+                      width: 1.5,
+                    ),
+                  ),
+                  color: isDark
+                      ? theme.colorScheme.surface
+                      : theme.colorScheme.surface.withOpacity(0.8),
+                  child: Padding(
+                    padding: const EdgeInsets.all(20),
                     child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Container(
-                          width: 40,
-                          height: 40,
+                          padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: AppTheme.primarySoft.withOpacity(0.15),
-                            borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+                            color: theme.colorScheme.primary.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(8),
                           ),
-                          child: const Icon(
-                            Icons.lightbulb_outline_rounded,
-                            color: AppTheme.primarySoft,
-                            size: 22,
+                          child: Icon(
+                            Icons.self_improvement,
+                            size: 24,
+                            color: theme.colorScheme.primary,
                           ),
                         ),
-                        const SizedBox(width: AppTheme.spacingM),
+                        const SizedBox(width: 16),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
                                 'A Reflective Journey',
-                                style: theme.textTheme.titleSmall?.copyWith(
+                                style: theme.textTheme.titleMedium?.copyWith(
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
-                              const SizedBox(height: 2),
+                              const SizedBox(height: 4),
                               Text(
-                                'For self-exploration, not clinical assessment.',
+                                'This is a reflective tool for self-exploration, not a medical or clinical assessment.',
                                 style: theme.textTheme.bodySmall?.copyWith(
-                                  color: AppTheme.textSecondary,
+                                  height: 1.5,
                                 ),
                               ),
                             ],
@@ -197,23 +136,53 @@ class WelcomeScreen extends ConsumerWidget {
                       ],
                     ),
                   ),
-                  
-                  const SizedBox(height: AppTheme.spacingL),
-                  
-                  // Get Started button
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () => context.go('/characters'),
-                      child: const Text('GET STARTED'),
+                ),
+                const Spacer(flex: 2),
+                // Begin button with gradient
+                Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    gradient: AppTheme.primaryGradient,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: theme.colorScheme.primary.withOpacity(0.4),
+                        blurRadius: 20,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
+                  ),
+                  child: ElevatedButton(
+                    onPressed: () => context.go('/characters'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                      padding: const EdgeInsets.symmetric(vertical: 20),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Begin Your Journey',
+                          style: theme.textTheme.titleLarge?.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        const Icon(Icons.arrow_forward, color: Colors.white),
+                      ],
                     ),
                   ),
-                  
-                  const SizedBox(height: AppTheme.spacingS),
-                ],
-              ),
+                ),
+                const SizedBox(height: 24),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
