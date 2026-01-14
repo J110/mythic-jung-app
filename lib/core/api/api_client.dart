@@ -303,6 +303,7 @@ class ApiClient {
           e.type == DioExceptionType.connectionError ||
           e.type == DioExceptionType.receiveTimeout) {
         print('[ApiClient] Timeout/502 detected - waiting for backend to complete and checking cache...');
+        final requestTime = DateTime.now();
         
         // Wait a bit for backend to finish processing
         for (int attempt = 1; attempt <= 5; attempt++) {
@@ -312,14 +313,19 @@ class ApiClient {
           try {
             final cached = await getCachedOutput();
             if (cached != null) {
-              print('[ApiClient] ✅ Found cached output after timeout! Returning cached result.');
-              return cached;
+              // Verify the cached output has constellation (indicates complete generation)
+              if (cached.constellation != null) {
+                print('[ApiClient] ✅ Found complete cached output after timeout! Returning cached result.');
+                return cached;
+              } else {
+                print('[ApiClient] Found cached output but missing constellation - waiting for complete generation...');
+              }
             }
           } catch (cacheError) {
             print('[ApiClient] Cache check failed: $cacheError');
           }
         }
-        print('[ApiClient] ❌ No cached output found after retries');
+        print('[ApiClient] ❌ No complete cached output found after retries');
       }
       
       // Handle validation errors with user-friendly messages
