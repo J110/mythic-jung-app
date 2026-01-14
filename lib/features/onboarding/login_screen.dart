@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/storage/repositories.dart';
+import '../../app/theme/app_theme.dart';
 
+/// Login screen with Silent Moon-inspired design
+/// Clean, calm, emotionally reassuring aesthetic
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
@@ -10,16 +13,28 @@ class LoginScreen extends ConsumerStatefulWidget {
   ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends ConsumerState<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen> 
+    with SingleTickerProviderStateMixin {
   final _usernameController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
   bool _checkedSession = false;
+  late AnimationController _fadeController;
+  late Animation<double> _fadeAnimation;
 
   @override
   void initState() {
     super.initState();
-    // Check if user is already logged in after frame is rendered
+    _fadeController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
+    _fadeAnimation = CurvedAnimation(
+      parent: _fadeController,
+      curve: Curves.easeOut,
+    );
+    _fadeController.forward();
+    
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkExistingSession();
     });
@@ -31,7 +46,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     
     final sessionState = ref.read(userSessionProvider);
     if (sessionState.isLoggedIn) {
-      // User already logged in, redirect appropriately
       if (sessionState.hasExistingData) {
         context.go('/home');
       } else {
@@ -43,6 +57,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   void dispose() {
     _usernameController.dispose();
+    _fadeController.dispose();
     super.dispose();
   }
 
@@ -51,22 +66,29 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     setState(() => _isLoading = true);
 
-    final success = await ref.read(userSessionProvider.notifier).login(
-      _usernameController.text.trim(),
-    );
+    try {
+      final success = await ref.read(userSessionProvider.notifier).login(
+        _usernameController.text.trim(),
+      );
 
-    setState(() => _isLoading = false);
+      if (!mounted) return;
+      setState(() => _isLoading = false);
 
-    if (success && mounted) {
-      final sessionState = ref.read(userSessionProvider);
-      
-      if (sessionState.hasExistingData) {
-        // Returning user with data - go directly to home
-        context.go('/home');
-      } else {
-        // New user or user without data - go to welcome
-        context.go('/welcome');
+      if (success) {
+        final sessionState = ref.read(userSessionProvider);
+        
+        if (sessionState.hasExistingData) {
+          context.go('/home');
+        } else {
+          context.go('/welcome');
+        }
       }
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Login error: $e')),
+      );
     }
   }
 
@@ -74,9 +96,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Widget build(BuildContext context) {
     final sessionState = ref.watch(userSessionProvider);
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
 
-    // Auto-redirect if session becomes active (e.g., restored from storage)
+    // Auto-redirect if session becomes active
     if (sessionState.isLoggedIn && !_isLoading) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
@@ -89,144 +110,105 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       });
     }
 
-    // Show loading while checking session
+    // Loading state while checking session
     if (sessionState.isLoading && !sessionState.isLoggedIn) {
       return Scaffold(
-        body: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: isDark
-                  ? [
-                      const Color(0xFF1a1a2e),
-                      const Color(0xFF16213e),
-                      const Color(0xFF0f3460),
-                    ]
-                  : [
-                      const Color(0xFFF8F4F0),
-                      const Color(0xFFF0EBE3),
-                      const Color(0xFFE8E0D5),
-                    ],
-            ),
-          ),
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  width: 80,
-                  height: 80,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: LinearGradient(
-                      colors: [
-                        theme.colorScheme.primary,
-                        theme.colorScheme.primary.withOpacity(0.7),
-                      ],
-                    ),
-                  ),
-                  child: const Icon(
-                    Icons.psychology_alt,
-                    size: 40,
-                    color: Colors.white,
-                  ),
+        backgroundColor: AppTheme.surfacePrimary,
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Logo
+              Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  color: AppTheme.primarySoft.withOpacity(0.15),
+                  shape: BoxShape.circle,
                 ),
-                const SizedBox(height: 24),
-                const CircularProgressIndicator(),
-                const SizedBox(height: 16),
-                Text(
-                  'Checking session...',
-                  style: TextStyle(
-                    color: isDark ? Colors.white70 : Colors.black54,
-                  ),
+                child: const Icon(
+                  Icons.psychology_rounded,
+                  size: 40,
+                  color: AppTheme.primarySoft,
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(height: AppTheme.spacingL),
+              const SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2.5,
+                  color: AppTheme.primarySoft,
+                ),
+              ),
+            ],
           ),
         ),
       );
     }
 
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: isDark
-                ? [
-                    const Color(0xFF1a1a2e),
-                    const Color(0xFF16213e),
-                    const Color(0xFF0f3460),
-                  ]
-                : [
-                    const Color(0xFFF8F4F0),
-                    const Color(0xFFF0EBE3),
-                    const Color(0xFFE8E0D5),
-                  ],
-          ),
-        ),
-        child: SafeArea(
-          child: Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(32),
+      backgroundColor: AppTheme.surfacePrimary,
+      body: SafeArea(
+        child: FadeTransition(
+          opacity: _fadeAnimation,
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: AppTheme.spacingL),
               child: Form(
                 key: _formKey,
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // Logo/Icon
+                    const SizedBox(height: 60),
+                    
+                    // Logo with soft background
                     Container(
                       width: 100,
                       height: 100,
                       decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            AppTheme.primarySoft.withOpacity(0.2),
+                            AppTheme.primarySoft.withOpacity(0.1),
+                          ],
+                        ),
                         shape: BoxShape.circle,
-                      gradient: LinearGradient(
-                        colors: [
-                          theme.colorScheme.primary,
-                          theme.colorScheme.primary.withOpacity(0.7),
-                        ],
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: theme.colorScheme.primary.withOpacity(0.3),
-                            blurRadius: 20,
-                            offset: const Offset(0, 10),
-                          ),
-                        ],
                       ),
                       child: const Icon(
-                        Icons.psychology_alt,
+                        Icons.psychology_rounded,
                         size: 50,
-                        color: Colors.white,
+                        color: AppTheme.primarySoft,
                       ),
                     ),
                     
-                    const SizedBox(height: 32),
+                    const SizedBox(height: AppTheme.spacingXXL),
                     
-                    // Title
+                    // Welcome text
                     Text(
                       'Welcome to Bliss',
-                      style: theme.textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: isDark ? Colors.white : const Color(0xFF2D2D2D),
-                      ),
-                    ),
-                    
-                    const SizedBox(height: 8),
-                    
-                    Text(
-                      'Discover your psychological archetypes',
-                      style: theme.textTheme.bodyLarge?.copyWith(
-                        color: isDark ? Colors.white70 : Colors.black54,
+                      style: theme.textTheme.displayMedium?.copyWith(
+                        color: const Color(0xFF1A1A1A),
                       ),
                       textAlign: TextAlign.center,
                     ),
                     
-                    const SizedBox(height: 48),
+                    const SizedBox(height: AppTheme.spacingS),
                     
-                    // Username field
+                    Text(
+                      'Discover your inner archetypes through\nthe characters you love',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: AppTheme.textSecondary,
+                        height: 1.6,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    
+                    const SizedBox(height: AppTheme.spacingXXL),
+                    
+                    // Username input - FIXED TEXT COLOR
                     Container(
                       constraints: const BoxConstraints(maxWidth: 400),
                       child: TextFormField(
@@ -234,37 +216,48 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         enabled: !_isLoading,
                         textInputAction: TextInputAction.done,
                         onFieldSubmitted: (_) => _handleLogin(),
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: const Color(0xFF1A1A1A),  // Explicit dark text color
+                          fontWeight: FontWeight.w500,
+                        ),
                         decoration: InputDecoration(
-                          labelText: 'Choose a username',
-                          hintText: 'Enter your name or nickname',
-                          prefixIcon: const Icon(Icons.person_outline),
+                          hintText: 'Enter your name',
+                          hintStyle: const TextStyle(
+                            color: AppTheme.textSecondary,
+                            fontWeight: FontWeight.w400,
+                          ),
                           filled: true,
-                          fillColor: isDark 
-                              ? Colors.white.withOpacity(0.1)
-                              : Colors.white.withOpacity(0.8),
+                          fillColor: AppTheme.surfaceSecondary,
+                          prefixIcon: const Padding(
+                            padding: EdgeInsets.only(left: 16, right: 12),
+                            child: Icon(
+                              Icons.person_outline_rounded,
+                              color: AppTheme.textSecondary,
+                            ),
+                          ),
+                          suffixIcon: _usernameController.text.length >= 2
+                              ? const Padding(
+                                  padding: EdgeInsets.only(right: 16),
+                                  child: Icon(
+                                    Icons.check_circle_rounded,
+                                    color: AppTheme.success,
+                                  ),
+                                )
+                              : null,
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
                             borderSide: BorderSide.none,
                           ),
                           enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(16),
-                            borderSide: BorderSide(
-                              color: isDark ? Colors.white24 : Colors.black12,
-                            ),
+                            borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+                            borderSide: BorderSide.none,
                           ),
                           focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(16),
-                            borderSide: BorderSide(
-                              color: theme.colorScheme.primary,
-                              width: 2,
-                            ),
+                            borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+                            borderSide: const BorderSide(color: AppTheme.primarySoft, width: 2),
                           ),
-                          errorBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(16),
-                            borderSide: const BorderSide(
-                              color: Colors.red,
-                            ),
-                          ),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
                         ),
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
@@ -275,85 +268,93 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           }
                           return null;
                         },
+                        onChanged: (_) => setState(() {}),
                       ),
                     ),
                     
-                    const SizedBox(height: 16),
+                    const SizedBox(height: AppTheme.spacingM),
                     
                     // Info text
                     Container(
                       constraints: const BoxConstraints(maxWidth: 400),
                       child: Text(
-                        'Your username will be used to save and retrieve your data. '
-                        'If you enter the same username again, your previous data will be restored.',
+                        'Your name will be used to save your journey.\nUse the same name to continue where you left off.',
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: isDark ? Colors.white54 : Colors.black45,
+                          color: AppTheme.textTertiary,
                         ),
                         textAlign: TextAlign.center,
                       ),
                     ),
                     
-                    const SizedBox(height: 32),
+                    const SizedBox(height: AppTheme.spacingXL),
                     
                     // Error message
                     if (sessionState.error != null) ...[
                       Container(
                         constraints: const BoxConstraints(maxWidth: 400),
-                        padding: const EdgeInsets.all(12),
+                        padding: const EdgeInsets.all(AppTheme.spacingM),
                         decoration: BoxDecoration(
-                          color: Colors.red.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.red.withOpacity(0.3)),
+                          color: AppTheme.error.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
                         ),
                         child: Row(
                           children: [
-                            const Icon(Icons.error_outline, color: Colors.red, size: 20),
-                            const SizedBox(width: 8),
+                            const Icon(
+                              Icons.info_outline_rounded,
+                              color: AppTheme.error,
+                              size: 20,
+                            ),
+                            const SizedBox(width: AppTheme.spacingS),
                             Expanded(
                               child: Text(
                                 sessionState.error!,
-                                style: const TextStyle(color: Colors.red),
+                                style: const TextStyle(
+                                  color: AppTheme.error,
+                                  fontSize: 14,
+                                ),
                               ),
                             ),
                           ],
                         ),
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: AppTheme.spacingM),
                     ],
                     
-                    // Login button
+                    // Continue button - pill shape
                     Container(
                       constraints: const BoxConstraints(maxWidth: 400),
                       width: double.infinity,
-                      height: 56,
                       child: ElevatedButton(
                         onPressed: _isLoading ? null : _handleLogin,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: theme.colorScheme.primary,
+                          backgroundColor: AppTheme.primarySoft,
                           foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 18),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: BorderRadius.circular(AppTheme.radiusPill),
                           ),
-                          elevation: _isLoading ? 0 : 4,
                         ),
                         child: _isLoading
                             ? const SizedBox(
                                 width: 24,
                                 height: 24,
                                 child: CircularProgressIndicator(
-                                  strokeWidth: 2,
+                                  strokeWidth: 2.5,
                                   valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                                 ),
                               )
                             : const Text(
-                                'Continue',
+                                'GET STARTED',
                                 style: TextStyle(
-                                  fontSize: 18,
+                                  fontSize: 14,
                                   fontWeight: FontWeight.w600,
+                                  letterSpacing: 1.0,
                                 ),
                               ),
                       ),
                     ),
+                    
+                    const SizedBox(height: AppTheme.spacingXXL),
                   ],
                 ),
               ),

@@ -748,6 +748,7 @@ class _CharacterInputSlot extends StatelessWidget {
         
         // Character name input
         TextField(
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Color(0xFF1A1A1A)),
           controller: slot.nameController,
           focusNode: slot.nameFocusNode,
           decoration: InputDecoration(
@@ -845,7 +846,7 @@ class _CharacterInputSlot extends StatelessWidget {
               contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               isDense: true,
             ),
-            style: theme.textTheme.bodyMedium,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Color(0xFF1A1A1A)),
             onChanged: (_) => onReferenceTextChanged(),
           ),
           const SizedBox(height: 12),

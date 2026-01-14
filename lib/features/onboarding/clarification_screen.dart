@@ -244,6 +244,7 @@ class _ClarificationScreenState extends ConsumerState<ClarificationScreen> {
             ),
             const SizedBox(height: 12),
             TextField(
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Color(0xFF1A1A1A)),
               controller: hintController,
               decoration: InputDecoration(
                 hintText: 'e.g., "Don, Fashion" or "Yes Man (2008)"',
