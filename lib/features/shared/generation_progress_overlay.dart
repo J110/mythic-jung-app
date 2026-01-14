@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/storage/repositories.dart';
 
 /// Overlay that shows generation progress with step-by-step updates
+/// Shows progress for both Me and Relationship generation
 class GenerationProgressOverlay extends ConsumerWidget {
   final Widget child;
 
@@ -13,7 +14,12 @@ class GenerationProgressOverlay extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final progress = ref.watch(generationProgressProvider);
+    final meProgress = ref.watch(generationProgressProvider);
+    final relProgress = ref.watch(relationshipProgressProvider);
+    
+    // Use whichever progress is actively generating
+    final progress = meProgress.isGenerating ? meProgress : relProgress;
+    final isRelationship = !meProgress.isGenerating && relProgress.isGenerating;
     
     return Stack(
       children: [
@@ -33,9 +39,11 @@ class GenerationProgressOverlay extends ConsumerWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Text(
-                        'Generating Your Myth',
-                        style: TextStyle(
+                      Text(
+                        isRelationship 
+                          ? 'Analyzing Your Relationship'
+                          : 'Generating Your Myth',
+                        style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),

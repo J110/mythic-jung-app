@@ -882,14 +882,25 @@ class RelationshipOutputRepository extends StateNotifier<AsyncValue<Relationship
             return;
           }
           
-          // Generate new output
+          // Generate new output with progress tracking
           print('🔄 [Relationship] No cached output, generating...');
-          final output = await apiClient.generateRelationshipOutput(force: false);
+          final progressNotifier = ref.read(relationshipProgressProvider.notifier);
+          progressNotifier.start();
+          
+          final output = await apiClient.generateRelationshipOutput(
+            force: false,
+            onProgress: (currentStep, totalSteps, stepLabel) {
+              progressNotifier.updateProgress(currentStep, totalSteps, stepLabel);
+            },
+          );
+          
+          progressNotifier.complete();
           print('✅ [Relationship] Generated output from backend');
           state = AsyncValue.data(output);
           return;
         } catch (e, stack) {
           print('❌ [Relationship] Backend error: $e');
+          ref.read(relationshipProgressProvider.notifier).error(e.toString());
           state = AsyncValue.error(e, stack);
           return;
         }
@@ -936,11 +947,22 @@ class RelationshipOutputRepository extends StateNotifier<AsyncValue<Relationship
           if (!apiClient.useMock) {
             try {
               print('🔄 [Relationship] Generating output...');
-              final output = await apiClient.generateRelationshipOutput(force: true);
+              final progressNotifier = ref.read(relationshipProgressProvider.notifier);
+              progressNotifier.start();
+              
+              final output = await apiClient.generateRelationshipOutput(
+                force: true,
+                onProgress: (currentStep, totalSteps, stepLabel) {
+                  progressNotifier.updateProgress(currentStep, totalSteps, stepLabel);
+                },
+              );
+              
+              progressNotifier.complete();
               print('✅ [Relationship] Backend generated output successfully');
               state = AsyncValue.data(output);
             } catch (e, stack) {
               print('❌ [Relationship] Backend generation failed: $e');
+              ref.read(relationshipProgressProvider.notifier).error(e.toString());
               state = AsyncValue.error(e, stack);
               return;
             }
@@ -959,6 +981,64 @@ class RelationshipOutputRepository extends StateNotifier<AsyncValue<Relationship
         }
       },
     );
+  }
+}
+
+// ============================================================================
+// RELATIONSHIP PROGRESS PROVIDER
+// ============================================================================
+
+/// Tracks progress of relationship generation (uses same state as Me generation)
+final relationshipProgressProvider = StateNotifierProvider<RelationshipProgressNotifier, GenerationProgressState>((ref) {
+  return RelationshipProgressNotifier();
+});
+
+class RelationshipProgressNotifier extends StateNotifier<GenerationProgressState> {
+  RelationshipProgressNotifier() : super(const GenerationProgressState());
+  
+  void start() {
+    state = const GenerationProgressState(
+      isGenerating: true,
+      currentStep: 0,
+      totalSteps: 6,
+      stepLabel: 'Starting relationship analysis...',
+      progressPercent: 0,
+    );
+  }
+  
+  void updateProgress(int currentStep, int totalSteps, String stepLabel) {
+    final percent = totalSteps > 0 ? ((currentStep / totalSteps) * 100).round() : 0;
+    state = GenerationProgressState(
+      isGenerating: true,
+      currentStep: currentStep,
+      totalSteps: totalSteps,
+      stepLabel: stepLabel,
+      progressPercent: percent,
+    );
+  }
+  
+  void complete() {
+    state = const GenerationProgressState(
+      isGenerating: false,
+      currentStep: 6,
+      totalSteps: 6,
+      stepLabel: 'Complete!',
+      progressPercent: 100,
+    );
+  }
+  
+  void error(String message) {
+    state = GenerationProgressState(
+      isGenerating: false,
+      currentStep: state.currentStep,
+      totalSteps: state.totalSteps,
+      stepLabel: 'Error: $message',
+      progressPercent: state.progressPercent,
+    );
+  }
+  
+  void clear() {
+    state = const GenerationProgressState();
   }
 }
 

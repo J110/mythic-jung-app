@@ -637,18 +637,89 @@ class ApiClient {
     }
   }
 
-  /// Generate relationship output
-  Future<RelationshipOutput> generateRelationshipOutput({bool force = false}) async {
+  /// Generate relationship output with async job polling
+  /// [onProgress] is called with (currentStep, totalSteps, stepLabel) as generation progresses
+  Future<RelationshipOutput> generateRelationshipOutput({
+    bool force = false,
+    void Function(int currentStep, int totalSteps, String stepLabel)? onProgress,
+  }) async {
     if (useMock) {
       await Future.delayed(const Duration(milliseconds: 1500));
       throw UnimplementedError('Mock generation for relationships');
     }
     
-    print('Calling POST /v1/relationship/regenerate with force=$force');
+    print('[ApiClient] Starting async relationship generation with force=$force');
+    
     try {
-      final response = await _dio.post('/v1/relationship/regenerate', data: {'force': force});
-      print('Relationship output generated: ${response.statusCode}');
-      return RelationshipOutput.fromJson(response.data);
+      // Step 1: Start the generation job
+      final startResponse = await _dio.post('/v1/relationship/regenerate', data: {'force': force});
+      final startData = startResponse.data as Map<String, dynamic>;
+      
+      // Check if we got cached output directly (when cache hit)
+      if (startData.containsKey('dynamics') || startData.containsKey('compatibility')) {
+        print('[ApiClient] Got cached relationship output directly');
+        return RelationshipOutput.fromJson(startData);
+      }
+      
+      // Got a job ID - need to poll for status
+      final jobId = startData['jobId'] as String;
+      print('[ApiClient] Relationship job started: $jobId');
+      
+      // Step 2: Poll for job status until completion
+      const pollInterval = Duration(seconds: 2);
+      const maxPolls = 180; // 6 minutes max (180 * 2 seconds)
+      
+      for (int poll = 0; poll < maxPolls; poll++) {
+        await Future.delayed(pollInterval);
+        
+        try {
+          final statusResponse = await _dio.get('/v1/relationship/status/$jobId');
+          final statusData = statusResponse.data as Map<String, dynamic>;
+          
+          final status = statusData['status'] as String;
+          final currentStep = (statusData['currentStep'] as num?)?.toInt() ?? 0;
+          final totalSteps = (statusData['totalSteps'] as num?)?.toInt() ?? 6;
+          final stepLabel = statusData['stepLabel'] as String? ?? 'Processing...';
+          
+          // Report progress
+          onProgress?.call(currentStep, totalSteps, stepLabel);
+          print('[ApiClient] Relationship job $jobId: Step $currentStep/$totalSteps - $stepLabel');
+          
+          if (status == 'completed') {
+            // Job completed - result should be in the response
+            if (statusData['result'] != null) {
+              print('[ApiClient] ✅ Relationship generation complete! Parsing result...');
+              return RelationshipOutput.fromJson(statusData['result'] as Map<String, dynamic>);
+            } else {
+              // Fallback: fetch from cache
+              print('[ApiClient] Job complete but no result - fetching from cache');
+              final cached = await getRelationshipOutput();
+              if (cached != null) return cached;
+              throw Exception('Relationship generation completed but no output available');
+            }
+          }
+          
+          if (status == 'failed') {
+            final error = statusData['error'] as String? ?? 'Unknown error';
+            print('[ApiClient] ❌ Relationship generation failed: $error');
+            throw Exception('Relationship generation failed: $error');
+          }
+          
+          // Still running - continue polling
+        } catch (pollError) {
+          if (pollError is DioException) {
+            print('[ApiClient] Relationship poll error (will retry): ${pollError.message}');
+            // Continue polling on network errors
+          } else {
+            rethrow;
+          }
+        }
+      }
+      
+      // Timeout after max polls
+      print('[ApiClient] ❌ Relationship generation timed out after ${maxPolls * 2} seconds');
+      throw Exception('Relationship generation timed out. Please try again.');
+      
     } on DioException catch (e) {
       print('DioException: ${e.message}');
       print('Response: ${e.response?.data}');
