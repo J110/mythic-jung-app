@@ -1418,7 +1418,8 @@ final effectiveRelationshipOutputProvider = Provider<RelationshipOutput?>((ref) 
 /// Provider for Me constellation data - fetches from API
 /// Note: Constellation is also included in main output, but we fetch separately
 /// to avoid circular dependencies
-final meConstellationProvider = FutureProvider.autoDispose<MeConstellationResponse?>((ref) async {
+/// Removed autoDispose to prevent re-fetching on tab switches
+final meConstellationProvider = FutureProvider<MeConstellationResponse?>((ref) async {
   final apiClient = ref.read(apiClientProvider);
   try {
     print('🔮 [Constellation] Fetching Me constellation from API...');
@@ -1430,7 +1431,8 @@ final meConstellationProvider = FutureProvider.autoDispose<MeConstellationRespon
 });
 
 /// Provider for Relationship constellation data - fetches from API
-final relationshipConstellationProvider = FutureProvider.autoDispose<RelationshipConstellationResponse?>((ref) async {
+/// Removed autoDispose to prevent re-fetching on tab switches
+final relationshipConstellationProvider = FutureProvider<RelationshipConstellationResponse?>((ref) async {
   final apiClient = ref.read(apiClientProvider);
   try {
     print('🔮 [Constellation] Fetching Relationship constellation from API...');
@@ -1522,7 +1524,8 @@ class PsycheModelState {
 
 /// Provider for Me PsycheModel (single source of truth)
 /// Only fetches AFTER main output is fully generated (has story content)
-final mePsycheModelProvider = FutureProvider.autoDispose<PsycheModel?>((ref) async {
+/// Uses keepAlive to prevent re-fetching on tab switches
+final mePsycheModelProvider = FutureProvider<PsycheModel?>((ref) async {
   final apiClient = ref.read(apiClientProvider);
   
   // Watch for output changes
@@ -1552,7 +1555,8 @@ final mePsycheModelProvider = FutureProvider.autoDispose<PsycheModel?>((ref) asy
 
 /// Provider for Relationship PsycheModel
 /// Only fetches AFTER relationship output is fully generated
-final relationshipPsycheModelProvider = FutureProvider.autoDispose<PsycheModel?>((ref) async {
+/// Uses keepAlive to prevent re-fetching on tab switches
+final relationshipPsycheModelProvider = FutureProvider<PsycheModel?>((ref) async {
   final apiClient = ref.read(apiClientProvider);
   
   // Watch for relationship output changes
