@@ -42,6 +42,7 @@ class _ClarificationScreenState extends ConsumerState<ClarificationScreen> {
   final Map<int, TextEditingController> _negativeTextControllers = {};
   bool _isSubmitting = false;
   final Set<int> _loadingCharacters = {}; // Track which characters are being re-recognized
+  final Set<int> _removedIndices = {}; // Track removed characters
 
   @override
   void initState() {
@@ -104,6 +105,13 @@ class _ClarificationScreenState extends ConsumerState<ClarificationScreen> {
     return _characters.asMap().entries.map((entry) {
       final index = entry.key;
       final char = entry.value;
+      
+      // Mark removed characters with SKIP mode
+      if (_removedIndices.contains(index)) {
+        return const ClarificationChoice(
+          referenceMode: 'SKIP', // Special mode to indicate character should be skipped
+        );
+      }
       
       // Build clarifications for ALL characters (not just needsClarification)
       final selectedVersionId = _selectedVersions[index];
@@ -200,6 +208,103 @@ class _ClarificationScreenState extends ConsumerState<ClarificationScreen> {
         setState(() => _isSubmitting = false);
       }
     }
+  }
+
+  /// Remove a character from the list
+  void _removeCharacter(int index, CharacterAmbiguityAnalysis character) {
+    // Calculate minimum required characters
+    final minMeCount = 4; // Minimum 4 Me characters required
+    final currentMeCount = _characters.asMap().entries
+        .where((e) => _isMyCharacter(e.key) && !_removedIndices.contains(e.key))
+        .length;
+    final currentOtherCount = _characters.asMap().entries
+        .where((e) => !_isMyCharacter(e.key) && !_removedIndices.contains(e.key))
+        .length;
+    
+    // Check if removal would violate minimum requirements
+    if (_isMyCharacter(index)) {
+      if (currentMeCount <= minMeCount) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('You need at least $minMeCount characters. Please redo recognition instead.'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+        return;
+      }
+    } else {
+      // For relationship characters, also need minimum 4
+      if (widget.relationshipEnabled && currentOtherCount <= 4) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('You need at least 4 partner characters. Please redo recognition instead.'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+        return;
+      }
+    }
+    
+    // Show confirmation dialog
+    showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Row(
+          children: [
+            Icon(Icons.delete_outline, color: Colors.red.shade700),
+            const SizedBox(width: 8),
+            const Expanded(child: Text('Remove Character?')),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Remove "${character.characterName ?? character.input}" from your selection?',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'This character will not be included in your analysis.',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('Remove'),
+          ),
+        ],
+      ),
+    ).then((confirmed) {
+      if (confirmed == true) {
+        setState(() {
+          _removedIndices.add(index);
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Removed "${character.characterName ?? character.input}"'),
+            action: SnackBarAction(
+              label: 'Undo',
+              onPressed: () {
+                setState(() {
+                  _removedIndices.remove(index);
+                });
+              },
+            ),
+          ),
+        );
+      }
+    });
   }
 
   /// Show dialog to redo recognition for a specific character
@@ -420,16 +525,16 @@ class _ClarificationScreenState extends ConsumerState<ClarificationScreen> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     
-    // Show ALL characters for confirmation/adjustment (not just needsClarification)
+    // Show ALL characters for confirmation/adjustment (excluding removed ones)
     final meCharacters = _characters
         .asMap()
         .entries
-        .where((e) => _isMyCharacter(e.key))
+        .where((e) => _isMyCharacter(e.key) && !_removedIndices.contains(e.key))
         .toList();
     final otherCharacters = _characters
         .asMap()
         .entries
-        .where((e) => !_isMyCharacter(e.key))
+        .where((e) => !_isMyCharacter(e.key) && !_removedIndices.contains(e.key))
         .toList();
     
     return Scaffold(
@@ -481,6 +586,7 @@ class _ClarificationScreenState extends ConsumerState<ClarificationScreen> {
                           negativeTextController: _negativeTextControllers[entry.key],
                           isLoading: _loadingCharacters.contains(entry.key),
                           onRedoRecognition: () => _showRedoRecognitionDialog(entry.key, entry.value),
+                          onRemove: () => _removeCharacter(entry.key, entry.value),
                           onVersionSelected: (versionId) {
                             setState(() => _selectedVersions[entry.key] = versionId);
                           },
@@ -534,6 +640,7 @@ class _ClarificationScreenState extends ConsumerState<ClarificationScreen> {
                           negativeTextController: _negativeTextControllers[entry.key],
                           isLoading: _loadingCharacters.contains(entry.key),
                           onRedoRecognition: () => _showRedoRecognitionDialog(entry.key, entry.value),
+                          onRemove: () => _removeCharacter(entry.key, entry.value),
                           onVersionSelected: (versionId) {
                             setState(() => _selectedVersions[entry.key] = versionId);
                           },
@@ -740,7 +847,8 @@ class _CharacterClarificationCard extends StatelessWidget {
   final ValueChanged<String?> onPhaseSelected;
   final ValueChanged<String> onPhaseExclusionToggled;
   final VoidCallback? onRedoRecognition;
-  final bool isLoading; // NEW: Loading state for re-recognition
+  final VoidCallback? onRemove; // NEW: Remove character callback
+  final bool isLoading; // Loading state for re-recognition
 
   const _CharacterClarificationCard({
     required this.character,
@@ -757,7 +865,8 @@ class _CharacterClarificationCard extends StatelessWidget {
     required this.onPhaseSelected,
     required this.onPhaseExclusionToggled,
     this.onRedoRecognition,
-    this.isLoading = false, // NEW
+    this.onRemove, // NEW
+    this.isLoading = false,
   });
 
   @override
@@ -1130,6 +1239,19 @@ class _CharacterClarificationCard extends StatelessWidget {
               backgroundColor: Colors.orange.withOpacity(0.1),
             ),
           ),
+        // Remove Character Button
+        if (onRemove != null) ...[
+          const SizedBox(width: 4),
+          IconButton(
+            onPressed: onRemove,
+            icon: const Icon(Icons.close),
+            tooltip: 'Remove this character',
+            style: IconButton.styleFrom(
+              foregroundColor: Colors.red.shade700,
+              backgroundColor: Colors.red.withOpacity(0.1),
+            ),
+          ),
+        ],
       ],
     );
   }
