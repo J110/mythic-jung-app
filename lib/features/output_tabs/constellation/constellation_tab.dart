@@ -322,11 +322,7 @@ class ConstellationTab extends ConsumerWidget {
           _buildShadowMotifsFromPsyche(context, shadowMotifs),
         ],
 
-        // Quality flags (for debugging/UX warnings)
-        if (psycheModel.qualityFlags.isNotEmpty) ...[
-          const SizedBox(height: 24),
-          _buildQualityFlagsCard(context, psycheModel.qualityFlags),
-        ],
+        // Quality flags removed - no longer displayed to users
       ],
     );
   }
