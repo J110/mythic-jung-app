@@ -273,15 +273,29 @@ class ApiClient {
       throw UnimplementedError('Mock generation - use fixture loader');
     }
     
-    print('Calling POST /v1/generate with force=$force');
+    print('[ApiClient] Calling POST /v1/generate with force=$force');
     try {
       final response = await _dio.post('/v1/generate', data: {'force': force});
-      print('Backend response received: ${response.statusCode}');
-      return GeneratedOutput.fromJson(response.data);
+      print('[ApiClient] Backend response received: ${response.statusCode}');
+      print('[ApiClient] Response data type: ${response.data.runtimeType}');
+      
+      if (response.data is Map<String, dynamic>) {
+        final data = response.data as Map<String, dynamic>;
+        print('[ApiClient] Response keys: ${data.keys.toList()}');
+        print('[ApiClient] Has constellation: ${data['constellation'] != null}');
+        print('[ApiClient] constellation type: ${data['constellation']?.runtimeType}');
+      }
+      
+      print('[ApiClient] Parsing GeneratedOutput...');
+      final output = GeneratedOutput.fromJson(response.data);
+      print('[ApiClient] GeneratedOutput parsed successfully');
+      print('[ApiClient] output.constellation: ${output.constellation != null}');
+      return output;
     } on DioException catch (e) {
-      print('DioException: ${e.message}');
-      print('Response: ${e.response?.data}');
-      print('Status: ${e.response?.statusCode}');
+      print('[ApiClient] DioException: ${e.type}');
+      print('[ApiClient] DioException message: ${e.message}');
+      print('[ApiClient] Response data: ${e.response?.data}');
+      print('[ApiClient] Status: ${e.response?.statusCode}');
       
       // Handle validation errors with user-friendly messages
       if (e.response?.statusCode == 400) {
@@ -740,6 +754,7 @@ class ApiClient {
 
   /// Get Me archetype constellation
   Future<MeConstellationResponse?> getMeConstellation({bool force = false}) async {
+    print('[ApiClient] getMeConstellation called, force=$force');
     if (useMock) {
       // Return mock data
       return const MeConstellationResponse(
@@ -765,16 +780,24 @@ class ApiClient {
     }
     
     try {
+      print('[ApiClient] Calling GET /v1/me/archetypes...');
       final response = await _dio.get(
         '/v1/me/archetypes',
         queryParameters: force ? {'force': 'true'} : null,
       );
-      return MeConstellationResponse.fromJson(response.data);
+      print('[ApiClient] /v1/me/archetypes response: ${response.statusCode}');
+      print('[ApiClient] Response data type: ${response.data.runtimeType}');
+      final result = MeConstellationResponse.fromJson(response.data);
+      print('[ApiClient] MeConstellationResponse parsed successfully');
+      return result;
     } on DioException catch (e) {
+      print('[ApiClient] getMeConstellation DioException: ${e.type}');
+      print('[ApiClient] getMeConstellation message: ${e.message}');
+      print('[ApiClient] getMeConstellation status: ${e.response?.statusCode}');
       if (e.response?.statusCode == 404) {
+        print('[ApiClient] getMeConstellation: 404, returning null');
         return null;
       }
-      print('Failed to get Me constellation: ${e.message}');
       rethrow;
     }
   }
