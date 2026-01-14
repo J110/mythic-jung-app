@@ -165,9 +165,9 @@ class UserSessionRepository extends StateNotifier<UserSessionState> {
 
     try {
       final apiClient = ref.read(apiClientProvider);
+      final prefs = await SharedPreferences.getInstance();
       
       // Clear any old session data first to avoid conflicts
-      final prefs = await SharedPreferences.getInstance();
       await prefs.remove(_userIdKey);
       await prefs.remove(_usernameKey);
       await prefs.remove(_displayNameKey);
@@ -176,7 +176,6 @@ class UserSessionRepository extends StateNotifier<UserSessionState> {
       final response = await apiClient.login(username.trim());
 
       // Save session locally
-      final prefs = await SharedPreferences.getInstance();
       await prefs.setString(_userIdKey, response.user.id);
       await prefs.setString(_usernameKey, response.user.username);
       await prefs.setString(_displayNameKey, response.user.displayName);
