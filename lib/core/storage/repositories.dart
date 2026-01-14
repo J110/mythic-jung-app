@@ -125,6 +125,18 @@ class UserSessionRepository extends StateNotifier<UserSessionState> {
           );
           print('[UserSession] Session restored with fresh status');
         } catch (e) {
+          // Check if user doesn't exist (404) - clear session and force re-login
+          final errorStr = e.toString().toLowerCase();
+          if (errorStr.contains('404') || errorStr.contains('not found') || errorStr.contains('user_not_found')) {
+            print('[UserSession] User not found in backend - clearing saved session');
+            await prefs.remove(_userIdKey);
+            await prefs.remove(_usernameKey);
+            await prefs.remove(_displayNameKey);
+            apiClient.clearUserId();
+            state = const UserSessionState(isLoading: false);
+            return;
+          }
+          
           // Backend unreachable - still restore session with local data
           print('[UserSession] Could not fetch status, using saved session: $e');
           state = UserSessionState(
