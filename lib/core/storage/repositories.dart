@@ -420,12 +420,19 @@ final outputRepositoryProvider = StateNotifierProvider<OutputRepository, AsyncVa
 class OutputRepository extends StateNotifier<AsyncValue<GeneratedOutput?>> {
   final Ref ref;
   Timer? _regenerationTimer;
+  bool _isGenerating = false; // Lock to prevent concurrent generation
 
   OutputRepository(this.ref) : super(const AsyncValue.loading()) {
     _loadOutput();
   }
 
   Future<void> _loadOutput() async {
+    // Prevent concurrent generation
+    if (_isGenerating) {
+      print('⏳ _loadOutput: Generation already in progress, skipping');
+      return;
+    }
+    
     try {
       final profileAsync = ref.read(userProfileRepositoryProvider);
       final profile = profileAsync.valueOrNull;
@@ -453,9 +460,11 @@ class OutputRepository extends StateNotifier<AsyncValue<GeneratedOutput?>> {
             return;
           }
           
-          // If no cached output, generate new one
+          // If no cached output, generate new one (with lock)
+          _isGenerating = true;
           print('🔄 No cached output, generating new output from backend...');
           final output = await apiClient.generateOutput(force: false);
+          _isGenerating = false;
           print('✅ Generated output from backend');
           state = AsyncValue.data(output);
           // Update local cache
@@ -464,6 +473,7 @@ class OutputRepository extends StateNotifier<AsyncValue<GeneratedOutput?>> {
           await db.saveProfile(updated);
           return;
         } catch (e, stack) {
+          _isGenerating = false;
           print('❌ Backend error in _loadOutput: $e');
           print('Stack: $stack');
           // If backend fails, try local cache as fallback
@@ -498,6 +508,7 @@ class OutputRepository extends StateNotifier<AsyncValue<GeneratedOutput?>> {
       print('ℹ️ No output available');
       state = const AsyncValue.data(null);
     } catch (e, stack) {
+      _isGenerating = false;
       print('❌ Error in _loadOutput: $e');
       state = AsyncValue.error(e, stack);
     }
@@ -518,6 +529,12 @@ class OutputRepository extends StateNotifier<AsyncValue<GeneratedOutput?>> {
     _regenerationTimer = Timer(
       const Duration(milliseconds: AppConstants.regenerationDebounceMs),
       () async {
+        // Prevent concurrent generation
+        if (_isGenerating) {
+          print('⏳ regenerate: Generation already in progress, skipping');
+          return;
+        }
+        
         try {
           state = const AsyncValue.loading();
           
@@ -536,11 +553,14 @@ class OutputRepository extends StateNotifier<AsyncValue<GeneratedOutput?>> {
           // Call backend API if not in mock mode
           if (!apiClient.useMock) {
             try {
+              _isGenerating = true;
               print('🔄 Calling backend to generate output with ${profile.characters.length} characters...');
               // Force regeneration to get fresh output based on current inputs
               output = await apiClient.generateOutput(force: true);
+              _isGenerating = false;
               print('✅ Backend generated output successfully');
             } catch (e, stack) {
+              _isGenerating = false;
               print('❌ Backend generation failed: $e');
               print('Stack: $stack');
               
@@ -573,6 +593,7 @@ class OutputRepository extends StateNotifier<AsyncValue<GeneratedOutput?>> {
           // Invalidate constellation provider to refetch with new data
           ref.invalidate(meConstellationProvider);
         } catch (e, stack) {
+          _isGenerating = false;
           print('❌ Regeneration error: $e');
           state = AsyncValue.error(e, stack);
         }
