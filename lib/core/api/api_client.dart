@@ -297,6 +297,31 @@ class ApiClient {
       print('[ApiClient] Response data: ${e.response?.data}');
       print('[ApiClient] Status: ${e.response?.statusCode}');
       
+      // Handle 502 Bad Gateway (Render timeout) - the backend may have completed
+      // and cached the output. Wait and try to fetch the cached output.
+      if (e.response?.statusCode == 502 || 
+          e.type == DioExceptionType.connectionError ||
+          e.type == DioExceptionType.receiveTimeout) {
+        print('[ApiClient] Timeout/502 detected - waiting for backend to complete and checking cache...');
+        
+        // Wait a bit for backend to finish processing
+        for (int attempt = 1; attempt <= 5; attempt++) {
+          await Future.delayed(Duration(seconds: 5 * attempt)); // 5s, 10s, 15s, 20s, 25s
+          print('[ApiClient] Retry attempt $attempt: checking for cached output...');
+          
+          try {
+            final cached = await getCachedOutput();
+            if (cached != null) {
+              print('[ApiClient] ✅ Found cached output after timeout! Returning cached result.');
+              return cached;
+            }
+          } catch (cacheError) {
+            print('[ApiClient] Cache check failed: $cacheError');
+          }
+        }
+        print('[ApiClient] ❌ No cached output found after retries');
+      }
+      
       // Handle validation errors with user-friendly messages
       if (e.response?.statusCode == 400) {
         final errorData = e.response?.data;
