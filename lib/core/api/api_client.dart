@@ -297,7 +297,9 @@ class ApiClient {
       
       // Step 2: Poll for job status until completion
       const pollInterval = Duration(seconds: 2);
-      const maxPolls = 180; // 6 minutes max (180 * 2 seconds)
+      const maxPolls = 300; // 10 minutes max (300 * 2 seconds)
+      int consecutiveErrors = 0;
+      const maxConsecutiveErrors = 10;
       
       for (int poll = 0; poll < maxPolls; poll++) {
         await Future.delayed(pollInterval);
@@ -305,6 +307,7 @@ class ApiClient {
         try {
           final statusResponse = await _dio.get('/v1/generate/status/$jobId');
           final statusData = statusResponse.data as Map<String, dynamic>;
+          consecutiveErrors = 0; // Reset on success
           
           final status = statusData['status'] as String;
           final currentStep = (statusData['currentStep'] as num?)?.toInt() ?? 0;
@@ -338,13 +341,26 @@ class ApiClient {
           // Still running - continue polling
         } catch (pollError) {
           if (pollError is DioException) {
-            print('[ApiClient] Poll error (will retry): ${pollError.message}');
+            consecutiveErrors++;
+            print('[ApiClient] Poll error ($consecutiveErrors/$maxConsecutiveErrors): ${pollError.message}');
             
             // Handle rate limiting (429) with exponential backoff
             if (pollError.response?.statusCode == 429) {
               final backoffSeconds = (poll ~/ 10 + 1) * 5; // 5s, 10s, 15s, etc.
               print('[ApiClient] Rate limited (429) - waiting ${backoffSeconds}s before retry...');
               await Future.delayed(Duration(seconds: backoffSeconds));
+              consecutiveErrors = 0; // Don't count rate limits as errors
+            }
+            
+            // Only fail after many consecutive errors
+            if (consecutiveErrors >= maxConsecutiveErrors) {
+              print('[ApiClient] Too many consecutive errors, checking for cached output...');
+              final cached = await getCachedOutput();
+              if (cached != null) {
+                print('[ApiClient] Found cached output after errors');
+                return cached;
+              }
+              throw Exception('Connection lost. Please check your network and try again.');
             }
             // Continue polling on network errors
           } else {
@@ -353,7 +369,14 @@ class ApiClient {
         }
       }
       
-      // Timeout after max polls
+      // Timeout after max polls - check for cached output first
+      print('[ApiClient] Polling timeout, checking for cached output...');
+      final cached = await getCachedOutput();
+      if (cached != null) {
+        print('[ApiClient] Found cached output after timeout');
+        return cached;
+      }
+      
       print('[ApiClient] ❌ Generation timed out after ${maxPolls * 2} seconds');
       throw Exception('Generation timed out. Please try again.');
       
@@ -674,7 +697,9 @@ class ApiClient {
       
       // Step 2: Poll for job status until completion
       const pollInterval = Duration(seconds: 2);
-      const maxPolls = 180; // 6 minutes max (180 * 2 seconds)
+      const maxPolls = 300; // 10 minutes max (300 * 2 seconds)
+      int consecutiveErrors = 0;
+      const maxConsecutiveErrors = 10;
       
       for (int poll = 0; poll < maxPolls; poll++) {
         await Future.delayed(pollInterval);
@@ -682,6 +707,7 @@ class ApiClient {
         try {
           final statusResponse = await _dio.get('/v1/relationship/status/$jobId');
           final statusData = statusResponse.data as Map<String, dynamic>;
+          consecutiveErrors = 0; // Reset on success
           
           final status = statusData['status'] as String;
           final currentStep = (statusData['currentStep'] as num?)?.toInt() ?? 0;
@@ -715,13 +741,26 @@ class ApiClient {
           // Still running - continue polling
         } catch (pollError) {
           if (pollError is DioException) {
-            print('[ApiClient] Relationship poll error (will retry): ${pollError.message}');
+            consecutiveErrors++;
+            print('[ApiClient] Relationship poll error ($consecutiveErrors/$maxConsecutiveErrors): ${pollError.message}');
             
             // Handle rate limiting (429) with exponential backoff
             if (pollError.response?.statusCode == 429) {
               final backoffSeconds = (poll ~/ 10 + 1) * 5; // 5s, 10s, 15s, etc.
               print('[ApiClient] Rate limited (429) - waiting ${backoffSeconds}s before retry...');
               await Future.delayed(Duration(seconds: backoffSeconds));
+              consecutiveErrors = 0; // Don't count rate limits as errors
+            }
+            
+            // Only fail after many consecutive errors
+            if (consecutiveErrors >= maxConsecutiveErrors) {
+              print('[ApiClient] Too many consecutive errors, checking for cached output...');
+              final cached = await getRelationshipOutput();
+              if (cached != null) {
+                print('[ApiClient] Found cached relationship output after errors');
+                return cached;
+              }
+              throw Exception('Connection lost. Please check your network and try again.');
             }
             // Continue polling on network errors
           } else {
@@ -730,7 +769,14 @@ class ApiClient {
         }
       }
       
-      // Timeout after max polls
+      // Timeout after max polls - check for cached output first
+      print('[ApiClient] Relationship polling timeout, checking for cached output...');
+      final cached = await getRelationshipOutput();
+      if (cached != null) {
+        print('[ApiClient] Found cached relationship output after timeout');
+        return cached;
+      }
+      
       print('[ApiClient] ❌ Relationship generation timed out after ${maxPolls * 2} seconds');
       throw Exception('Relationship generation timed out. Please try again.');
       
