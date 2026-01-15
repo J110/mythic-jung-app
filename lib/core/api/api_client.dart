@@ -339,6 +339,13 @@ class ApiClient {
         } catch (pollError) {
           if (pollError is DioException) {
             print('[ApiClient] Poll error (will retry): ${pollError.message}');
+            
+            // Handle rate limiting (429) with exponential backoff
+            if (pollError.response?.statusCode == 429) {
+              final backoffSeconds = (poll ~/ 10 + 1) * 5; // 5s, 10s, 15s, etc.
+              print('[ApiClient] Rate limited (429) - waiting ${backoffSeconds}s before retry...');
+              await Future.delayed(Duration(seconds: backoffSeconds));
+            }
             // Continue polling on network errors
           } else {
             rethrow;
@@ -709,6 +716,13 @@ class ApiClient {
         } catch (pollError) {
           if (pollError is DioException) {
             print('[ApiClient] Relationship poll error (will retry): ${pollError.message}');
+            
+            // Handle rate limiting (429) with exponential backoff
+            if (pollError.response?.statusCode == 429) {
+              final backoffSeconds = (poll ~/ 10 + 1) * 5; // 5s, 10s, 15s, etc.
+              print('[ApiClient] Rate limited (429) - waiting ${backoffSeconds}s before retry...');
+              await Future.delayed(Duration(seconds: backoffSeconds));
+            }
             // Continue polling on network errors
           } else {
             rethrow;
