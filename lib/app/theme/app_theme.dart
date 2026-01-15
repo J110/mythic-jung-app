@@ -306,20 +306,21 @@ class AppTheme {
       inputDecorationTheme: InputDecorationTheme(
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey.shade700, width: 1.5),
+          borderSide: BorderSide(color: Colors.grey.shade600, width: 1.5),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey.shade700, width: 1.5),
+          borderSide: BorderSide(color: Colors.grey.shade600, width: 1.5),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: _primaryPurple, width: 2),
         ),
         filled: true,
-        fillColor: const Color(0xFF2D1B3D),
+        // IMPORTANT: Lighter than card background (0xFF2D1B3D) for text visibility
+        fillColor: const Color(0xFF3D2B4D),
         contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
-        hintStyle: TextStyle(color: Colors.grey.shade600, fontSize: 16),
+        hintStyle: TextStyle(color: Colors.grey.shade500, fontSize: 16),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -387,4 +388,113 @@ class AppTheme {
           width: 1,
         ),
       );
+
+  // ============================================================================
+  // THEME-SAFE COLOR HELPERS
+  // Use these to ensure visibility in both light and dark themes
+  // ============================================================================
+
+  /// Get text color for input fields - ALWAYS visible against input background
+  static Color inputTextColor(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return isDark ? Colors.grey.shade100 : const Color(0xFF1F2937);
+  }
+
+  /// Get background color for input fields - slightly different from card background
+  static Color inputFillColor(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    // Dark: lighter than card (0xFF2D1B3D), Light: lighter than white
+    return isDark ? const Color(0xFF3D2B4D) : Colors.grey.shade50;
+  }
+
+  /// Get placeholder/hint text color
+  static Color hintTextColor(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return isDark ? Colors.grey.shade500 : Colors.grey.shade500;
+  }
+
+  /// Get icon color that works on current surface background
+  static Color iconOnSurface(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return isDark ? Colors.grey.shade300 : Colors.grey.shade700;
+  }
+
+  /// Get accent icon color (for action buttons, examples icon, etc.)
+  static Color accentIconColor(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    // Lighter purple for dark theme, standard purple for light
+    return isDark ? const Color(0xFFA78BFA) : _primaryPurple;
+  }
+
+  /// Get chip/badge text color with good contrast
+  static Color chipTextColor(BuildContext context, {Color? chipBackground}) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    // Darker for light theme, lighter for dark theme
+    return isDark ? const Color(0xFFD8B4FE) : const Color(0xFF5B21B6);
+  }
+
+  /// Get chip/badge background color
+  static Color chipBackgroundColor(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return isDark 
+        ? _primaryPurple.withOpacity(0.25) 
+        : _primaryPurple.withOpacity(0.12);
+  }
+
+  /// Get border color for containers, cards, inputs
+  static Color borderColor(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return isDark ? Colors.grey.shade700 : Colors.grey.shade300;
+  }
+
+  /// Get secondary/muted text color
+  static Color secondaryTextColor(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return isDark ? Colors.grey.shade400 : Colors.grey.shade600;
+  }
+
+  /// Get card background color
+  static Color cardBackground(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return isDark ? const Color(0xFF2D1B3D) : Colors.white;
+  }
+
+  /// Get page/scaffold background color
+  static Color pageBackground(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return isDark ? const Color(0xFF1E1B2E) : _surfaceLight;
+  }
+
+  /// Check if current theme is dark
+  static bool isDarkMode(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark;
+  }
+
+  // ============================================================================
+  // SEMANTIC COLORS (for specific use cases)
+  // ============================================================================
+
+  /// Success color (green) - for checkmarks, success states
+  static Color successColor(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return isDark ? const Color(0xFF34D399) : const Color(0xFF10B981);
+  }
+
+  /// Warning color (orange/amber) - for warnings, cautions
+  static Color warningColor(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return isDark ? const Color(0xFFFBBF24) : const Color(0xFFD97706);
+  }
+
+  /// Error color (red) - for errors, destructive actions
+  static Color errorColor(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return isDark ? const Color(0xFFF87171) : const Color(0xFFDC2626);
+  }
+
+  /// Info color (blue) - for info, hints
+  static Color infoColor(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return isDark ? const Color(0xFF60A5FA) : const Color(0xFF2563EB);
+  }
 }
