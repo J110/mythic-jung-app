@@ -43,3 +43,71 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# =============================================================================
+# DEPLOYMENT & SECURITY - DO NOT COMMIT
+# =============================================================================
+
+# Environment files with secrets
+.env
+.env.local
+.env.*.local
+backend/.env
+backend/.env.local
+
+# Keep example env files
+!.env.example
+!.env.development
+!.env.production
+!backend/.env.example
+!backend/.env.development
+!backend/.env.production
+
+# Android keystore and signing
+*.keystore
+*.jks
+android/app/keystore/
+android/key.properties
+android/local.properties
+
+# iOS signing
+ios/*.mobileprovision
+ios/*.p12
+ios/ExportOptions.plist
+ios/fastlane/
+ios/Runner/GoogleService-Info.plist
+
+# Firebase/Google services
+google-services.json
+GoogleService-Info.plist
+
+# Prisma generated client (regenerate with `npx prisma generate`)
+backend/src/generated/
+
+# Node modules
+backend/node_modules/
+node_modules/
+
+# Backend logs
+backend/logs/
+*.log
+
+# IDE specific
+.cursor/
+.vscode/settings.json
+
+# Build outputs
+*.apk
+*.aab
+*.ipa
+*.app
+dist/
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
