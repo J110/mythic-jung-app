@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 80">
+  <!-- Classic Crown - 5 points, clearly recognizable like 👑 -->
+  
+  <!-- Main crown body with 5 points -->
+  <path d="
+    M 5 75
+    L 5 70
+    L 10 35
+    L 20 50
+    L 30 15
+    L 40 45
+    L 50 5
+    L 60 45
+    L 70 15
+    L 80 50
+    L 90 35
+    L 95 70
+    L 95 75
+    Z
+  " fill="#000000"/>
+  
+  <!-- Base band -->
+  <rect x="5" y="65" width="90" height="12" rx="2" fill="#000000"/>
+  
+  <!-- Jewels on points -->
+  <circle cx="50" cy="12" r="5" fill="#000000"/>
+  <circle cx="30" cy="22" r="4" fill="#000000"/>
+  <circle cx="70" cy="22" r="4" fill="#000000"/>
+  
+  <!-- Jewels on base band -->
+  <circle cx="25" cy="71" r="4" fill="#000000"/>
+  <circle cx="50" cy="71" r="5" fill="#000000"/>
+  <circle cx="75" cy="71" r="4" fill="#000000"/>
+  
+  <!-- Cross patterns on band -->
+  <rect x="35" y="67" width="3" height="8" fill="#000000"/>
+  <rect x="62" y="67" width="3" height="8" fill="#000000"/>
+</svg>

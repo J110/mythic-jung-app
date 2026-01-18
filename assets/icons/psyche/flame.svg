@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120">
+  <!-- Classic Flame - clearly recognizable like 🔥 -->
+  
+  <!-- Main outer flame -->
+  <path d="
+    M 50 5
+    C 55 15 70 25 72 40
+    C 75 55 65 60 68 75
+    C 72 90 60 100 50 115
+    C 40 100 28 90 32 75
+    C 35 60 25 55 28 40
+    C 30 25 45 15 50 5
+    Z
+  " fill="#000000"/>
+  
+  <!-- Inner flame (middle layer) -->
+  <path d="
+    M 50 20
+    C 55 30 62 38 62 50
+    C 62 65 55 75 50 95
+    C 45 75 38 65 38 50
+    C 38 38 45 30 50 20
+    Z
+  " fill="#000000"/>
+  
+  <!-- Core flame (brightest) -->
+  <path d="
+    M 50 35
+    C 53 42 55 50 55 60
+    C 55 70 52 78 50 85
+    C 48 78 45 70 45 60
+    C 45 50 47 42 50 35
+    Z
+  " fill="#000000"/>
+  
+  <!-- Side tongues -->
+  <path d="M 30 50 Q 20 40 25 28" fill="none" stroke="#000000" stroke-width="6" stroke-linecap="round"/>
+  <path d="M 70 50 Q 80 40 75 28" fill="none" stroke="#000000" stroke-width="6" stroke-linecap="round"/>
+</svg>

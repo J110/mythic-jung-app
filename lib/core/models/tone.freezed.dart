@@ -321,7 +321,7 @@ class __$$AvailableTonesResponseImplCopyWithImpl<$Res>
 class _$AvailableTonesResponseImpl implements _AvailableTonesResponse {
   const _$AvailableTonesResponseImpl({
     final List<ToneInfo> tones = const [],
-    this.defaultTone = 'PLAIN',
+    this.defaultTone = 'MODERN',
   }) : _tones = tones;
 
   factory _$AvailableTonesResponseImpl.fromJson(Map<String, dynamic> json) =>
@@ -514,7 +514,7 @@ class __$$TonePreferenceResponseImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$TonePreferenceResponseImpl implements _TonePreferenceResponse {
   const _$TonePreferenceResponseImpl({
-    this.narrativeTone = 'PLAIN',
+    this.narrativeTone = 'MODERN',
     final List<ToneInfo> availableTones = const [],
   }) : _availableTones = availableTones;
 

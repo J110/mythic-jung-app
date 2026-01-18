@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
-import '../../../core/models/character.dart';
-import '../../../core/storage/repositories.dart';
-import '../../../core/utils/constants.dart';
-import '../../../app/theme/app_theme.dart';
+import '../../core/models/character.dart';
+import '../../core/storage/repositories.dart';
+import '../../core/utils/constants.dart';
+import '../../app/theme/app_theme.dart';
+import '../shared/redesign/character_entry_cards.dart';
 
 /// Enum for relationship types
 enum RelationshipType {
@@ -79,20 +80,19 @@ class CharacterEntryScreen extends ConsumerStatefulWidget {
   const CharacterEntryScreen({super.key});
 
   @override
-  ConsumerState<CharacterEntryScreen> createState() =>
-      _CharacterEntryScreenState();
+  ConsumerState<CharacterEntryScreen> createState() => _CharacterEntryScreenState();
 }
 
 class _CharacterEntryScreenState extends ConsumerState<CharacterEntryScreen> {
-  // "My Characters" slots (4 required + 2 optional)
   late final List<CharacterSlotState> _meSlots;
-  
-  // "Their Characters" slots (4 required + 2 optional)
   late final List<CharacterSlotState> _otherSlots;
   
-  // Relationship state
   bool _relationshipEnabled = false;
   RelationshipType _relationshipType = RelationshipType.platonic;
+  
+  // Track visible slots (start with minimum required)
+  int _visibleMeSlots = 4;
+  int _visibleOtherSlots = 4;
 
   @override
   void initState() {
@@ -123,31 +123,24 @@ class _CharacterEntryScreenState extends ConsumerState<CharacterEntryScreen> {
   void _generate() async {
     final meCharacters = _extractCharacters(_meSlots);
     
-    // Validate "Me" characters
     if (meCharacters.length < AppConstants.minCharacterCount) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Please enter at least ${AppConstants.minCharacterCount} characters for yourself'),
-        ),
+        SnackBar(content: Text('Please enter at least ${AppConstants.minCharacterCount} characters')),
       );
       return;
     }
     
-    // If relationship enabled, validate "Other" characters
     List<Character>? otherCharacters;
     if (_relationshipEnabled) {
       otherCharacters = _extractCharacters(_otherSlots);
       if (otherCharacters.length < AppConstants.minRelationshipCharacterCount) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Please enter at least ${AppConstants.minRelationshipCharacterCount} characters for your ${_relationshipType.displayName.toLowerCase()}'),
-          ),
+          SnackBar(content: Text('Please enter at least ${AppConstants.minRelationshipCharacterCount} characters for your ${_relationshipType.displayName.toLowerCase()}')),
         );
         return;
       }
     }
 
-    // Show loading
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -160,9 +153,7 @@ class _CharacterEntryScreenState extends ConsumerState<CharacterEntryScreen> {
               children: [
                 const CircularProgressIndicator(),
                 const SizedBox(height: 16),
-                Text(_relationshipEnabled 
-                    ? 'Creating your myths...' 
-                    : 'Creating your myth...'),
+                Text(_relationshipEnabled ? 'Creating your myths...' : 'Creating your myth...'),
               ],
             ),
           ),
@@ -171,31 +162,21 @@ class _CharacterEntryScreenState extends ConsumerState<CharacterEntryScreen> {
     );
 
     try {
-      // Collect all character inputs with references for resonance analysis
       final meCharacterInputs = meCharacters.map((c) => c.displayName).toList();
       final otherCharacterInputs = otherCharacters?.map((c) => c.displayName).toList() ?? [];
-      
-      // Combine all characters for analysis (Me first, then Other)
       final allCharacterInputs = [...meCharacterInputs, ...otherCharacterInputs];
       
-      // Build slots with references for recognition
       final allSlots = [
         ...meCharacters.asMap().entries.map((e) => _buildSlotPayload('me_${e.key}', e.value)),
         ...?otherCharacters?.asMap().entries.map((e) => _buildSlotPayload('other_${e.key}', e.value)),
       ];
       
-      // Step 1: Analyze ALL characters for ambiguity (Resonance Engine)
-      // Pass slots with references for better recognition
       final resonanceResponse = await ref
           .read(resonanceRepositoryProvider.notifier)
           .analyzeCharactersWithReferences(allCharacterInputs, allSlots);
       
-      // Save "Me" characters
-      await ref.read(userProfileRepositoryProvider.notifier).saveCharacters(
-            meCharacters,
-          );
+      await ref.read(userProfileRepositoryProvider.notifier).saveCharacters(meCharacters);
       
-      // Save relationship characters if enabled
       if (_relationshipEnabled && otherCharacters != null) {
         await ref.read(relationshipRepositoryProvider.notifier).saveRelationship(
           enabled: true,
@@ -203,16 +184,13 @@ class _CharacterEntryScreenState extends ConsumerState<CharacterEntryScreen> {
           otherCharacters: otherCharacters,
         );
       } else {
-        // Disable relationship if toggle is off
         await ref.read(relationshipRepositoryProvider.notifier).disableRelationship();
       }
       
       if (context.mounted) {
-        Navigator.of(context).pop(); // Close loading
+        Navigator.of(context).pop();
         
-        // Step 2: Check if clarification is needed (for ANY character)
         if (resonanceResponse.needsClarification) {
-          // Navigate to clarification screen with context about character ownership
           context.push('/clarification', extra: {
             'response': resonanceResponse,
             'meCount': meCharacterInputs.length,
@@ -221,24 +199,18 @@ class _CharacterEntryScreenState extends ConsumerState<CharacterEntryScreen> {
             'relationshipType': _relationshipType.apiValue,
           });
         } else {
-          // No clarification needed - skip to generation
           await ref.read(resonanceRepositoryProvider.notifier).skipClarification();
           context.go('/home');
         }
       }
     } catch (e) {
       if (context.mounted) {
-        Navigator.of(context).pop(); // Close loading
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: $e'),
-          ),
-        );
+        Navigator.of(context).pop();
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     }
   }
 
-  /// Build slot payload for recognition with reference hints
   Map<String, dynamic> _buildSlotPayload(String slotId, Character character) {
     final ref = character.entryReference;
     return {
@@ -256,128 +228,210 @@ class _CharacterEntryScreenState extends ConsumerState<CharacterEntryScreen> {
     final isDark = theme.brightness == Brightness.dark;
     
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Enter Your Characters'),
-      ),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: isDark
-                ? [
-                    const Color(0xFF1E1B2E),
-                    const Color(0xFF2D1B3D),
-                  ]
-                : [
-                    const Color(0xFFFAF5FF),
-                    Colors.white,
-                  ],
+                ? [const Color(0xFF1E1B2E), const Color(0xFF2D1B3D)]
+                : [const Color(0xFFFAF5FF), Colors.white],
           ),
         ),
         child: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // === MY CHARACTERS SECTION ===
-                _buildSectionHeader(
-                  context,
-                  icon: Icons.person,
-                  title: 'My Characters',
-                  subtitle: '4 required, 2 optional. Characters you identify with.',
-                  color: theme.colorScheme.primary,
+          top: false,
+          child: Column(
+            children: [
+              Expanded(
+                child: CustomScrollView(
+                  slivers: [
+                    // === CASTING CIRCLE HEADER ===
+                    SliverToBoxAdapter(child: _buildHeader(context, isDark)),
+                    
+                    // === MY CHARACTERS SECTION ===
+                    SliverPadding(
+                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                      sliver: SliverToBoxAdapter(
+                        child: _buildSectionLabel(context, 'My Characters', 'Characters you identify with'),
+                      ),
+                    ),
+                    
+                    // Character cards grid
+                    SliverPadding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      sliver: SliverGrid(
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 16,
+                          mainAxisSpacing: 16,
+                          childAspectRatio: 0.85, // Square-ish cards like Story page
+                        ),
+                        delegate: SliverChildBuilderDelegate(
+                          (context, index) => _CharacterInputCard(
+                            slot: _meSlots[index],
+                            index: index,
+                            theme: CharacterCardThemes.getTheme(index),
+                            isDark: isDark,
+                            onReferenceToggle: () => setState(() => _meSlots[index].showReference = !_meSlots[index].showReference),
+                          ),
+                          childCount: _visibleMeSlots,
+                        ),
+                      ),
+                    ),
+                    
+                    // Add More button for Me
+                    if (_visibleMeSlots < AppConstants.maxCharacterCount)
+                      SliverPadding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        sliver: SliverToBoxAdapter(
+                          child: _buildAddMoreButton(context, () {
+                            setState(() => _visibleMeSlots = (_visibleMeSlots + 2).clamp(0, AppConstants.maxCharacterCount));
+                          }),
+                        ),
+                      ),
+                    
+                    // === RELATIONSHIP TOGGLE ===
+                    SliverPadding(
+                      padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
+                      sliver: SliverToBoxAdapter(child: _buildRelationshipToggle(context)),
+                    ),
+                    
+                    // === PARTNER CHARACTERS (if enabled) ===
+                    if (_relationshipEnabled) ...[
+                      SliverPadding(
+                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                        sliver: SliverToBoxAdapter(child: _buildRelationshipTypeSelector(context)),
+                      ),
+                      
+                      SliverPadding(
+                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                        sliver: SliverToBoxAdapter(
+                          child: _buildSectionLabel(
+                            context, 
+                            'Their Characters', 
+                            'Characters that remind you of them',
+                            color: _getRelationshipColor(),
+                          ),
+                        ),
+                      ),
+                      
+                      SliverPadding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        sliver: SliverGrid(
+                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 16,
+                            mainAxisSpacing: 16,
+                            childAspectRatio: 0.85, // Square-ish cards like Story page
+                          ),
+                          delegate: SliverChildBuilderDelegate(
+                            (context, index) => _CharacterInputCard(
+                              slot: _otherSlots[index],
+                              index: index,
+                              theme: CharacterCardThemes.getTheme(index),
+                              isDark: isDark,
+                              accentOverride: _getRelationshipColor(),
+                              onReferenceToggle: () => setState(() => _otherSlots[index].showReference = !_otherSlots[index].showReference),
+                            ),
+                            childCount: _visibleOtherSlots,
+                          ),
+                        ),
+                      ),
+                      
+                      if (_visibleOtherSlots < AppConstants.maxRelationshipCharacterCount)
+                        SliverPadding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          sliver: SliverToBoxAdapter(
+                            child: _buildAddMoreButton(context, () {
+                              setState(() => _visibleOtherSlots = (_visibleOtherSlots + 2).clamp(0, AppConstants.maxRelationshipCharacterCount));
+                            }, color: _getRelationshipColor()),
+                          ),
+                        ),
+                      
+                      SliverPadding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        sliver: SliverToBoxAdapter(child: _buildDisclaimerNote(context)),
+                      ),
+                    ],
+                    
+                    const SliverPadding(padding: EdgeInsets.only(bottom: 100)),
+                  ],
                 ),
-                const SizedBox(height: 24),
-                ..._buildCharacterInputs(
-                  context,
-                  slots: _meSlots,
-                  minRequired: AppConstants.minCharacterCount,
-                  maxCount: AppConstants.maxCharacterCount,
-                  isMe: true,
-                ),
-                
-                const SizedBox(height: 40),
-                
-                // === RELATIONSHIP TOGGLE ===
-                _buildRelationshipToggle(context),
-                
-                // === THEIR CHARACTERS SECTION (if enabled) ===
-                if (_relationshipEnabled) ...[
-                  const SizedBox(height: 32),
-                  _buildRelationshipTypeSelector(context),
-                  const SizedBox(height: 24),
-                  _buildSectionHeader(
-                    context,
-                    icon: Icons.people,
-                    title: 'Their Characters',
-                    subtitle: '4 required, 2 optional. Characters that remind you of them.',
-                    color: _getRelationshipColor(),
-                  ),
-                  const SizedBox(height: 24),
-                  ..._buildCharacterInputs(
-                    context,
-                    slots: _otherSlots,
-                    minRequired: AppConstants.minRelationshipCharacterCount,
-                    maxCount: AppConstants.maxRelationshipCharacterCount,
-                    isMe: false,
-                  ),
-                  const SizedBox(height: 16),
-                  _buildDisclaimerNote(context),
-                ],
-                
-                const SizedBox(height: 32),
-                
-                // === GENERATE BUTTON ===
-                _buildGenerateButton(context),
-                
-                const SizedBox(height: 24),
-              ],
-            ),
+              ),
+              
+              // === BOTTOM BAR ===
+              _buildBottomBar(context),
+            ],
           ),
         ),
       ),
     );
   }
 
-  Widget _buildSectionHeader(
-    BuildContext context, {
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required Color color,
-  }) {
+  Widget _buildHeader(BuildContext context, bool isDark) {
     final theme = Theme.of(context);
     
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: color.withOpacity(0.3),
-          width: 1.5,
-        ),
-      ),
-      child: Row(
+    return SizedBox(
+      height: 300,
+      child: Stack(
         children: [
-          Icon(icon, color: color, size: 32),
-          const SizedBox(width: 16),
-          Expanded(
+          Positioned.fill(
+            child: CustomPaint(
+              painter: CastingCircleHeaderPainter(isDark: isDark),
+              size: Size.infinite,
+            ),
+          ),
+          
+          // Back button
+          Positioned(
+            top: MediaQuery.of(context).padding.top + 8,
+            left: 8,
+            child: IconButton(
+              onPressed: () => Navigator.of(context).pop(),
+              icon: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(Icons.arrow_back, color: Colors.white, size: 20),
+              ),
+            ),
+          ),
+          
+          // Title
+          Positioned(
+            bottom: 24,
+            left: 24,
+            right: 24,
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  title,
-                  style: theme.textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
+                  '✨ CASTING CIRCLE ✨',
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    color: const Color(0xFFD4AF37),
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 3,
                   ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Summon Your Characters',
+                  style: theme.textTheme.headlineMedium?.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    shadows: [Shadow(offset: const Offset(1, 1), blurRadius: 4, color: Colors.black.withOpacity(0.5))],
+                  ),
+                  textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  subtitle,
-                  style: theme.textTheme.bodyMedium?.copyWith(height: 1.5),
+                  'The characters you resonate with reveal your inner mythology',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: Colors.white.withOpacity(0.8),
+                  ),
+                  textAlign: TextAlign.center,
                 ),
               ],
             ),
@@ -387,112 +441,85 @@ class _CharacterEntryScreenState extends ConsumerState<CharacterEntryScreen> {
     );
   }
 
-  List<Widget> _buildCharacterInputs(
-    BuildContext context, {
-    required List<CharacterSlotState> slots,
-    required int minRequired,
-    required int maxCount,
-    required bool isMe,
-  }) {
+  Widget _buildSectionLabel(BuildContext context, String title, String subtitle, {Color? color}) {
     final theme = Theme.of(context);
-    final accentColor = isMe ? theme.colorScheme.primary : _getRelationshipColor();
+    final accentColor = color ?? theme.colorScheme.primary;
     
-    return List.generate(maxCount, (index) {
-      final slot = slots[index];
-      final isOptional = index >= minRequired;
-      
-      return Padding(
-        padding: const EdgeInsets.only(bottom: 20),
-        child: _CharacterInputSlot(
-          slot: slot,
-          index: index,
-          isOptional: isOptional,
-          isMe: isMe,
-          accentColor: accentColor,
-          onShowReferenceChanged: (show) {
-            setState(() {
-              slot.showReference = show;
-            });
-          },
-          onReferenceTypeChanged: (type) {
-            setState(() {
-              slot.referenceType = type;
-            });
-          },
-          onLimitModeChanged: (mode) {
-            setState(() {
-              slot.limitMode = mode;
-            });
-          },
-          onReferenceTextChanged: () {
-            setState(() {
-              // Trigger rebuild to show/hide limit mode toggle
-            });
-          },
-          onNextField: () {
-            if (index < maxCount - 1) {
-              slots[index + 1].nameFocusNode.requestFocus();
-            }
-          },
+    return Row(
+      children: [
+        Container(
+          width: 4,
+          height: 40,
+          decoration: BoxDecoration(
+            color: accentColor,
+            borderRadius: BorderRadius.circular(2),
+          ),
         ),
-      );
-    });
+        const SizedBox(width: 12),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(title, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+            Text(subtitle, style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAddMoreButton(BuildContext context, VoidCallback onTap, {Color? color}) {
+    final theme = Theme.of(context);
+    final accentColor = color ?? theme.colorScheme.primary;
+    
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        decoration: BoxDecoration(
+          border: Border.all(color: accentColor.withOpacity(0.4), width: 1.5),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.add_circle_outline, color: accentColor, size: 20),
+            const SizedBox(width: 8),
+            Text('Add More Characters', style: theme.textTheme.bodyMedium?.copyWith(color: accentColor, fontWeight: FontWeight.w600)),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _buildRelationshipToggle(BuildContext context) {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: _relationshipEnabled
-            ? _getRelationshipColor().withOpacity(0.1)
-            : theme.colorScheme.surfaceContainerHighest.withOpacity(0.5),
+        gradient: _relationshipEnabled
+            ? LinearGradient(colors: [_getRelationshipColor().withOpacity(isDark ? 0.2 : 0.1), _getRelationshipColor().withOpacity(isDark ? 0.1 : 0.05)])
+            : null,
+        color: _relationshipEnabled ? null : theme.colorScheme.surfaceContainerHighest.withOpacity(0.5),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: _relationshipEnabled
-              ? _getRelationshipColor().withOpacity(0.3)
-              : theme.colorScheme.outline.withOpacity(0.2),
-          width: 1.5,
-        ),
+        border: Border.all(color: _relationshipEnabled ? _getRelationshipColor().withOpacity(0.4) : theme.colorScheme.outline.withOpacity(0.2)),
       ),
       child: Row(
         children: [
-          Icon(
-            _relationshipEnabled ? Icons.favorite : Icons.favorite_border,
-            color: _relationshipEnabled ? _getRelationshipColor() : Colors.grey,
-            size: 28,
-          ),
-          const SizedBox(width: 16),
+          Icon(_relationshipEnabled ? Icons.favorite : Icons.favorite_border, color: _relationshipEnabled ? _getRelationshipColor() : Colors.grey, size: 24),
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Add a Relationship',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  'Explore dynamics with a partner or friend',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ),
+                Text('Add a Relationship', style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
+                Text('Explore dynamics with a partner or friend', style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
               ],
             ),
           ),
-          Switch.adaptive(
-            value: _relationshipEnabled,
-            onChanged: (value) {
-              setState(() {
-                _relationshipEnabled = value;
-              });
-            },
-            activeColor: _getRelationshipColor(),
-          ),
+          Switch.adaptive(value: _relationshipEnabled, onChanged: (v) => setState(() => _relationshipEnabled = v), activeColor: _getRelationshipColor()),
         ],
       ),
     );
@@ -501,76 +528,37 @@ class _CharacterEntryScreenState extends ConsumerState<CharacterEntryScreen> {
   Widget _buildRelationshipTypeSelector(BuildContext context) {
     final theme = Theme.of(context);
     
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Relationship Type',
-          style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        const SizedBox(height: 12),
-        Row(
-          children: RelationshipType.values.map((type) {
-            final isSelected = _relationshipType == type;
-            final color = type == RelationshipType.romantic
-                ? const Color(0xFFE91E63)
-                : const Color(0xFF2196F3);
-            
-            return Expanded(
-              child: Padding(
-                padding: EdgeInsets.only(
-                  right: type == RelationshipType.romantic ? 8 : 0,
-                  left: type == RelationshipType.platonic ? 8 : 0,
-                ),
-                child: InkWell(
-                  onTap: () {
-                    setState(() {
-                      _relationshipType = type;
-                    });
-                  },
+    return Row(
+      children: RelationshipType.values.map((type) {
+        final isSelected = _relationshipType == type;
+        final color = type == RelationshipType.romantic ? const Color(0xFFE91E63) : const Color(0xFF2196F3);
+        
+        return Expanded(
+          child: Padding(
+            padding: EdgeInsets.only(right: type == RelationshipType.romantic ? 6 : 0, left: type == RelationshipType.platonic ? 6 : 0),
+            child: InkWell(
+              onTap: () => setState(() => _relationshipType = type),
+              borderRadius: BorderRadius.circular(12),
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                decoration: BoxDecoration(
+                  color: isSelected ? color.withOpacity(0.15) : Colors.transparent,
                   borderRadius: BorderRadius.circular(12),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-                    decoration: BoxDecoration(
-                      color: isSelected ? color.withOpacity(0.15) : Colors.transparent,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: isSelected ? color : theme.colorScheme.outline.withOpacity(0.3),
-                        width: isSelected ? 2 : 1,
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          type == RelationshipType.romantic
-                              ? Icons.favorite
-                              : Icons.people,
-                          color: isSelected ? color : Colors.grey,
-                          size: 20,
-                        ),
-                        const SizedBox(width: 8),
-                        Flexible(
-                          child: Text(
-                            type.displayName,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: isSelected ? color : theme.colorScheme.onSurface,
-                              fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  border: Border.all(color: isSelected ? color : theme.colorScheme.outline.withOpacity(0.3), width: isSelected ? 2 : 1),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(type == RelationshipType.romantic ? Icons.favorite : Icons.people, color: isSelected ? color : Colors.grey, size: 18),
+                    const SizedBox(width: 6),
+                    Text(type.displayName, style: theme.textTheme.bodySmall?.copyWith(color: isSelected ? color : null, fontWeight: isSelected ? FontWeight.w600 : null)),
+                  ],
                 ),
               ),
-            );
-          }).toList(),
-        ),
-      ],
+            ),
+          ),
+        );
+      }).toList(),
     );
   }
 
@@ -579,369 +567,357 @@ class _CharacterEntryScreenState extends ConsumerState<CharacterEntryScreen> {
     
     return Container(
       padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.amber.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: Colors.amber.withOpacity(0.3),
-        ),
-      ),
+      decoration: BoxDecoration(color: Colors.amber.withOpacity(0.1), borderRadius: BorderRadius.circular(10), border: Border.all(color: Colors.amber.withOpacity(0.3))),
       child: Row(
         children: [
-          Icon(Icons.info_outline, color: Colors.amber.shade700, size: 20),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              'This is based on your perception of them. Accuracy improves if they make their own profile.',
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: Colors.amber.shade800,
-                height: 1.4,
-              ),
-            ),
-          ),
+          Icon(Icons.info_outline, color: Colors.amber.shade700, size: 18),
+          const SizedBox(width: 10),
+          Expanded(child: Text('Based on your perception. Accuracy improves if they create their own profile.', style: theme.textTheme.bodySmall?.copyWith(color: Colors.amber.shade800))),
         ],
       ),
     );
   }
 
-  Widget _buildGenerateButton(BuildContext context) {
+  Widget _buildBottomBar(BuildContext context) {
     final theme = Theme.of(context);
     
     return Container(
-      width: double.infinity,
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        gradient: AppTheme.primaryGradient,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: theme.colorScheme.primary.withOpacity(0.4),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-          ),
-        ],
+        color: theme.scaffoldBackgroundColor,
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 10, offset: const Offset(0, -2))],
       ),
-      child: ElevatedButton(
-        onPressed: _generate,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.transparent,
-          shadowColor: Colors.transparent,
-          padding: const EdgeInsets.symmetric(vertical: 20),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
+      child: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          gradient: AppTheme.primaryGradient,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [BoxShadow(color: theme.colorScheme.primary.withOpacity(0.4), blurRadius: 15, offset: const Offset(0, 6))],
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.auto_awesome, color: Colors.white),
-            const SizedBox(width: 12),
-            Text(
-              _relationshipEnabled ? 'Generate Our Myths' : 'Generate My Myth',
-              style: theme.textTheme.titleLarge?.copyWith(
-                color: Colors.white,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 0.5,
-              ),
-            ),
-          ],
+        child: ElevatedButton(
+          onPressed: _generate,
+          style: ElevatedButton.styleFrom(backgroundColor: Colors.transparent, shadowColor: Colors.transparent, padding: const EdgeInsets.symmetric(vertical: 18)),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.auto_awesome, color: Colors.white),
+              const SizedBox(width: 10),
+              Text(_relationshipEnabled ? 'Generate Our Myths' : 'Generate My Myth', style: theme.textTheme.titleMedium?.copyWith(color: Colors.white, fontWeight: FontWeight.w700)),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Color _getRelationshipColor() {
-    return _relationshipType == RelationshipType.romantic
-        ? const Color(0xFFE91E63)
-        : const Color(0xFF2196F3);
-  }
+  Color _getRelationshipColor() => _relationshipType == RelationshipType.romantic ? const Color(0xFFE91E63) : const Color(0xFF2196F3);
 }
 
-/// Individual character input slot with optional reference
-class _CharacterInputSlot extends StatelessWidget {
+/// Individual character input card with themed illustration
+class _CharacterInputCard extends StatefulWidget {
   final CharacterSlotState slot;
   final int index;
-  final bool isOptional;
-  final bool isMe;
-  final Color accentColor;
-  final ValueChanged<bool> onShowReferenceChanged;
-  final ValueChanged<ReferenceType> onReferenceTypeChanged;
-  final ValueChanged<LimitMode> onLimitModeChanged;
-  final VoidCallback onReferenceTextChanged;
-  final VoidCallback onNextField;
+  final CharacterCardTheme theme;
+  final bool isDark;
+  final Color? accentOverride;
+  final VoidCallback onReferenceToggle;
 
-  const _CharacterInputSlot({
+  const _CharacterInputCard({
     required this.slot,
     required this.index,
-    required this.isOptional,
-    required this.isMe,
-    required this.accentColor,
-    required this.onShowReferenceChanged,
-    required this.onReferenceTypeChanged,
-    required this.onLimitModeChanged,
-    required this.onReferenceTextChanged,
-    required this.onNextField,
+    required this.theme,
+    required this.isDark,
+    this.accentOverride,
+    required this.onReferenceToggle,
   });
 
   @override
+  State<_CharacterInputCard> createState() => _CharacterInputCardState();
+}
+
+class _CharacterInputCardState extends State<_CharacterInputCard> {
+  bool _showReference = false;
+
+  @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final themeData = Theme.of(context);
+    final accentColor = widget.accentOverride ?? widget.theme.accentColor;
     
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Header row
-        Row(
-          children: [
-            Container(
-              width: 32,
-              height: 32,
-              decoration: BoxDecoration(
-                gradient: isOptional
-                    ? LinearGradient(colors: [Colors.grey.shade400, Colors.grey.shade500])
-                    : LinearGradient(colors: [accentColor, accentColor.withOpacity(0.8)]),
-                shape: BoxShape.circle,
-              ),
-              child: Center(
-                child: Text(
-                  '${index + 1}',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 16,
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Row(
-                children: [
-                  Text(
-                    'Character ${index + 1}',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  if (isOptional) ...[
-                    const SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: Colors.grey.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        'Optional',
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: Colors.grey.shade600,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        
-        // Character name input
-        TextField(
-          controller: slot.nameController,
-          focusNode: slot.nameFocusNode,
-          decoration: InputDecoration(
-            hintText: isOptional
-                ? 'Optional: Add another character...'
-                : isMe
-                    ? 'e.g., Ethan Hunt, James Bond, Odysseus...'
-                    : 'e.g., Elizabeth Bennet, Aragorn, Hermione...',
-            prefixIcon: Icon(
-              isMe ? Icons.person_outline : Icons.person_pin,
-              color: isOptional ? Colors.grey : accentColor,
-            ),
-          ),
-          textInputAction: TextInputAction.next,
-          onSubmitted: (_) => onNextField(),
-        ),
-        
-        // Add reference link
-        const SizedBox(height: 8),
-        if (!slot.showReference)
-          InkWell(
-            onTap: () => onShowReferenceChanged(true),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.add, size: 16, color: accentColor.withOpacity(0.7)),
-                  const SizedBox(width: 4),
-                  Text(
-                    'Add reference (optional)',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: accentColor.withOpacity(0.7),
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          )
-        else
-          _buildReferenceSection(context),
-      ],
-    );
-  }
-
-  Widget _buildReferenceSection(BuildContext context) {
-    final theme = Theme.of(context);
-    
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.5),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: accentColor.withOpacity(0.2)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header with close button
-          Row(
-            children: [
-              Icon(Icons.movie_filter, size: 16, color: accentColor),
-              const SizedBox(width: 8),
-              Text(
-                'Reference',
-                style: theme.textTheme.labelLarge?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: accentColor,
-                ),
-              ),
-              const Spacer(),
-              InkWell(
-                onTap: () => onShowReferenceChanged(false),
-                child: Icon(Icons.close, size: 18, color: theme.colorScheme.onSurfaceVariant),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          
-          // Reference text input
-          TextField(
-            controller: slot.referenceController,
-            decoration: InputDecoration(
-              hintText: 'e.g., "Yes Man", "Saat Khoon Maaf", "Scene: the breakup"',
-              hintStyle: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant.withOpacity(0.6),
-              ),
-              filled: true,
-              fillColor: theme.colorScheme.surface,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide.none,
-              ),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-              isDense: true,
-            ),
-            style: theme.textTheme.bodyMedium,
-            onChanged: (_) => onReferenceTextChanged(),
-          ),
-          const SizedBox(height: 12),
-          
-          // Reference type chips
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              _buildTypeChip(context, ReferenceType.movie, 'Movie'),
-              _buildTypeChip(context, ReferenceType.tv, 'TV'),
-              _buildTypeChip(context, ReferenceType.book, 'Book'),
-              _buildTypeChip(context, ReferenceType.other, 'Other'),
-            ],
-          ),
-          
-          // Limit mode toggle (only show if reference has text)
-          if (slot.referenceController.text.isNotEmpty) ...[
-            const SizedBox(height: 12),
-            _buildLimitModeToggle(context),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTypeChip(BuildContext context, ReferenceType type, String label) {
-    final theme = Theme.of(context);
-    final isSelected = slot.referenceType == type;
-    
-    return FilterChip(
-      label: Text(label),
-      selected: isSelected,
-      onSelected: (_) => onReferenceTypeChanged(type),
-      selectedColor: accentColor.withOpacity(0.2),
-      checkmarkColor: accentColor,
-      labelStyle: theme.textTheme.labelSmall?.copyWith(
-        color: isSelected ? accentColor : theme.colorScheme.onSurface,
-        fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-      ),
-      side: BorderSide(
-        color: isSelected ? accentColor : theme.colorScheme.outline.withOpacity(0.3),
-      ),
-      visualDensity: VisualDensity.compact,
-    );
-  }
-
-  Widget _buildLimitModeToggle(BuildContext context) {
-    final theme = Theme.of(context);
-    final isStrict = slot.limitMode == LimitMode.strict;
-    
-    return Container(
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: isStrict ? Colors.orange.withOpacity(0.1) : Colors.transparent,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: isStrict ? Colors.orange.withOpacity(0.3) : theme.colorScheme.outline.withOpacity(0.2),
-        ),
-      ),
-      child: Row(
-        children: [
-          Icon(
-            isStrict ? Icons.lock : Icons.lock_open,
-            size: 18,
-            color: isStrict ? Colors.orange.shade700 : theme.colorScheme.onSurfaceVariant,
-          ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Limit recognition to my reference',
-                  style: theme.textTheme.labelMedium?.copyWith(
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                Text(
-                  isStrict
-                      ? 'Only match within your reference'
-                      : 'Reference used as hint (recommended)',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                    fontSize: 11,
-                  ),
+        // Card with illustration - matches Story page design (no border)
+        Expanded(
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(widget.isDark ? 0.3 : 0.2),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
                 ),
               ],
             ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  // Full-bleed illustration
+                  CustomPaint(
+                    painter: widget.theme.iconPainter(accentColor, widget.isDark),
+                    size: Size.infinite,
+                  ),
+                  
+                  // Gradient overlay at bottom for input area
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    height: 100,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.transparent,
+                            Colors.black.withOpacity(0.7),
+                            Colors.black.withOpacity(0.85),
+                          ],
+                          stops: const [0.0, 0.4, 1.0],
+                        ),
+                      ),
+                    ),
+                  ),
+                  
+                  // Character number badge (top left)
+                  Positioned(
+                    top: 8,
+                    left: 8,
+                    child: Container(
+                      width: 26,
+                      height: 26,
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.5),
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white.withOpacity(0.3), width: 1.5),
+                      ),
+                      child: Center(
+                        child: Text(
+                          '${widget.index + 1}',
+                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+                        ),
+                      ),
+                    ),
+                  ),
+                  
+                  // Input section at bottom (inside the card)
+                  Positioned(
+                    bottom: 8,
+                    left: 8,
+                    right: 8,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Character name input
+                        TextField(
+                          controller: widget.slot.nameController,
+                          focusNode: widget.slot.nameFocusNode,
+                          style: themeData.textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w500,
+                            color: Colors.white,
+                          ),
+                          decoration: InputDecoration(
+                            hintText: 'Character name',
+                            hintStyle: themeData.textTheme.bodySmall?.copyWith(
+                              color: Colors.white.withOpacity(0.5),
+                            ),
+                            filled: true,
+                            fillColor: Colors.white.withOpacity(0.15),
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide.none,
+                            ),
+                            isDense: true,
+                          ),
+                        ),
+                        
+                        // Reference toggle
+                        if (!_showReference)
+                          GestureDetector(
+                            onTap: () => setState(() => _showReference = true),
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 6),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(Icons.add, size: 14, color: Colors.white.withOpacity(0.6)),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    'Add source',
+                                    style: themeData.textTheme.labelSmall?.copyWith(
+                                      color: Colors.white.withOpacity(0.6),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
-          Switch.adaptive(
-            value: isStrict,
-            onChanged: (value) => onLimitModeChanged(value ? LimitMode.strict : LimitMode.assistive),
-            activeColor: Colors.orange.shade700,
+        ),
+        
+        // Reference section (below card when expanded)
+        if (_showReference) ...[
+          const SizedBox(height: 8),
+          // Reference input
+          TextField(
+            controller: widget.slot.referenceController,
+            style: themeData.textTheme.bodySmall,
+            decoration: InputDecoration(
+              hintText: 'Movie, show, book, or real person',
+              hintStyle: themeData.textTheme.labelSmall?.copyWith(
+                color: themeData.colorScheme.onSurfaceVariant.withOpacity(0.5),
+              ),
+              filled: true,
+              fillColor: widget.isDark ? Colors.white.withOpacity(0.08) : themeData.colorScheme.surfaceContainerHighest.withOpacity(0.5),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide.none),
+              isDense: true,
+            ),
+          ),
+          const SizedBox(height: 4),
+          // Type chips row
+          Wrap(
+            spacing: 4,
+            runSpacing: 4,
+            children: [
+              _ReferenceTypeChip(
+                label: 'Movie',
+                icon: Icons.movie,
+                isSelected: widget.slot.referenceType == ReferenceType.movie,
+                accentColor: accentColor,
+                onTap: () => setState(() => widget.slot.referenceType = ReferenceType.movie),
+              ),
+              _ReferenceTypeChip(
+                label: 'TV',
+                icon: Icons.tv,
+                isSelected: widget.slot.referenceType == ReferenceType.tv,
+                accentColor: accentColor,
+                onTap: () => setState(() => widget.slot.referenceType = ReferenceType.tv),
+              ),
+              _ReferenceTypeChip(
+                label: 'Real',
+                icon: Icons.person,
+                isSelected: widget.slot.referenceType == ReferenceType.realLife,
+                accentColor: accentColor,
+                onTap: () => setState(() => widget.slot.referenceType = ReferenceType.realLife),
+              ),
+              _LimitModeChip(
+                label: widget.slot.limitMode == LimitMode.strict ? '🔒 Strict' : '🔓 Flex',
+                isSelected: widget.slot.limitMode == LimitMode.strict,
+                accentColor: accentColor,
+                onTap: () => setState(() => widget.slot.limitMode = 
+                  widget.slot.limitMode == LimitMode.strict ? LimitMode.assistive : LimitMode.strict),
+              ),
+            ],
           ),
         ],
+      ],
+    );
+  }
+}
+
+/// Small chip for reference type selection
+class _ReferenceTypeChip extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final bool isSelected;
+  final Color accentColor;
+  final VoidCallback onTap;
+
+  const _ReferenceTypeChip({
+    required this.label,
+    required this.icon,
+    required this.isSelected,
+    required this.accentColor,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+        decoration: BoxDecoration(
+          color: isSelected ? accentColor.withOpacity(0.2) : Colors.transparent,
+          borderRadius: BorderRadius.circular(6),
+          border: Border.all(color: isSelected ? accentColor : Colors.grey.withOpacity(0.3)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 12, color: isSelected ? accentColor : Colors.grey),
+            const SizedBox(width: 2),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                color: isSelected ? accentColor : Colors.grey,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Small chip for limit mode selection
+class _LimitModeChip extends StatelessWidget {
+  final String label;
+  final bool isSelected;
+  final Color accentColor;
+  final VoidCallback onTap;
+
+  const _LimitModeChip({
+    required this.label,
+    required this.isSelected,
+    required this.accentColor,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+        decoration: BoxDecoration(
+          color: isSelected ? accentColor.withOpacity(0.15) : Colors.transparent,
+          borderRadius: BorderRadius.circular(4),
+          border: Border.all(color: isSelected ? accentColor.withOpacity(0.5) : Colors.grey.withOpacity(0.3)),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 10,
+            fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+            color: isSelected ? accentColor : Colors.grey,
+          ),
+        ),
       ),
     );
   }

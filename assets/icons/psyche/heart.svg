@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Classic Heart - clearly recognizable like ❤️ -->
+  
+  <!-- Main heart shape - proper curves -->
+  <path d="
+    M 50 88
+    C 10 55 5 35 20 20
+    C 32 10 45 15 50 25
+    C 55 15 68 10 80 20
+    C 95 35 90 55 50 88
+    Z
+  " fill="#000000"/>
+  
+  <!-- Highlight on left lobe -->
+  <ellipse cx="30" cy="32" rx="8" ry="10" fill="#000000" transform="rotate(-30 30 32)"/>
+</svg>

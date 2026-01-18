@@ -3,81 +3,85 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'tone.freezed.dart';
 part 'tone.g.dart';
 
-/// Supported narrative tones
+/// Supported narrative tones - 3 distinct styles
+/// 
+/// MINIMAL: Action-oriented, no story form, characters only in Psyche & Examples
+/// MODERN: Contemporary language, story form with recognized characters
+/// MYTHICAL: Magical/fairy tale style with recognized characters, accessible language
 enum NarrativeTone {
-  @JsonValue('PLAIN')
-  plain,
-  @JsonValue('MYTHIC')
-  mythic,
-  @JsonValue('REFLECTIVE')
-  reflective,
-  @JsonValue('PRACTICAL')
-  practical,
-  @JsonValue('ANALYTICAL')
-  analytical,
+  @JsonValue('MINIMAL')
+  minimal,
+  @JsonValue('MODERN')
+  modern,
+  @JsonValue('MYTHICAL')
+  mythical,
 }
 
 /// Extension for human-readable labels
 extension NarrativeToneX on NarrativeTone {
   String get label {
     switch (this) {
-      case NarrativeTone.plain:
-        return 'Clear & Direct';
-      case NarrativeTone.mythic:
-        return 'Mythic & Poetic';
-      case NarrativeTone.reflective:
-        return 'Gentle & Contemplative';
-      case NarrativeTone.practical:
-        return 'Action-Oriented';
-      case NarrativeTone.analytical:
-        return 'Deep & Psychological';
+      case NarrativeTone.minimal:
+        return 'Minimal';
+      case NarrativeTone.modern:
+        return 'Modern';
+      case NarrativeTone.mythical:
+        return 'Mythical';
     }
   }
 
   String get description {
     switch (this) {
-      case NarrativeTone.plain:
-        return 'No metaphors, just clear everyday language you can share with anyone';
-      case NarrativeTone.mythic:
-        return 'Rich with archetypal imagery, metaphors, and a sense of epic storytelling';
-      case NarrativeTone.reflective:
-        return 'Soft questions and invitations to explore — like a wise friend speaking';
-      case NarrativeTone.practical:
-        return 'Bullet points and "do this, avoid that" — ready for immediate action';
-      case NarrativeTone.analytical:
-        return 'Full Jungian terminology — ego, shadow, anima explained explicitly';
+      case NarrativeTone.minimal:
+        return 'Clean, action-oriented insights without storytelling. Characters appear only in identification and examples.';
+      case NarrativeTone.modern:
+        return 'Contemporary narrative weaving your characters into a meaningful personal story.';
+      case NarrativeTone.mythical:
+        return 'Enchanting, fairy-tale style narrative bringing your characters to life in an epic journey.';
+    }
+  }
+
+  String get shortDescription {
+    switch (this) {
+      case NarrativeTone.minimal:
+        return 'Direct & actionable';
+      case NarrativeTone.modern:
+        return 'Story-driven & relatable';
+      case NarrativeTone.mythical:
+        return 'Magical & epic';
     }
   }
 
   String get apiValue {
     switch (this) {
-      case NarrativeTone.plain:
-        return 'PLAIN';
-      case NarrativeTone.mythic:
-        return 'MYTHIC';
-      case NarrativeTone.reflective:
-        return 'REFLECTIVE';
-      case NarrativeTone.practical:
-        return 'PRACTICAL';
-      case NarrativeTone.analytical:
-        return 'ANALYTICAL';
+      case NarrativeTone.minimal:
+        return 'MINIMAL';
+      case NarrativeTone.modern:
+        return 'MODERN';
+      case NarrativeTone.mythical:
+        return 'MYTHICAL';
     }
   }
 
   static NarrativeTone fromApiValue(String value) {
     switch (value.toUpperCase()) {
+      case 'MINIMAL':
+        return NarrativeTone.minimal;
+      case 'MODERN':
+        return NarrativeTone.modern;
+      case 'MYTHICAL':
+        return NarrativeTone.mythical;
+      // Legacy mappings for backward compatibility
       case 'PLAIN':
-        return NarrativeTone.plain;
-      case 'MYTHIC':
-        return NarrativeTone.mythic;
-      case 'REFLECTIVE':
-        return NarrativeTone.reflective;
       case 'PRACTICAL':
-        return NarrativeTone.practical;
       case 'ANALYTICAL':
-        return NarrativeTone.analytical;
+        return NarrativeTone.minimal;
+      case 'REFLECTIVE':
+        return NarrativeTone.modern;
+      case 'MYTHIC':
+        return NarrativeTone.mythical;
       default:
-        return NarrativeTone.plain;
+        return NarrativeTone.modern; // Default to modern
     }
   }
 }
@@ -100,7 +104,7 @@ class ToneInfo with _$ToneInfo {
 class AvailableTonesResponse with _$AvailableTonesResponse {
   const factory AvailableTonesResponse({
     @Default([]) List<ToneInfo> tones,
-    @Default('PLAIN') String defaultTone,
+    @Default('MODERN') String defaultTone,
   }) = _AvailableTonesResponse;
 
   factory AvailableTonesResponse.fromJson(Map<String, dynamic> json) =>
@@ -111,7 +115,7 @@ class AvailableTonesResponse with _$AvailableTonesResponse {
 @freezed
 class TonePreferenceResponse with _$TonePreferenceResponse {
   const factory TonePreferenceResponse({
-    @Default('PLAIN') String narrativeTone,
+    @Default('MODERN') String narrativeTone,
     @Default([]) List<ToneInfo> availableTones,
   }) = _TonePreferenceResponse;
 

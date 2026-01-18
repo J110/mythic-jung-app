@@ -4,6 +4,8 @@ import '../../../core/storage/repositories.dart';
 import '../../../core/models/constellation.dart';
 import '../../../core/models/psyche_model.dart';
 import '../../../app/theme/app_theme.dart';
+import '../../shared/redesign/content_card.dart';
+import '../../shared/redesign/sub_header.dart';
 
 /// Dedicated tab for displaying Archetype Constellation data
 /// Uses PsycheModel as the single source of truth for both
@@ -21,27 +23,38 @@ class ConstellationTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
     // Use PsycheModel as the single source of truth
     final psycheModelAsync = isRelationship
         ? ref.watch(relationshipPsycheModelProvider)
         : ref.watch(mePsycheModelProvider);
 
-    Widget content = psycheModelAsync.when(
-      data: (psycheModel) {
-        if (psycheModel == null) {
-          // No PsycheModel yet - show waiting state
-          return _buildWaitingState(context);
-        }
+    Widget content = Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: isDark
+              ? [const Color(0xFF1E1B2E), const Color(0xFF1E1B2E).withOpacity(0.5)]
+              : [const Color(0xFFFAF5FF), Colors.white],
+        ),
+      ),
+      child: psycheModelAsync.when(
+        data: (psycheModel) {
+          if (psycheModel == null) {
+            return _buildWaitingState(context);
+          }
 
-        if (isRelationship) {
-          return _buildRelationshipContentFromPsyche(context, psycheModel);
-        } else {
-          return _buildMeContentFromPsyche(context, psycheModel);
-        }
-      },
-      loading: () => _buildLoadingState(context),
-      error: (error, stack) => _buildWaitingState(context), // Show waiting on error
+          if (isRelationship) {
+            return _buildRelationshipContentFromPsyche(context, psycheModel);
+          } else {
+            return _buildMeContentFromPsyche(context, psycheModel);
+          }
+        },
+        loading: () => _buildLoadingState(context),
+        error: (error, stack) => _buildWaitingState(context),
+      ),
     );
 
     if (embedded) {
@@ -288,42 +301,123 @@ class ConstellationTab extends ConsumerWidget {
 
   Widget _buildMeContentFromPsyche(BuildContext context, PsycheModel psycheModel) {
     final theme = Theme.of(context);
-    final positions = psycheModel.structuralPositions;
+    final isDark = theme.brightness == Brightness.dark;
     final motifs = psycheModel.motifDistribution;
     final shadowMotifs = psycheModel.shadowMotifs;
 
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        // Header card
-        _buildHeaderCard(context, 'Your Archetype Constellation'),
-        const SizedBox(height: 16),
+    // Sort motifs by score (highest to lowest)
+    final sortedMotifs = List<MotifEntry>.from(motifs)..sort((a, b) => b.score.compareTo(a.score));
+    final sortedShadowMotifs = List<MotifEntry>.from(shadowMotifs)..sort((a, b) => b.score.compareTo(a.score));
 
-        // Structural Archetypes from PsycheModel
-        if (positions != null) ...[
-          _buildSectionHeader(context, 'Structural Positions', Icons.account_tree),
-          const SizedBox(height: 12),
-          _buildStructuralFromPsyche(context, positions),
-          const SizedBox(height: 24),
-        ],
-
-        // Motif Section from PsycheModel
-        if (motifs.isNotEmpty) ...[
-          _buildSectionHeader(context, 'Archetypal Energies', Icons.auto_awesome),
-          const SizedBox(height: 12),
-          _buildMotifsFromPsyche(context, motifs),
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Sub-header: Your Archetype Constellation with full-bleed background
+          const ConstellationSubHeader(),
+          
           const SizedBox(height: 16),
-        ],
 
-        // Shadow motifs from PsycheModel
-        if (shadowMotifs.isNotEmpty) ...[
-          _buildSectionHeader(context, 'Shadow Energies', Icons.contrast, isShadow: true),
-          const SizedBox(height: 12),
-          _buildShadowMotifsFromPsyche(context, shadowMotifs),
-        ],
+          // Archetypal Energies - as clickable cards
+          if (sortedMotifs.isNotEmpty) ...[
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: _buildSectionTitle(context, 'Your Archetypal Energies', Icons.auto_awesome),
+            ),
+            const SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Text(
+                'Tap a card to explore how this energy shows up in your life',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurface.withOpacity(0.6),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            _buildArchetypeCardsGrid(context, sortedMotifs.take(6).toList(), isShadow: false),
+            const SizedBox(height: 32),
+          ],
 
-        // Quality flags removed - no longer displayed to users
+          // Shadow Energies - as clickable cards
+          if (sortedShadowMotifs.isNotEmpty) ...[
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: _buildSectionTitle(context, 'Shadow Energies', Icons.contrast, isShadow: true),
+            ),
+            const SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Text(
+                'Hidden aspects that may be repressed or projected onto others',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.error.withOpacity(0.7),
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            _buildArchetypeCardsGrid(context, sortedShadowMotifs.take(4).toList(), isShadow: true),
+          ],
+          
+          const SizedBox(height: 32),
+        ],
+      ),
+    );
+  }
+
+  /// Section title with icon
+  Widget _buildSectionTitle(BuildContext context, String title, IconData icon, {bool isShadow = false}) {
+    final theme = Theme.of(context);
+    final color = isShadow ? theme.colorScheme.error : theme.colorScheme.primary;
+    
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(icon, size: 20, color: color),
+        ),
+        const SizedBox(width: 12),
+        Text(
+          title,
+          style: theme.textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: color,
+          ),
+        ),
       ],
+    );
+  }
+
+  /// Grid of archetype cards
+  Widget _buildArchetypeCardsGrid(BuildContext context, List<MotifEntry> motifs, {required bool isShadow}) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 16,
+        mainAxisSpacing: 16,
+        childAspectRatio: 1.0,
+      ),
+      itemCount: motifs.length,
+      itemBuilder: (context, index) {
+        final motif = motifs[index];
+        return _ArchetypeCard(
+          motif: motif.motif,
+          score: motif.score,
+          isShadow: isShadow,
+          isDark: isDark,
+        );
+      },
     );
   }
 
@@ -1579,4 +1673,225 @@ class _PositionItem {
     required this.icon,
     required this.description,
   });
+}
+
+/// Individual archetype card with illustration and tap-to-expand
+class _ArchetypeCard extends StatefulWidget {
+  final String motif;
+  final double score;
+  final bool isShadow;
+  final bool isDark;
+
+  const _ArchetypeCard({
+    required this.motif,
+    required this.score,
+    required this.isShadow,
+    required this.isDark,
+  });
+
+  @override
+  State<_ArchetypeCard> createState() => _ArchetypeCardState();
+}
+
+class _ArchetypeCardState extends State<_ArchetypeCard> {
+  bool _isHovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final accentColor = getArchetypeColor(widget.motif);
+    final label = getArchetypeLabel(widget.motif);
+    final description = getArchetypeDescription(widget.motif);
+
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      child: GestureDetector(
+        onTap: () => _showArchetypeDetail(context, label, description, accentColor),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          transform: Matrix4.identity()..scale(_isHovered ? 1.03 : 1.0),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: _isHovered
+                    ? (widget.isShadow ? Colors.deepPurple : accentColor).withOpacity(0.4)
+                    : Colors.black.withOpacity(0.2),
+                blurRadius: _isHovered ? 16 : 8,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: Stack(
+              children: [
+                // Background illustration
+                Positioned.fill(
+                  child: CustomPaint(
+                    painter: getArchetypePainter(widget.motif, accentColor, widget.isDark, isShadow: widget.isShadow),
+                    size: Size.infinite,
+                  ),
+                ),
+                
+                // Shadow overlay for shadow archetypes
+                if (widget.isShadow)
+                  Positioned.fill(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.deepPurple.withOpacity(0.1),
+                            Colors.deepPurple.withOpacity(0.3),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                
+                // Bottom gradient for title
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  height: 70,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.transparent,
+                          Colors.black.withOpacity(0.75),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                
+                // Title and score
+                Positioned(
+                  bottom: 8,
+                  left: 12,
+                  right: 12,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        label,
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          shadows: [
+                            Shadow(
+                              offset: const Offset(1, 1),
+                              blurRadius: 3,
+                              color: Colors.black.withOpacity(0.5),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      // Score bar
+                      Row(
+                        children: [
+                          Expanded(
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(4),
+                              child: LinearProgressIndicator(
+                                value: widget.score,
+                                minHeight: 4,
+                                backgroundColor: Colors.white.withOpacity(0.2),
+                                valueColor: AlwaysStoppedAnimation(
+                                  widget.isShadow ? Colors.deepPurple.shade300 : accentColor,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            '${(widget.score * 100).toInt()}%',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: Colors.white.withOpacity(0.9),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showArchetypeDetail(BuildContext context, String label, String description, Color accentColor) {
+    // Use Navigator.push with slide transition (same pattern as ContentDetailView on Story page)
+    Navigator.of(context).push(
+      PageRouteBuilder(
+        opaque: false,
+        barrierDismissible: true,
+        barrierColor: Colors.black54,
+        pageBuilder: (context, animation, secondaryAnimation) => ArchetypeDetailView(
+          motif: widget.motif,
+          label: label,
+          description: description,
+          accentColor: accentColor,
+          score: widget.score,
+          isShadow: widget.isShadow,
+          painterBuilder: getArchetypePainter,
+          howItShowsUp: _getHowItShowsUp(widget.motif, widget.isShadow),
+        ),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) => SlideTransition(
+          position: Tween<Offset>(begin: const Offset(0, 1), end: Offset.zero).animate(
+            CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
+          ),
+          child: child,
+        ),
+      ),
+    );
+  }
+
+  String _getHowItShowsUp(String motif, bool isShadow) {
+    if (isShadow) {
+      switch (motif.toUpperCase()) {
+        case 'HERO': return 'You might sometimes feel inadequate or avoid challenges that could reveal vulnerability. This energy can emerge as unexpected bursts of courage during crisis.';
+        case 'TRICKSTER': return 'You may judge others who bend rules or feel uncomfortable with playfulness. This energy might surface as unexpected sarcasm or rebellious impulses.';
+        case 'WISE_OLD_MAN': return 'You might distrust your own wisdom or seek external validation for decisions. This energy can emerge as surprising insights when you least expect them.';
+        case 'GREAT_MOTHER': return 'You may struggle to accept nurturing from others or feel unworthy of care. This energy might surface as unexpected maternal/paternal feelings.';
+        case 'WARRIOR': return 'You might avoid conflict or feel uncomfortable asserting yourself. This energy can emerge as unexpected fierce protectiveness.';
+        case 'LOVER_EROS': return 'You may keep others at emotional distance or feel undeserving of deep connection. This energy might surface as intense attractions or creative inspiration.';
+        case 'OUTLAW_REBEL': return 'You might over-conform or judge those who break conventions. This energy can emerge as unexpected urges to break free from constraints.';
+        case 'SEEKER_WANDERER': return 'You may feel restless but resist exploration, preferring safety. This energy might surface as deep curiosity about meaning and purpose.';
+        case 'CHILD': return 'You might suppress spontaneity or feel uncomfortable with playfulness. This energy can emerge as unexpected wonder or vulnerability.';
+        case 'CAREGIVER_HEALER': return 'You may struggle to show compassion to yourself or resist helping roles. This energy might surface as unexpected empathy or healing presence.';
+        case 'MAGICIAN': return 'You might dismiss your ability to create change or feel powerless. This energy can emerge as surprising moments of transformation or insight.';
+        case 'FATHER_AUTHORITY': return 'You may resist structure or feel uncomfortable with authority. This energy might surface as unexpected need for order or leadership.';
+        default: return 'This energy operates beneath your conscious awareness, potentially influencing your reactions and relationships in subtle ways.';
+      }
+    } else {
+      switch (motif.toUpperCase()) {
+        case 'HERO': return 'You naturally rise to challenges and feel called to overcome obstacles. Others may look to you for leadership during difficult times.';
+        case 'TRICKSTER': return 'You bring levity to serious situations and often see unconventional solutions. You question authority and enjoy crossing boundaries playfully.';
+        case 'WISE_OLD_MAN': return 'Others seek your counsel and you have a gift for seeing patterns. You value knowledge and often reflect on deeper meanings.';
+        case 'GREAT_MOTHER': return 'You create safe spaces for others and naturally nurture growth. People feel accepted and cared for in your presence.';
+        case 'WARRIOR': return 'You stand firm in your convictions and fight for what matters. You bring discipline and strength to protect what you value.';
+        case 'LOVER_EROS': return 'You seek deep connections and appreciate beauty. Passion and intimacy are central to how you experience life.';
+        case 'OUTLAW_REBEL': return 'You challenge systems that don\'t serve and forge your own path. Authenticity matters more to you than fitting in.';
+        case 'SEEKER_WANDERER': return 'You\'re driven to find meaning and explore possibilities. The journey of discovery feels more important than the destination.';
+        case 'CHILD': return 'You maintain a sense of wonder and openness to new experiences. Your spontaneity and innocence can be refreshing to others.';
+        case 'CAREGIVER_HEALER': return 'You\'re drawn to help others heal and find wholeness. Your compassion creates space for restoration and growth.';
+        case 'MAGICIAN': return 'You see possibilities others miss and can catalyze transformation. You bring vision and the ability to manifest change.';
+        case 'FATHER_AUTHORITY': return 'You provide structure and uphold standards that create order. Others look to you for principled guidance and clear boundaries.';
+        default: return 'This archetypal energy shapes how you navigate life and relationships, influencing your natural tendencies and strengths.';
+      }
+    }
+  }
 }

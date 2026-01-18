@@ -1,21 +1,27 @@
 import 'package:go_router/go_router.dart';
-import '../features/onboarding/login_screen.dart';
-import '../features/onboarding/welcome_screen.dart';
+import '../features/onboarding/onboarding_screen.dart';
 import '../features/onboarding/character_entry_screen.dart';
 import '../features/onboarding/clarification_screen.dart';
 import '../features/output_tabs/home_screen.dart';
 import '../core/models/resonance.dart';
 
 final router = GoRouter(
-  initialLocation: '/login',
+  initialLocation: '/',
   routes: [
+    // Main onboarding route - shows welcome with tone selection, then login
+    GoRoute(
+      path: '/',
+      builder: (context, state) => const OnboardingScreen(showWelcome: true),
+    ),
+    // Direct login route (for returning users)
     GoRoute(
       path: '/login',
-      builder: (context, state) => const LoginScreen(),
+      builder: (context, state) => const OnboardingScreen(showWelcome: false),
     ),
+    // Welcome route - for tone change from output pages
     GoRoute(
       path: '/welcome',
-      builder: (context, state) => const WelcomeScreen(),
+      builder: (context, state) => const OnboardingScreen(showWelcome: true),
     ),
     GoRoute(
       path: '/characters',

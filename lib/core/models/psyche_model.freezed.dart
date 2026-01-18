@@ -26,6 +26,10 @@ mixin _$StructuralPosition {
   double get confidence => throw _privateConstructorUsedError;
   List<String> get evidenceFlags => throw _privateConstructorUsedError;
 
+  /// Iconic shape for shadow illustration (e.g., "fist", "gun", "cane")
+  /// Comes from character recognition AI
+  String? get iconicShape => throw _privateConstructorUsedError;
+
   /// Serializes this StructuralPosition to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
@@ -48,6 +52,7 @@ abstract class $StructuralPositionCopyWith<$Res> {
     List<String> secondary,
     double confidence,
     List<String> evidenceFlags,
+    String? iconicShape,
   });
 }
 
@@ -70,6 +75,7 @@ class _$StructuralPositionCopyWithImpl<$Res, $Val extends StructuralPosition>
     Object? secondary = null,
     Object? confidence = null,
     Object? evidenceFlags = null,
+    Object? iconicShape = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -89,6 +95,10 @@ class _$StructuralPositionCopyWithImpl<$Res, $Val extends StructuralPosition>
                 ? _value.evidenceFlags
                 : evidenceFlags // ignore: cast_nullable_to_non_nullable
                       as List<String>,
+            iconicShape: freezed == iconicShape
+                ? _value.iconicShape
+                : iconicShape // ignore: cast_nullable_to_non_nullable
+                      as String?,
           )
           as $Val,
     );
@@ -109,6 +119,7 @@ abstract class _$$StructuralPositionImplCopyWith<$Res>
     List<String> secondary,
     double confidence,
     List<String> evidenceFlags,
+    String? iconicShape,
   });
 }
 
@@ -130,6 +141,7 @@ class __$$StructuralPositionImplCopyWithImpl<$Res>
     Object? secondary = null,
     Object? confidence = null,
     Object? evidenceFlags = null,
+    Object? iconicShape = freezed,
   }) {
     return _then(
       _$StructuralPositionImpl(
@@ -149,6 +161,10 @@ class __$$StructuralPositionImplCopyWithImpl<$Res>
             ? _value._evidenceFlags
             : evidenceFlags // ignore: cast_nullable_to_non_nullable
                   as List<String>,
+        iconicShape: freezed == iconicShape
+            ? _value.iconicShape
+            : iconicShape // ignore: cast_nullable_to_non_nullable
+                  as String?,
       ),
     );
   }
@@ -162,6 +178,7 @@ class _$StructuralPositionImpl implements _StructuralPosition {
     final List<String> secondary = const [],
     this.confidence = 0.5,
     final List<String> evidenceFlags = const [],
+    this.iconicShape,
   }) : _secondary = secondary,
        _evidenceFlags = evidenceFlags;
 
@@ -191,9 +208,14 @@ class _$StructuralPositionImpl implements _StructuralPosition {
     return EqualUnmodifiableListView(_evidenceFlags);
   }
 
+  /// Iconic shape for shadow illustration (e.g., "fist", "gun", "cane")
+  /// Comes from character recognition AI
+  @override
+  final String? iconicShape;
+
   @override
   String toString() {
-    return 'StructuralPosition(primary: $primary, secondary: $secondary, confidence: $confidence, evidenceFlags: $evidenceFlags)';
+    return 'StructuralPosition(primary: $primary, secondary: $secondary, confidence: $confidence, evidenceFlags: $evidenceFlags, iconicShape: $iconicShape)';
   }
 
   @override
@@ -211,7 +233,9 @@ class _$StructuralPositionImpl implements _StructuralPosition {
             const DeepCollectionEquality().equals(
               other._evidenceFlags,
               _evidenceFlags,
-            ));
+            ) &&
+            (identical(other.iconicShape, iconicShape) ||
+                other.iconicShape == iconicShape));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -222,6 +246,7 @@ class _$StructuralPositionImpl implements _StructuralPosition {
     const DeepCollectionEquality().hash(_secondary),
     confidence,
     const DeepCollectionEquality().hash(_evidenceFlags),
+    iconicShape,
   );
 
   /// Create a copy of StructuralPosition
@@ -247,6 +272,7 @@ abstract class _StructuralPosition implements StructuralPosition {
     final List<String> secondary,
     final double confidence,
     final List<String> evidenceFlags,
+    final String? iconicShape,
   }) = _$StructuralPositionImpl;
 
   factory _StructuralPosition.fromJson(Map<String, dynamic> json) =
@@ -260,6 +286,11 @@ abstract class _StructuralPosition implements StructuralPosition {
   double get confidence;
   @override
   List<String> get evidenceFlags;
+
+  /// Iconic shape for shadow illustration (e.g., "fist", "gun", "cane")
+  /// Comes from character recognition AI
+  @override
+  String? get iconicShape;
 
   /// Create a copy of StructuralPosition
   /// with the given fields replaced by the non-null parameter values.

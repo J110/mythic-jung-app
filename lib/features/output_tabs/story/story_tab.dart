@@ -3,24 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/storage/repositories.dart';
 import '../../../core/models/generated_output.dart';
 import '../../../core/models/tone.dart';
-import '../../../core/widgets/output_card.dart';
-import '../../../core/widgets/examples_sheet.dart';
-import '../../../app/theme/app_theme.dart';
-
-/// Section configuration for loading state
-class _StorySection {
-  final String title;
-  final IconData icon;
-  final Color accentColor;
-  final String? Function(StoryOutput) getValue;
-
-  const _StorySection({
-    required this.title,
-    required this.icon,
-    required this.accentColor,
-    required this.getValue,
-  });
-}
+import '../../shared/redesign/redesign.dart';
 
 class StoryTab extends ConsumerStatefulWidget {
   final bool embedded;
@@ -32,65 +15,6 @@ class StoryTab extends ConsumerStatefulWidget {
 }
 
 class _StoryTabState extends ConsumerState<StoryTab> {
-  // Track which sections have been "revealed" with animation
-  final Set<int> _revealedSections = {};
-
-  static const List<_StorySection> _sections = [
-    _StorySection(
-      title: 'Myth Summary',
-      icon: Icons.auto_stories,
-      accentColor: Color(0xFF7C3AED),
-      getValue: _getMythSummary,
-    ),
-    _StorySection(
-      title: 'Central Tension',
-      icon: Icons.balance,
-      accentColor: Color(0xFFD97706),
-      getValue: _getCentralTension,
-    ),
-    _StorySection(
-      title: 'Guiding Sentence',
-      icon: Icons.navigation,
-      accentColor: Color(0xFF14B8A6),
-      getValue: _getGuidingSentence,
-    ),
-    _StorySection(
-      title: 'North Star Scene',
-      icon: Icons.star,
-      accentColor: Color(0xFFF59E0B),
-      getValue: _getNorthStarScene,
-    ),
-    _StorySection(
-      title: 'Current Chapter',
-      icon: Icons.book,
-      accentColor: Color(0xFF8B5CF6),
-      getValue: _getCurrentChapter,
-    ),
-  ];
-
-  static String? _getMythSummary(StoryOutput s) => s.mythSummary;
-  static String? _getCentralTension(StoryOutput s) => s.centralTension;
-  static String? _getGuidingSentence(StoryOutput s) => s.guidingSentence;
-  static String? _getNorthStarScene(StoryOutput s) => s.northStarScene;
-  static String? _getCurrentChapter(StoryOutput s) => s.currentChapter;
-
-  @override
-  void initState() {
-    super.initState();
-    // Reveal sections progressively
-    _startProgressiveReveal();
-  }
-
-  void _startProgressiveReveal() {
-    for (int i = 0; i < _sections.length; i++) {
-      Future.delayed(Duration(milliseconds: 200 * i), () {
-        if (mounted) {
-          setState(() => _revealedSections.add(i));
-        }
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final outputAsync = ref.watch(outputRepositoryProvider);
@@ -99,16 +23,22 @@ class _StoryTabState extends ConsumerState<StoryTab> {
     // Watch tone state for loading state
     final toneState = ref.watch(toneRepositoryProvider);
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
     final content = Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [
-            theme.scaffoldBackgroundColor,
-            theme.scaffoldBackgroundColor.withOpacity(0.5),
-          ],
+          colors: isDark
+              ? [
+                  const Color(0xFF1E1B2E),
+                  const Color(0xFF1E1B2E).withOpacity(0.5),
+                ]
+              : [
+                  const Color(0xFFFAF5FF),
+                  Colors.white,
+                ],
         ),
       ),
       child: Stack(
@@ -166,100 +96,24 @@ class _StoryTabState extends ConsumerState<StoryTab> {
   }
 
   Widget _buildLoadingState(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: _sections.length,
-      itemBuilder: (context, index) {
-        final section = _sections[index];
-        final isRevealed = _revealedSections.contains(index);
-
-        return AnimatedOpacity(
-          duration: const Duration(milliseconds: 400),
-          opacity: isRevealed ? 1.0 : 0.3,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 400),
-            margin: const EdgeInsets.only(bottom: 12),
-            transform: Matrix4.translationValues(isRevealed ? 0 : 20, 0, 0),
-            child: _buildSkeletonCard(section, isDark, theme),
+    final allConfigs = [...StoryCardConfigs.all, ...FunctioningCardConfigs.all];
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          // Sub-header
+          const StorySubHeader(),
+          
+          const SizedBox(height: 16),
+          
+          // Loading cards grid
+          ContentCardGrid(
+            configs: allConfigs,
+            contents: const {},
+            isLoading: true,
           ),
-        );
-      },
-    );
-  }
-
-  Widget _buildSkeletonCard(_StorySection section, bool isDark, ThemeData theme) {
-    return Card(
-      elevation: 1,
-      color: isDark ? Colors.grey.shade900 : Colors.grey.shade100,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: BorderSide(
-          color: section.accentColor.withOpacity(0.2),
-          width: 1,
-        ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: section.accentColor.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(
-                    section.icon,
-                    color: section.accentColor.withOpacity(0.5),
-                    size: 20,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Text(
-                  section.title,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: isDark ? Colors.grey.shade500 : Colors.grey.shade600,
-                  ),
-                ),
-                const Spacer(),
-                SizedBox(
-                  width: 16,
-                  height: 16,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation(section.accentColor.withOpacity(0.5)),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            // Skeleton text lines
-            _buildShimmerLine(isDark, width: double.infinity),
-            const SizedBox(height: 8),
-            _buildShimmerLine(isDark, width: double.infinity),
-            const SizedBox(height: 8),
-            _buildShimmerLine(isDark, width: 180),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildShimmerLine(bool isDark, {required double width}) {
-    return Container(
-      width: width,
-      height: 12,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(4),
-        color: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
+          
+          const SizedBox(height: 24),
+        ],
       ),
     );
   }
@@ -304,200 +158,97 @@ class _StoryTabState extends ConsumerState<StoryTab> {
     }
 
     final story = output.story;
+    final functioning = output.functioning;
     // Get section-specific examples
     final storyExamples = output.examples?.story ?? const StoryExamples();
+    final funcExamples = output.examples?.functioning ?? const FunctioningExamples();
     
-    // Map section titles to their examples
-    List<ExampleItem> getExamplesForSection(String title) {
-      switch (title) {
-        case 'Myth Summary':
-          return storyExamples.mythSummary;
-        case 'Central Tension':
-          return storyExamples.centralTension;
-        case 'Guiding Sentence':
-          return storyExamples.guidingSentence;
-        case 'North Star Scene':
-          return storyExamples.northStarScene;
-        default:
-          return [];
-      }
-    }
+    // Build contents map - Story content
+    final contents = <String, String?>{
+      // Story sections
+      'mythSummary': story.mythSummary,
+      'centralTension': story.centralTension,
+      'guidingSentence': story.guidingSentence,
+      'northStarScene': story.northStarScene,
+      'currentChapter': story.currentChapter,
+      // Functioning sections
+      'coreTraits': functioning.coreTraits.isNotEmpty ? functioning.coreTraits.join('\n\n• ') : null,
+      'symbolicEssence': functioning.symbolicEssence.isNotEmpty ? functioning.symbolicEssence : null,
+      'narrativeArc': functioning.narrativeArc.isNotEmpty ? functioning.narrativeArc : null,
+      'redemptionArc': functioning.redemptionArc.isNotEmpty ? functioning.redemptionArc : null,
+      'costsAndCompensations': functioning.costsAndCompensations,
+      'powerStance': functioning.powerStance,
+      'alignmentIndicators': functioning.alignmentIndicators != null 
+          ? _formatAlignmentIndicators(functioning.alignmentIndicators!) 
+          : null,
+    };
 
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: _sections.length,
-      itemBuilder: (context, index) {
-        final section = _sections[index];
-        final value = section.getValue(story);
-        
-        // Skip null optional sections
-        if (value == null) return const SizedBox.shrink();
-        
-        // Get examples specific to this section
-        final sectionExamples = getExamplesForSection(section.title);
+    // Build examples map - convert ExampleItem to Map for the detail view
+    Map<String, dynamic> exampleToMap(ExampleItem e) => {
+      'character': e.characterName,
+      'franchise': '${e.reference.title} (${e.reference.year}) • ${e.reference.medium}',
+      'description': '${e.situation}\n\n${e.actions.join('\n')}\n\n${e.outcomeAndCost.join('\n')}',
+    };
 
-        return TweenAnimationBuilder<double>(
-          duration: Duration(milliseconds: 300 + (index * 100)),
-          tween: Tween(begin: 0.0, end: 1.0),
-          builder: (context, animation, child) {
-            return Opacity(
-              opacity: animation,
-              child: Transform.translate(
-                offset: Offset(0, 20 * (1 - animation)),
-                child: child,
-              ),
-            );
-          },
-          child: OutputCard(
-            title: section.title,
-            preview: value,
-            icon: section.icon,
-            accentColor: section.accentColor,
-            onTap: () => _showDetail(
-              context,
-              section.title,
-              value,
-              sectionExamples,
-            ),
-            onShowExamples: sectionExamples.isNotEmpty ? () => showExamplesSheet(
-              context: context,
-              examples: sectionExamples,
-              sectionTitle: section.title,
-            ) : null,
+    final examples = <String, List<dynamic>>{
+      // Story examples
+      'mythSummary': storyExamples.mythSummary.map(exampleToMap).toList(),
+      'centralTension': storyExamples.centralTension.map(exampleToMap).toList(),
+      'guidingSentence': storyExamples.guidingSentence.map(exampleToMap).toList(),
+      'northStarScene': storyExamples.northStarScene.map(exampleToMap).toList(),
+      'currentChapter': storyExamples.currentChapter.map(exampleToMap).toList(),
+      // Functioning examples
+      'coreTraits': funcExamples.coreTraits.map(exampleToMap).toList(),
+      'symbolicEssence': funcExamples.symbolicEssence.map(exampleToMap).toList(),
+      'narrativeArc': funcExamples.narrativeArc.map(exampleToMap).toList(),
+      'redemptionArc': funcExamples.redemptionArc.map(exampleToMap).toList(),
+      'costsAndCompensations': funcExamples.costsAndCompensations.map(exampleToMap).toList(),
+      'alignmentIndicators': funcExamples.alignmentIndicators.map(exampleToMap).toList(),
+    };
+
+    // Combine all configs and filter by available content
+    final allConfigs = [...StoryCardConfigs.all, ...FunctioningCardConfigs.all];
+    final availableConfigs = allConfigs.where((c) => contents[c.id] != null).toList();
+
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          // Sub-header with illustration
+          const StorySubHeader(),
+          
+          const SizedBox(height: 16),
+          
+          // Content cards grid - now handles its own detail view with tabs
+          ContentCardGrid(
+            configs: availableConfigs,
+            contents: contents,
+            examples: examples,
           ),
-        );
-      },
+          
+          const SizedBox(height: 24),
+        ],
+      ),
     );
   }
 
-  void _showDetail(
-    BuildContext context,
-    String title,
-    String content,
-    List<ExampleItem> examples,
-  ) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+  String _formatAlignmentIndicators(AlignmentIndicators alignment) {
+    final buffer = StringBuffer();
     
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.75,
-        minChildSize: 0.5,
-        maxChildSize: 0.95,
-        builder: (context, scrollController) => Container(
-          decoration: BoxDecoration(
-            color: theme.scaffoldBackgroundColor,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: isDark
-                  ? [
-                      theme.colorScheme.surface,
-                      theme.scaffoldBackgroundColor,
-                    ]
-                  : [
-                      Colors.white,
-                      theme.scaffoldBackgroundColor,
-                    ],
-            ),
-          ),
-          child: Column(
-            children: [
-              // Handle bar
-              Container(
-                margin: const EdgeInsets.only(top: 12),
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade400,
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            gradient: AppTheme.primaryGradient,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: const Icon(
-                            Icons.auto_stories,
-                            color: Colors.white,
-                            size: 24,
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Text(
-                            title,
-                            style: theme.textTheme.headlineMedium?.copyWith(
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: SingleChildScrollView(
-                  controller: scrollController,
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Column(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.surface.withOpacity(0.5),
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
-                            color: theme.colorScheme.primary.withOpacity(0.2),
-                            width: 1,
-                          ),
-                        ),
-                        child: Text(
-                          content,
-                          style: theme.textTheme.bodyLarge?.copyWith(
-                            height: 1.8,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ),
-                      if (examples.isNotEmpty) ...[
-                        const SizedBox(height: 16),
-                        ElevatedButton.icon(
-                          onPressed: () {
-                            Navigator.pop(context);
-                            showExamplesSheet(
-                              context: context,
-                              examples: examples,
-                              sectionTitle: title,
-                            );
-                          },
-                          icon: const Icon(Icons.movie_outlined),
-                          label: Text('View ${examples.length} Examples'),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24),
-            ],
-          ),
-        ),
-      ),
-    );
+    if (alignment.aligned.isNotEmpty) {
+      buffer.writeln('✓ ALIGNED BEHAVIORS:');
+      for (final item in alignment.aligned) {
+        buffer.writeln('• $item');
+      }
+    }
+    
+    if (alignment.unaligned.isNotEmpty) {
+      if (buffer.isNotEmpty) buffer.writeln();
+      buffer.writeln('⚠ MISALIGNED BEHAVIORS:');
+      for (final item in alignment.unaligned) {
+        buffer.writeln('• $item');
+      }
+    }
+    
+    return buffer.toString().trim();
   }
 }

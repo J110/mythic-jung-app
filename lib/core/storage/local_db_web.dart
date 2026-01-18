@@ -4,6 +4,7 @@ import '../models/generated_output.dart';
 import '../models/user_profile.dart';
 import '../models/character.dart' as models;
 import '../models/assessment_answer.dart' as models;
+import '../models/relationship.dart';
 
 /// Web-compatible storage using SharedPreferences
 class AppDatabase {
@@ -11,6 +12,7 @@ class AppDatabase {
   static const String _answersKey = 'answers';
   static const String _cachedOutputKey = 'cached_output';
   static const String _profileIdKey = 'profile_id';
+  static const String _relationshipKey = 'relationship';
 
   Future<void> saveProfile(UserProfile profile) async {
     final prefs = await SharedPreferences.getInstance();
@@ -80,5 +82,23 @@ class AppDatabase {
       cachedOutput: cachedOutput,
       lastUpdated: DateTime.now(),
     );
+  }
+
+  Future<void> saveRelationship(RelationshipCharacterSet relationship) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_relationshipKey, jsonEncode(relationship.toJson()));
+  }
+
+  Future<RelationshipCharacterSet?> loadRelationship() async {
+    final prefs = await SharedPreferences.getInstance();
+    final jsonStr = prefs.getString(_relationshipKey);
+    if (jsonStr == null) return null;
+    
+    try {
+      final json = jsonDecode(jsonStr) as Map<String, dynamic>;
+      return RelationshipCharacterSet.fromJson(json);
+    } catch (e) {
+      return null;
+    }
   }
 }

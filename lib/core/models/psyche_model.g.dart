@@ -19,6 +19,7 @@ _$StructuralPositionImpl _$$StructuralPositionImplFromJson(
           ?.map((e) => e as String)
           .toList() ??
       const [],
+  iconicShape: json['iconicShape'] as String?,
 );
 
 Map<String, dynamic> _$$StructuralPositionImplToJson(
@@ -28,6 +29,7 @@ Map<String, dynamic> _$$StructuralPositionImplToJson(
   'secondary': instance.secondary,
   'confidence': instance.confidence,
   'evidenceFlags': instance.evidenceFlags,
+  'iconicShape': instance.iconicShape,
 };
 
 _$SelfDirectionPositionImpl _$$SelfDirectionPositionImplFromJson(

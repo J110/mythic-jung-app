@@ -1191,7 +1191,7 @@ class ToneState {
   final Map<String, dynamic>? renderedRelationshipOutput;
 
   const ToneState({
-    this.currentTone = NarrativeTone.plain,
+    this.currentTone = NarrativeTone.modern, // Default to modern tone
     this.isLoading = false,
     this.renderedMeOutput,
     this.renderedRelationshipOutput,
@@ -1267,9 +1267,9 @@ class ToneRepository extends StateNotifier<ToneState> {
 
       print('✅ [Tone] Preference saved: ${tone.apiValue}');
       
-      // If PLAIN tone, we're done - no rendering needed, just use original output
-      if (tone == NarrativeTone.plain) {
-        print('✅ [Tone] Plain tone selected - using original output');
+      // If MINIMAL tone, we're done - no rendering needed, just use original output
+      if (tone == NarrativeTone.minimal) {
+        print('✅ [Tone] Minimal tone selected - using original output');
         state = ToneState(
           currentTone: tone,
           isLoading: false,
@@ -1332,8 +1332,8 @@ class ToneRepository extends StateNotifier<ToneState> {
 
   /// Render Me output in current tone
   Future<Map<String, dynamic>?> renderMeOutput({String? section}) async {
-    // If PLAIN tone, no transformation needed
-    if (state.currentTone == NarrativeTone.plain) {
+    // If MINIMAL tone, no transformation needed
+    if (state.currentTone == NarrativeTone.minimal) {
       return null; // Use original output
     }
 
@@ -1370,8 +1370,8 @@ class ToneRepository extends StateNotifier<ToneState> {
 
   /// Render Relationship output in current tone
   Future<Map<String, dynamic>?> renderRelationshipOutput({String? section}) async {
-    // If PLAIN tone, no transformation needed
-    if (state.currentTone == NarrativeTone.plain) {
+    // If MINIMAL tone, no transformation needed
+    if (state.currentTone == NarrativeTone.minimal) {
       return null; // Use original output
     }
 
@@ -1431,8 +1431,8 @@ final effectiveMeOutputProvider = Provider<GeneratedOutput?>((ref) {
   
   if (originalOutput == null) return null;
   
-  // If PLAIN tone or no rendered output, use original
-  if (toneState.currentTone == NarrativeTone.plain || toneState.renderedMeOutput == null) {
+  // If MINIMAL tone or no rendered output, use original
+  if (toneState.currentTone == NarrativeTone.minimal || toneState.renderedMeOutput == null) {
     return originalOutput;
   }
   
@@ -1469,8 +1469,8 @@ final effectiveRelationshipOutputProvider = Provider<RelationshipOutput?>((ref) 
   
   if (originalOutput == null) return null;
   
-  // If PLAIN tone or no rendered output, use original
-  if (toneState.currentTone == NarrativeTone.plain || toneState.renderedRelationshipOutput == null) {
+  // If MINIMAL tone or no rendered output, use original
+  if (toneState.currentTone == NarrativeTone.minimal || toneState.renderedRelationshipOutput == null) {
     return originalOutput;
   }
   

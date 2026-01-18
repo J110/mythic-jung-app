@@ -28,7 +28,7 @@ _$AvailableTonesResponseImpl _$$AvailableTonesResponseImplFromJson(
           ?.map((e) => ToneInfo.fromJson(e as Map<String, dynamic>))
           .toList() ??
       const [],
-  defaultTone: json['defaultTone'] as String? ?? 'PLAIN',
+  defaultTone: json['defaultTone'] as String? ?? 'MODERN',
 );
 
 Map<String, dynamic> _$$AvailableTonesResponseImplToJson(
@@ -41,7 +41,7 @@ Map<String, dynamic> _$$AvailableTonesResponseImplToJson(
 _$TonePreferenceResponseImpl _$$TonePreferenceResponseImplFromJson(
   Map<String, dynamic> json,
 ) => _$TonePreferenceResponseImpl(
-  narrativeTone: json['narrativeTone'] as String? ?? 'PLAIN',
+  narrativeTone: json['narrativeTone'] as String? ?? 'MODERN',
   availableTones:
       (json['availableTones'] as List<dynamic>?)
           ?.map((e) => ToneInfo.fromJson(e as Map<String, dynamic>))

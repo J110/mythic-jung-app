@@ -3,13 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../story/story_tab.dart';
 import '../identification/identification_tab.dart';
-import '../functioning/functioning_tab.dart';
-import '../actions/actions_tab.dart';
-import '../life_domains/life_domains_tab.dart';
+import '../scenarios/scenarios_tab.dart';
+import '../affirmations/affirmations_tab.dart';
 import '../constellation/constellation_tab.dart';
 import '../../../core/storage/repositories.dart';
-import '../../../app/theme/app_theme.dart';
 import '../../shared/tone_selector.dart';
+import '../../shared/redesign/redesign.dart';
 
 class MeTab extends ConsumerStatefulWidget {
   const MeTab({super.key});
@@ -18,112 +17,90 @@ class MeTab extends ConsumerStatefulWidget {
   ConsumerState<MeTab> createState() => _MeTabState();
 }
 
-class _MeTabState extends ConsumerState<MeTab> with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+class _MeTabState extends ConsumerState<MeTab> {
+  int _selectedTabIndex = 0;
 
-  final List<_TabItem> _tabItems = const [
-    _TabItem(title: 'Story', icon: Icons.auto_stories),
-    _TabItem(title: 'Archetypes', icon: Icons.auto_awesome),
-    _TabItem(title: 'Identity', icon: Icons.person),
-    _TabItem(title: 'Functioning', icon: Icons.psychology),
-    _TabItem(title: 'Actions', icon: Icons.directions_run),
-    _TabItem(title: 'Life', icon: Icons.domain),
+  // Functioning tab merged into Story tab
+  final List<TabPillConfig> _tabConfigs = const [
+    TabPillConfig(label: 'Story', icon: Icons.auto_stories),
+    TabPillConfig(label: 'Archetypes', icon: Icons.auto_awesome),
+    TabPillConfig(label: 'Psyche', icon: Icons.psychology),
+    TabPillConfig(label: 'Scenarios', icon: Icons.theater_comedy),
+    TabPillConfig(label: 'Affirmations', icon: Icons.auto_awesome),
   ];
 
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: _tabItems.length, vsync: this);
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
+  Widget _buildTabContent() {
+    switch (_selectedTabIndex) {
+      case 0:
+        return const StoryTab(embedded: true); // Now includes Functioning content
+      case 1:
+        return const ConstellationTab(embedded: true, isRelationship: false);
+      case 2:
+        return const IdentificationTab(embedded: true);
+      case 3:
+        return const ScenariosTab(embedded: true);
+      case 4:
+        return const AffirmationsTab(embedded: true);
+      default:
+        return const StoryTab(embedded: true);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                gradient: AppTheme.primaryGradient,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: const Icon(
-                Icons.auto_awesome,
-                color: Colors.white,
-                size: 20,
-              ),
-            ),
-            const SizedBox(width: 12),
-            const Text('My Mythic Self'),
-          ],
-        ),
-        actions: [
-          // Tone selector
-          const ToneSelector(compact: true),
-          IconButton(
-            icon: const Icon(Icons.edit_outlined),
-            tooltip: 'Edit Characters',
-            onPressed: () {
-              context.push('/characters');
+      body: Column(
+        children: [
+          // Full-width illustrated Page Header
+          PageHeader(
+            title: 'Your Inner World',
+            tagline: 'Discover the mythic patterns and archetypal energies that shape who you are',
+            tabs: _tabConfigs,
+            selectedTabIndex: _selectedTabIndex,
+            onTabSelected: (index) {
+              setState(() {
+                _selectedTabIndex = index;
+              });
             },
+            backgroundPainter: MeHeaderBackgroundPainter(isDark: isDark),
+            height: 320,
+            actions: [
+              // Tone selector
+              const ToneSelector(compact: true),
+              IconButton(
+                icon: const Icon(
+                  Icons.edit_outlined,
+                  color: Colors.white,
+                ),
+                tooltip: 'Edit Characters',
+                onPressed: () {
+                  context.push('/characters');
+                },
+              ),
+              IconButton(
+                icon: const Icon(
+                  Icons.refresh,
+                  color: Colors.white,
+                ),
+                tooltip: 'Regenerate',
+                onPressed: () {
+                  ref.read(outputRepositoryProvider.notifier).regenerate();
+                },
+              ),
+            ],
           ),
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            tooltip: 'Regenerate',
-            onPressed: () {
-              ref.read(outputRepositoryProvider.notifier).regenerate();
-            },
-          ),
-        ],
-        bottom: TabBar(
-          controller: _tabController,
-          isScrollable: true,
-          tabAlignment: TabAlignment.start,
-          indicatorSize: TabBarIndicatorSize.label,
-          dividerColor: Colors.transparent,
-          labelColor: theme.colorScheme.primary,
-          unselectedLabelColor: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
-          indicatorColor: theme.colorScheme.primary,
-          tabs: _tabItems.map((item) => Tab(
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(item.icon, size: 18),
-                const SizedBox(width: 6),
-                Text(item.title),
-              ],
+
+          // Tab content
+          Expanded(
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 300),
+              child: _buildTabContent(),
             ),
-          )).toList(),
-        ),
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        children: const [
-          StoryTab(embedded: true),
-          ConstellationTab(embedded: true, isRelationship: false),
-          IdentificationTab(embedded: true),
-          FunctioningTab(embedded: true),
-          ActionsTab(embedded: true),
-          LifeDomainsTab(embedded: true),
+          ),
         ],
       ),
     );
   }
-}
-
-class _TabItem {
-  final String title;
-  final IconData icon;
-
-  const _TabItem({required this.title, required this.icon});
 }

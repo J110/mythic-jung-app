@@ -37,6 +37,9 @@ class StructuralPosition with _$StructuralPosition {
     @Default([]) List<String> secondary,
     @Default(0.5) double confidence,
     @Default([]) List<String> evidenceFlags,
+    /// Iconic shape for shadow illustration (e.g., "fist", "gun", "cane")
+    /// Comes from character recognition AI
+    String? iconicShape,
   }) = _StructuralPosition;
 
   factory StructuralPosition.fromJson(Map<String, dynamic> json) =>

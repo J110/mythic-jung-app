@@ -461,6 +461,7 @@ class StoryExamples with _$StoryExamples {
     @Default([]) List<ExampleItem> centralTension,
     @Default([]) List<ExampleItem> guidingSentence,
     @Default([]) List<ExampleItem> northStarScene,
+    @Default([]) List<ExampleItem> currentChapter,
   }) = _StoryExamples;
 
   factory StoryExamples.fromJson(Map<String, dynamic> json) =>

@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Theatrical Comedy/Tragedy Mask - clearly recognizable -->
+  <!-- Mask on stick (like 🎭) -->
+  
+  <!-- Stick/handle -->
+  <rect x="45" y="70" width="10" height="35" rx="2" fill="#000000"/>
+  
+  <!-- Main mask face - curved like a theatrical mask -->
+  <path d="
+    M 15 25
+    Q 15 10 30 8
+    L 50 5
+    L 70 8
+    Q 85 10 85 25
+    L 88 50
+    Q 88 70 70 75
+    L 50 78
+    L 30 75
+    Q 12 70 12 50
+    Z
+  " fill="#000000"/>
+  
+  <!-- Left eye hole - almond shaped, angled up for drama -->
+  <ellipse cx="32" cy="35" rx="10" ry="7" transform="rotate(-10 32 35)" fill="#000000" stroke="#333333" stroke-width="3"/>
+  
+  <!-- Right eye hole -->
+  <ellipse cx="68" cy="35" rx="10" ry="7" transform="rotate(10 68 35)" fill="#000000" stroke="#333333" stroke-width="3"/>
+  
+  <!-- Dramatic eyebrows - arched high -->
+  <path d="M 18 25 Q 32 15 45 22" fill="none" stroke="#000000" stroke-width="5" stroke-linecap="round"/>
+  <path d="M 82 25 Q 68 15 55 22" fill="none" stroke="#000000" stroke-width="5" stroke-linecap="round"/>
+  
+  <!-- Nose - prominent theatrical style -->
+  <path d="M 50 38 L 46 52 Q 50 58 54 52 Z" fill="#000000"/>
+  
+  <!-- Big theatrical smile - the key feature -->
+  <path d="
+    M 28 55
+    Q 35 72 50 75
+    Q 65 72 72 55
+  " fill="none" stroke="#000000" stroke-width="4" stroke-linecap="round"/>
+  
+  <!-- Smile teeth suggestion -->
+  <path d="M 35 60 L 35 68" stroke="#000000" stroke-width="2"/>
+  <path d="M 50 62 L 50 72" stroke="#000000" stroke-width="2"/>
+  <path d="M 65 60 L 65 68" stroke="#000000" stroke-width="2"/>
+  
+  <!-- Cheek highlights -->
+  <circle cx="25" cy="52" r="5" fill="#000000"/>
+  <circle cx="75" cy="52" r="5" fill="#000000"/>
+</svg>

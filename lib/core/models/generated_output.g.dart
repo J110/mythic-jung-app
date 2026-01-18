@@ -595,6 +595,11 @@ _$StoryExamplesImpl _$$StoryExamplesImplFromJson(Map<String, dynamic> json) =>
               ?.map((e) => ExampleItem.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
+      currentChapter:
+          (json['currentChapter'] as List<dynamic>?)
+              ?.map((e) => ExampleItem.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
     );
 
 Map<String, dynamic> _$$StoryExamplesImplToJson(_$StoryExamplesImpl instance) =>
@@ -603,6 +608,7 @@ Map<String, dynamic> _$$StoryExamplesImplToJson(_$StoryExamplesImpl instance) =>
       'centralTension': instance.centralTension,
       'guidingSentence': instance.guidingSentence,
       'northStarScene': instance.northStarScene,
+      'currentChapter': instance.currentChapter,
     };
 
 _$FunctioningExamplesImpl _$$FunctioningExamplesImplFromJson(

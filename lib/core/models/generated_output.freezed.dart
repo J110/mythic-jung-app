@@ -6520,6 +6520,7 @@ mixin _$StoryExamples {
   List<ExampleItem> get centralTension => throw _privateConstructorUsedError;
   List<ExampleItem> get guidingSentence => throw _privateConstructorUsedError;
   List<ExampleItem> get northStarScene => throw _privateConstructorUsedError;
+  List<ExampleItem> get currentChapter => throw _privateConstructorUsedError;
 
   /// Serializes this StoryExamples to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -6543,6 +6544,7 @@ abstract class $StoryExamplesCopyWith<$Res> {
     List<ExampleItem> centralTension,
     List<ExampleItem> guidingSentence,
     List<ExampleItem> northStarScene,
+    List<ExampleItem> currentChapter,
   });
 }
 
@@ -6565,6 +6567,7 @@ class _$StoryExamplesCopyWithImpl<$Res, $Val extends StoryExamples>
     Object? centralTension = null,
     Object? guidingSentence = null,
     Object? northStarScene = null,
+    Object? currentChapter = null,
   }) {
     return _then(
       _value.copyWith(
@@ -6583,6 +6586,10 @@ class _$StoryExamplesCopyWithImpl<$Res, $Val extends StoryExamples>
             northStarScene: null == northStarScene
                 ? _value.northStarScene
                 : northStarScene // ignore: cast_nullable_to_non_nullable
+                      as List<ExampleItem>,
+            currentChapter: null == currentChapter
+                ? _value.currentChapter
+                : currentChapter // ignore: cast_nullable_to_non_nullable
                       as List<ExampleItem>,
           )
           as $Val,
@@ -6604,6 +6611,7 @@ abstract class _$$StoryExamplesImplCopyWith<$Res>
     List<ExampleItem> centralTension,
     List<ExampleItem> guidingSentence,
     List<ExampleItem> northStarScene,
+    List<ExampleItem> currentChapter,
   });
 }
 
@@ -6625,6 +6633,7 @@ class __$$StoryExamplesImplCopyWithImpl<$Res>
     Object? centralTension = null,
     Object? guidingSentence = null,
     Object? northStarScene = null,
+    Object? currentChapter = null,
   }) {
     return _then(
       _$StoryExamplesImpl(
@@ -6644,6 +6653,10 @@ class __$$StoryExamplesImplCopyWithImpl<$Res>
             ? _value._northStarScene
             : northStarScene // ignore: cast_nullable_to_non_nullable
                   as List<ExampleItem>,
+        currentChapter: null == currentChapter
+            ? _value._currentChapter
+            : currentChapter // ignore: cast_nullable_to_non_nullable
+                  as List<ExampleItem>,
       ),
     );
   }
@@ -6657,10 +6670,12 @@ class _$StoryExamplesImpl implements _StoryExamples {
     final List<ExampleItem> centralTension = const [],
     final List<ExampleItem> guidingSentence = const [],
     final List<ExampleItem> northStarScene = const [],
+    final List<ExampleItem> currentChapter = const [],
   }) : _mythSummary = mythSummary,
        _centralTension = centralTension,
        _guidingSentence = guidingSentence,
-       _northStarScene = northStarScene;
+       _northStarScene = northStarScene,
+       _currentChapter = currentChapter;
 
   factory _$StoryExamplesImpl.fromJson(Map<String, dynamic> json) =>
       _$$StoryExamplesImplFromJson(json);
@@ -6701,9 +6716,18 @@ class _$StoryExamplesImpl implements _StoryExamples {
     return EqualUnmodifiableListView(_northStarScene);
   }
 
+  final List<ExampleItem> _currentChapter;
+  @override
+  @JsonKey()
+  List<ExampleItem> get currentChapter {
+    if (_currentChapter is EqualUnmodifiableListView) return _currentChapter;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_currentChapter);
+  }
+
   @override
   String toString() {
-    return 'StoryExamples(mythSummary: $mythSummary, centralTension: $centralTension, guidingSentence: $guidingSentence, northStarScene: $northStarScene)';
+    return 'StoryExamples(mythSummary: $mythSummary, centralTension: $centralTension, guidingSentence: $guidingSentence, northStarScene: $northStarScene, currentChapter: $currentChapter)';
   }
 
   @override
@@ -6726,6 +6750,10 @@ class _$StoryExamplesImpl implements _StoryExamples {
             const DeepCollectionEquality().equals(
               other._northStarScene,
               _northStarScene,
+            ) &&
+            const DeepCollectionEquality().equals(
+              other._currentChapter,
+              _currentChapter,
             ));
   }
 
@@ -6737,6 +6765,7 @@ class _$StoryExamplesImpl implements _StoryExamples {
     const DeepCollectionEquality().hash(_centralTension),
     const DeepCollectionEquality().hash(_guidingSentence),
     const DeepCollectionEquality().hash(_northStarScene),
+    const DeepCollectionEquality().hash(_currentChapter),
   );
 
   /// Create a copy of StoryExamples
@@ -6759,6 +6788,7 @@ abstract class _StoryExamples implements StoryExamples {
     final List<ExampleItem> centralTension,
     final List<ExampleItem> guidingSentence,
     final List<ExampleItem> northStarScene,
+    final List<ExampleItem> currentChapter,
   }) = _$StoryExamplesImpl;
 
   factory _StoryExamples.fromJson(Map<String, dynamic> json) =
@@ -6772,6 +6802,8 @@ abstract class _StoryExamples implements StoryExamples {
   List<ExampleItem> get guidingSentence;
   @override
   List<ExampleItem> get northStarScene;
+  @override
+  List<ExampleItem> get currentChapter;
 
   /// Create a copy of StoryExamples
   /// with the given fields replaced by the non-null parameter values.
