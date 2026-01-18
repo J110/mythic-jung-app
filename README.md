@@ -1,25 +1,30 @@
 # Mythic Jung - Flutter App
 
-A beautiful, state-of-the-art Flutter application for Jungian analysis of personal identity based on TV/movie/real characters that users connect with. The app features a mindful and mythical theme with card-based UI and offline-first functionality.
+A beautiful, state-of-the-art Flutter application for Jungian analysis of personal identity based on TV/movie/real characters that users connect with. The app features shadow silhouettes with peeking eyes as its signature visual style.
 
 ## Features
 
 ### ✨ Core Features
-- **Character Entry**: Enter 6 characters that resonate with you (from stories, myths, films, etc.)
-- **Mythic Narrative Generation**: Automatically generates a Jungian narrative report based on selected characters
-- **Assessment Modules**: Complete 7 assessment modules to refine your mythic narrative
-- **Output Tabs**: Explore your myth through 5 main sections:
-  - **Story**: Myth Summary, Central Tension, Guiding Sentence, North Star Scene
-  - **Identification**: Ego, Persona, Shadow, Shadow Virtue, Feeling Function, Eros Axis
-  - **Functioning**: Core Traits, Symbolic Essence, Narrative Arc, Redemption Arc
-  - **Actions**: Situation blocks with aligned responses and guidance
-  - **Life Domains**: Work, Leadership, Truth, Intimacy, Social, Inner Life
+- **Character Entry**: Enter characters that resonate with you (from stories, myths, films, etc.)
+- **Character Recognition**: AI-powered recognition of characters with clarification flow
+- **Mythic Narrative Generation**: Automatically generates a Jungian narrative report
+- **Three Narrative Tones**:
+  - **Minimal**: Direct, action-oriented insights without storytelling
+  - **Modern**: Contemporary narrative with your characters woven throughout (default)
+  - **Mythical**: Fairy-tale style, magical but accessible language
+
+### 📱 Output Tabs
+- **Story**: Myth Summary, Central Tension, Guiding Sentence, North Star Scene, Current Chapter
+- **Psyche**: Ego, Persona, Shadow, Feeling Function, Eros Axis positions with dynamic character shadows
+- **Archetypes**: Your archetype constellation and shadow energies
+- **Affirmations**: Life domain cards (Work, Leadership, Truth, Intimacy, Social, Inner Life)
+- **Scenarios**: Real-life situation cards for self-discovery
 
 ### 🎨 Design Features
-- **Beautiful Mythical Theme**: Carefully crafted color palette with purple, indigo, gold, and teal accents
-- **Mindful Aesthetics**: Clean, minimal UI with thoughtful spacing and typography
-- **Card-Based Layout**: All content presented in beautiful, tappable cards with icons and gradients
-- **Evidence System**: Transparent evidence showing which characters and assessments influenced each output
+- **Shadow Silhouettes with Peeking Eyes**: Signature visual style across all cards
+- **Rich Environments**: Varied backgrounds with time-of-day and weather variability
+- **SVG Icons**: Detailed icon-based characters for Psyche positions
+- **3-Tab Pattern**: About, In Your Life, Examples structure for all detail views
 - **Dark Mode Support**: Full support for light and dark themes
 
 ### 🔧 Technical Features
@@ -28,7 +33,6 @@ A beautiful, state-of-the-art Flutter application for Jungian analysis of person
 - **Clean Architecture**: Well-organized codebase with clear separation of concerns
 - **State Management**: Riverpod for reactive state management
 - **Local Storage**: Drift/SQLite for offline persistence
-- **Routing**: go_router for declarative navigation
 
 ## Project Structure
 
@@ -37,57 +41,79 @@ lib/
   app/
     app.dart              # Main app widget
     router.dart           # Navigation configuration
-    theme/
-      app_theme.dart      # Beautiful mythical theme
+    theme/                # App theming
   core/
-    api/                  # API client (mock mode enabled)
+    api/                  # API client
+    config/               # App configuration (API URLs)
     models/               # Data models (GeneratedOutput, Character, etc.)
     storage/              # Local database and repositories
-    widgets/              # Reusable widgets (OutputCard, EvidenceSheet)
-    utils/                # Utilities and constants
   features/
-    onboarding/           # Welcome and character entry screens
-    output_tabs/          # Story, Identification, Functioning, Actions, Life Domains
-    assessment/           # Assessment modules and question pager
-    settings/             # Settings screen (optional)
+    onboarding/           # Welcome, Login, Character Entry, Clarification
+    output_tabs/          # Story, Psyche, Archetypes, Affirmations, Scenarios
+    shared/
+      redesign/           # Shadow utils, painters, illustrations
 ```
 
 ## Getting Started
 
 ### Prerequisites
 - Flutter SDK (3.10.4 or higher)
+- Node.js (for backend)
 - Dart SDK
-- Android Studio / Xcode (for mobile builds)
-- VS Code or Android Studio (for development)
 
-### Installation
+### Backend Setup
 
-1. **Clone and navigate to the project**:
+1. **Navigate to backend**:
    ```bash
-   cd /Users/anmolmohan/Projects/flutter_app
+   cd backend
    ```
 
 2. **Install dependencies**:
    ```bash
+   npm install
+   ```
+
+3. **Set environment variables** (create `.env` file):
+   ```
+   OPENAI_API_KEY=your_openai_key
+   PORT=3001
+   ```
+
+4. **Start the backend**:
+   ```bash
+   npm start
+   ```
+   Backend will run on `http://localhost:3001`
+
+### Flutter App Setup
+
+1. **Install dependencies**:
+   ```bash
    flutter pub get
    ```
 
-3. **Run code generation** (for Freezed models):
+2. **Run code generation** (for Freezed models):
    ```bash
    flutter pub run build_runner build --delete-conflicting-outputs
    ```
 
-4. **Run the app**:
+3. **Run the app**:
    ```bash
+   # For Web
+   flutter run -d chrome
+   
    # For iOS
    flutter run -d ios
    
    # For Android
    flutter run -d android
-   
-   # For Web
-   flutter run -d chrome
    ```
+
+### Configuration
+
+The app connects to the backend at `http://127.0.0.1:3001` by default. To change this:
+- Edit `lib/core/config/app_config.dart`
+- Or set `API_BASE_URL` environment variable when building
 
 ## Development
 
@@ -97,36 +123,45 @@ lib/
 - `dio`: HTTP client
 - `drift`: Local SQLite database
 - `freezed`: Immutable data classes
-- `json_serializable`: JSON serialization
+- `flutter_svg`: SVG icon rendering
 
-### Mock Mode
-The app currently runs in mock mode, using fixture data from `assets/fixtures/generated_output_fixture.json`. To enable backend integration, update the `ApiClient` in `lib/core/api/api_client.dart`.
+### Design Guide
+See `UI_DESIGN_GUIDE.md` for detailed design specifications including:
+- Shadow silhouette style guidelines
+- Peeking eyes implementation
+- Environment variability standards
+- 3-tab pattern structure
+- Icon allocation per page
 
-### Architecture
-- **Repositories**: Handle data persistence and API calls
-- **Providers**: Riverpod providers for state management
-- **Models**: Freezed data classes matching the GeneratedOutput schema
-- **Widgets**: Reusable UI components with consistent styling
+## Production Deployment
 
-## Usage
+### Backend (Render)
+The backend is deployed on Render. Push to `main` branch triggers automatic deployment.
 
-1. **Onboarding**: Start by entering 6 characters that resonate with you
-2. **Generate**: The app automatically generates your mythic narrative
-3. **Explore**: Browse through Story, Identification, Functioning, Actions, and Life Domains tabs
-4. **Assess**: Complete assessment modules to refine your narrative
-5. **Evidence**: Tap "Evidence" on any card to see how outputs were derived
+### Flutter Web (Vercel/Firebase)
+Build for production:
+```bash
+flutter build web --release
+```
+Deploy the `build/web` directory.
 
-## Next Steps
+## Usage Flow
 
-- [ ] Backend API integration (currently using mock/fixture data)
-- [ ] Export functionality (DOCX/PDF)
-- [ ] User authentication
-- [ ] Analytics and crash reporting (Sentry)
-- [ ] Additional customization options
+1. **Welcome**: Select your narrative tone (Minimal/Modern/Mythical)
+2. **Login**: Enter username to save your journey
+3. **Characters**: Enter characters that resonate with you
+4. **Clarification**: Confirm or clarify character recognition
+5. **Explore**: Browse your generated narrative across all tabs
 
-## License
+## Recent Updates
 
-This project is part of a private development effort.
+### v2.0 - UI Redesign
+- Merged welcome and login into swipeable onboarding
+- Simplified to 3 narrative tones
+- Added Affirmations and Scenarios tabs
+- Implemented shadow silhouettes with peeking eyes throughout
+- Added SVG-based icons for Psyche positions
+- Deduplicated icons across all pages
 
 ---
 
