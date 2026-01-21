@@ -31,14 +31,14 @@ case $ENV in
         ;;
     staging)
         echo -e "${YELLOW}Building for STAGING${NC}"
-        API_URL="https://api-staging.mythicjung.com"
+        API_URL="http://127.0.0.1:3001"
         USE_MOCK="false"
         PRODUCTION="false"
         SCHEME="staging"
         ;;
     prod|production)
         echo -e "${YELLOW}Building for PRODUCTION${NC}"
-        API_URL="https://api.mythicjung.com"
+        API_URL="https://bliss-backend-prod.vervetogether.com"
         USE_MOCK="false"
         PRODUCTION="true"
         SCHEME="production"
