@@ -156,13 +156,17 @@ This guide covers deploying both the backend API and mobile apps to production.
 - Google Play Developer account ($25 one-time fee)
 - Release keystore
 
-#### Create Keystore
+### Create and Configure Keystore (only if not created earlier, in this case it's created)
+```./scripts/setup-android-keystore.sh
+```
+
+#### Mannual Create Keystore
 ```bash
 keytool -genkey -v -keystore android/app/keystore/release.keystore \
   -alias mythicjung -keyalg RSA -keysize 2048 -validity 10000
 ```
 
-#### Configure signing
+#### Mannual Configure signing or use Existing Keystore
 Create `android/local.properties`:
 ```properties
 KEYSTORE_PATH=keystore/release.keystore
@@ -170,6 +174,14 @@ KEYSTORE_PASSWORD=your-keystore-password
 KEY_ALIAS=mythicjung
 KEY_PASSWORD=your-key-password
 ```
+
+### Keystore already created
+```Download keystore from:
+https://drive.google.com/drive/folders/1EKMJy-QVj-6JgnxZzoO_7mBOHsRj7toL?usp=drive_link
+then move the file at locaiton:
+android/app/keystore/release.keystore
+```
+
 
 #### Build for release
 ```bash
