@@ -154,34 +154,62 @@ This guide covers deploying both the backend API and mobile apps to production.
 
 #### Prerequisites
 - Google Play Developer account ($25 one-time fee)
-- Release keystore
+- Release keystore (provided via shared drive, or created using the steps below)
 
-### Create and Configure Keystore (only if not created earlier, in this case it's created)
-```./scripts/setup-android-keystore.sh
-```
+#### Keystore & signing setup
 
-#### Mannual Create Keystore
+You have **two main options** depending on whether you already have the shared keystore and `local.properties` file.
+
+##### Option A: Use existing shared keystore (recommended for collaborators)
+
+1. Download the keystore and `local.properties` from the shared drive:  
+   [Google Drive folder](https://drive.google.com/drive/folders/1EKMJy-QVj-6JgnxZzoO_7mBOHsRj7toL?usp=drive_link)
+2. Place the files in the project at:
+   - `android/app/keystore/release.keystore`
+   - `android/local.properties`
+3. Open `android/local.properties` and verify it contains entries like:
+   ```properties
+   KEYSTORE_PATH=keystore/release.keystore
+   KEYSTORE_PASSWORD=your-keystore-password
+   KEY_ALIAS=mythicjung
+   KEY_PASSWORD=your-key-password
+   ```
+4. Do **not** commit these files to git; they are already ignored via `.gitignore`.
+
+##### Option B: Create a new keystore with helper script (if you don't have the shared one)
+
+1. From the project root, run:
+   ```bash
+   ./scripts/setup-android-keystore.sh
+   ```
+2. Follow the prompts to:
+   - Set a keystore password and key password
+   - Provide basic identity information (name, organization, country, etc.)
+3. The script will:
+   - Create `android/app/keystore/release.keystore`
+   - Update or create `android/local.properties` with:
+     ```properties
+     KEYSTORE_PATH=keystore/release.keystore
+     KEYSTORE_PASSWORD=your-keystore-password
+     KEY_ALIAS=mythicjung
+     KEY_PASSWORD=your-key-password
+     ```
+4. Keep the keystore file and passwords **safe** – you will need them for all future app updates.
+
+##### (Optional) Manual keystore creation
+
 ```bash
 keytool -genkey -v -keystore android/app/keystore/release.keystore \
   -alias mythicjung -keyalg RSA -keysize 2048 -validity 10000
 ```
 
-#### Mannual Configure signing or use Existing Keystore
-Create `android/local.properties`:
+Then create or update `android/local.properties`:
 ```properties
 KEYSTORE_PATH=keystore/release.keystore
 KEYSTORE_PASSWORD=your-keystore-password
 KEY_ALIAS=mythicjung
 KEY_PASSWORD=your-key-password
 ```
-
-### Keystore already created
-```Download keystore from:
-https://drive.google.com/drive/folders/1EKMJy-QVj-6JgnxZzoO_7mBOHsRj7toL?usp=drive_link
-then move the file at locaiton:
-android/app/keystore/release.keystore
-```
-
 
 #### Build for release
 ```bash
