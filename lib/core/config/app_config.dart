@@ -23,7 +23,7 @@ class AppConfig {
   /// App name
   static const String appName = String.fromEnvironment(
     'APP_NAME',
-    defaultValue: 'Mythic Jung',
+    defaultValue: 'Bliss+',
   );
 
   /// App version (can be overridden for display purposes)

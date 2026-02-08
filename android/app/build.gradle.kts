@@ -128,19 +128,19 @@ android {
             dimension = "environment"
             applicationIdSuffix = ".dev"
             versionNameSuffix = "-dev"
-            resValue("string", "app_name", "Mythic Jung Dev")
+            resValue("string", "app_name", "Bliss+ Dev")
         }
         
         create("staging") {
             dimension = "environment"
             applicationIdSuffix = ".staging"
             versionNameSuffix = "-staging"
-            resValue("string", "app_name", "Mythic Jung Staging")
+            resValue("string", "app_name", "Bliss+ Staging")
         }
         
         create("production") {
             dimension = "environment"
-            resValue("string", "app_name", "Mythic Jung")
+            resValue("string", "app_name", "Bliss+")
         }
     }
 
